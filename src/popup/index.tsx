@@ -1,7 +1,5 @@
-import { Main } from "~components/main"
+import Main from "~components/main"
 
-function IndexPopup() {
+export default function IndexPopup() {
   return <Main />
 }
-
-export default IndexPopup
