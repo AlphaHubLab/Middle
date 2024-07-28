@@ -2,10 +2,17 @@ This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with
 
 ## Getting Started
 
+Clone:
+
+```bash
+git clone -b boilerplate --single-branch https://github.com/AlphaHubLab/Middle.git
+```
+
 Install dependencies:
+
 ```bash
 npm i
-# or 
+# or
 pnpm i
 ```
 
@@ -20,6 +27,19 @@ pnpm dev
 Use this [Tutorial](https://docs.plasmo.com/framework#loading-the-extension-in-chrome/) to load the under-dev extension into the browser. For example, if you are developing for the chrome browser, using manifest v3, use: `build/chrome-mv3-dev`.
 
 For further guidance, [visit our Documentation](https://docs.plasmo.com/)
+
+## How to contribute
+
+After some modification:
+
+```bash
+git add .
+git commit -m "commit name"
+# create/switch to a new branch to preserve the boilerplate and the main branch.
+git checkout -b your-branch-name
+git remote add origin https://github.com/AlphaHubLab/Middle.git
+git push -u origin your-branch-name
+```
 
 ## Making production build
 
