@@ -1,0 +1,1 @@
+export const FETCH_STALE_TIME = 10 // 2 hours

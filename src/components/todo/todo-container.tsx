@@ -24,16 +24,7 @@ export default function TodoList() {
 
   return (
     <>
-      <div className="my-2">
-        <p className="text-xs text-rose-500">for dev purposes</p>
-        <button
-          className="text-rose-500 border border-rose-500 rounded-lg p-1 hover:bg-gray-200 border-"
-          onClick={() => remove()}>
-          reset storage
-        </button>
-      </div>
-
-      <div>
+      <div className="text-zinc-300">
         <h1 className="font-bold text-xl border-b border-1 pb-1 mb-2">Tasks</h1>
         <div className="flex justify-end">
           <button
@@ -54,6 +45,14 @@ export default function TodoList() {
               <Todo data={t}></Todo>
             </div>
           ))}
+      </div>
+      <div className="my-2">
+        <p className="text-xs text-rose-500">for dev purposes</p>
+        <button
+          className="text-rose-500 border border-rose-500 rounded-lg p-1 hover:bg-gray-200 border-"
+          onClick={() => remove()}>
+          reset storage
+        </button>
       </div>
     </>
   )

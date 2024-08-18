@@ -4,7 +4,7 @@ import { IoSettingsOutline } from "react-icons/io5"
 import { RiHomeLine } from "react-icons/ri"
 
 import TodoList from "./todo/todo-container"
-import Welcome from "./welocme"
+import Home from "./home"
 
 const routes = [
   { route: "Home", icon: RiHomeLine },
@@ -16,7 +16,7 @@ export default function Main({ children }: { children: ReactNode }) {
   const [activePage, setActivePage] = useState("Home")
 
   return (
-    <main className="bg-blue-100 h-screen p-2">
+    <main className="bg-zinc-800 h-screen p-2">
       <nav className="fixed left-0 h-screen w-12 md:w-16 pl-2 flex flex-col gap-2 text-black justify-center">
         {routes.map((r, i) => (
           <div key={`nav-${i}`}>
@@ -29,8 +29,8 @@ export default function Main({ children }: { children: ReactNode }) {
           </div>
         ))}
       </nav>
-      <div className="ml-12 md:ml-16 bg-white rounded-xl p-2 h-full">
-        {activePage === "Home" && <Welcome />}
+      <div className="ml-12 md:ml-16 bg-zinc-900 rounded-xl p-2 h-full">
+        {activePage === "Home" && <Home />}
         {activePage === "Tasks" && <TodoList />}
         {activePage === "Preferences" && <>Preferences</>}
       </div>

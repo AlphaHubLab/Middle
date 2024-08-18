@@ -1,11 +1,15 @@
 This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with [`plasmo init`](https://www.npmjs.com/package/plasmo).
 
+
+This branch contains a repo prepared with necessory permissions, manifest, storage, and works with popup and new tab actions.
+
+
 ## Getting Started
 
-Clone:
+Clone current branch (dev branch):
 
 ```bash
-git clone -b boilerplate --single-branch https://github.com/AlphaHubLab/Middle.git
+git clone -b dev --single-branch https://github.com/AlphaHubLab/Middle.git
 ```
 
 Install dependencies:
@@ -26,9 +30,41 @@ pnpm dev
 
 Use this [Tutorial](https://docs.plasmo.com/framework#loading-the-extension-in-chrome/) to load the under-dev extension into the browser. For example, if you are developing for the chrome browser, using manifest v3, use: `build/chrome-mv3-dev`.
 
-For further guidance, [visit our Documentation](https://docs.plasmo.com/)
+## Useful resources (Docs)
+
+Using React-icons:
+[React Icons](https://react-icons.github.io/react-icons/)
+
+Styling with TailwindCSS:
+[Tailwind](https://tailwindcss.com/)
+
+Adding actions/pages to extension:
+[Plasmo pages](https://docs.plasmo.com/framework/ext-pages)
+
+How to add external assets (Images, scripts) and permissions to extension:
+[Plasmo assets](https://docs.plasmo.com/framework/assets)
+
+Content scripts to manipulate or use an open website data:
+[Plasmo content scripts](https://docs.plasmo.com/framework/content-scripts)
+
+Working with Background worker (Useful for fetching/Heavy computation):
+[Plasmo Background worker](https://docs.plasmo.com/framework/background-service-worker)
+
+to add communication between popup and other parts of extension:
+[Plasmo messaging](https://docs.plasmo.com/framework/messaging)
+
+Working with storage:
+[Plasmo storage](https://docs.plasmo.com/framework/storage)
+
+For further guidance and full documentation, [visit our Documentation](https://docs.plasmo.com/)
 
 ## How to contribute
+
+Please use `pnpm` over `npm`
+
+```
+npm install -g pnpm
+```
 
 After some modification:
 
