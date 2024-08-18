@@ -73,7 +73,7 @@ git add .
 git commit -m "commit name"
 # create/switch to a new branch to preserve the boilerplate and the main branch.
 git checkout -b your-branch-name
-git remote add origin https://github.com/AlphaHubLab/Middle.git
+git remote add origin git@github.com:AlphaHubLab/Middle.git
 git push -u origin your-branch-name
 ```
 
