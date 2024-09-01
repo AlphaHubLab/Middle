@@ -1,4 +1,7 @@
+import { Command } from "cmdk"
+
 import BookmarkContainer from "./bookmark/bookmark-container"
+import { CommandMenu } from "./command"
 import TodoList from "./todo/todo-container"
 import WidgetBox from "./ui/widget-box"
 
@@ -15,6 +18,14 @@ export default function Home() {
             </div>
           </WidgetBox>
         </nav>
+
+        {/* <div className="h-16"> */}
+        <WidgetBox className="bg-zinc-800">
+          <div className="flex justify-around text-zinc-300 items-center h-full">
+            <CommandMenu />
+          </div>
+        </WidgetBox>
+        {/* </div> */}
 
         <div className="flex gap-2">
           <section className="basis-2/3">
