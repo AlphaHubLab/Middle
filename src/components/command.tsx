@@ -1,30 +1,31 @@
 import { Command } from "cmdk"
-import { useEffect, useState } from "react"
+import { useRouter } from "next/router"
+import { useEffect, useRef, useState } from "react"
 
 export const CommandMenu = () => {
   const [open, setOpen] = useState(true)
-
+  const ref = useRef(null)
   // Toggle the menu when ⌘K is pressed
-  // useEffect(() => {
-  //   const down = (e) => {
-  //     if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-  //       e.preventDefault()
-  //       setOpen((open) => !open)
-  //     }
-  //   }
+  useEffect(() => {
+    const down = (e) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setOpen((open) => !open)
+      }
+    }
 
-  //   document.addEventListener("keydown", down)
-  //   return () => document.removeEventListener("keydown", down)
-  // }, [])
+    document.addEventListener("keydown", down)
+    return () => document.removeEventListener("keydown", down)
+  }, [])
 
   return (
-    <div>
-      <p>Search (test)</p>
-      {/* <Command.Dialog
+    <>
+      <Command.Dialog
+        container={ref.current}
         open={open}
         onOpenChange={setOpen}
-        label="Global Command Menu"> */}
-      <Command>
+        label="Global Command Menu">
+        {/* <Command> */}
         <Command.Input />
         <Command.List>
           <Command.Empty>No results found.</Command.Empty>
@@ -38,8 +39,9 @@ export const CommandMenu = () => {
 
           <Command.Item>Apple</Command.Item>
         </Command.List>
-      </Command>
-      {/* </Command.Dialog> */}
-    </div>
+        {/* </Command> */}
+      </Command.Dialog>
+      <div className="bg-zinc-900" ref={ref} />
+    </>
   )
 }
