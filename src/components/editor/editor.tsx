@@ -6,7 +6,9 @@ import {
   type KeyboardEvent
 } from "react"
 
-import { extensions, type Extenstion } from "./extenstions"
+import { type Extenstion } from "~lib/types"
+
+import { extensions } from "./extenstions"
 
 export default function TaskBox() {
   const [showCommand, setShowCommand] = useState(false)
@@ -33,6 +35,7 @@ export default function TaskBox() {
   }
 
   const initCommand = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setSelected(0)
     setStartCommand(e.target.selectionStart)
     setShowCommand(true)
     setCommand("")
@@ -140,9 +143,11 @@ export default function TaskBox() {
   }, [value])
 
   const setter = (_extension: Extenstion) => {
-    input.current.focus()
+    input?.current?.focus()
+
     const search = new RegExp("/" + command, "g")
     const newValue = value.replace(search, _extension.value)
+
     setValue(newValue)
     setShowCommand(false)
   }
@@ -151,10 +156,10 @@ export default function TaskBox() {
     <div className="w-full flex flex-col text-sm max-w-[650px] p-12">
       <textarea
         ref={input}
+        className="border w-full rounded-t-xl p-2"
         placeholder="Start typing or press / to search commands"
         value={value}
         spellCheck={false}
-        className="border w-full rounded-t-xl p-2"
         onKeyDown={handleKeyDown}
         onChange={handleChange}
       />
@@ -198,7 +203,8 @@ const List = ({ extensions, setter, select, selected }) => {
         <div className="text-zinc-500 text-sm">No results</div>
       )}
       {extensions.length > 0 && (
-        <div className="overflow-y-auto h-[12.5rem]">
+        <div
+          className={`overflow-y-auto h-[${extensions.length >= 5 ? "200" : (extensions.length * 40).toString()}px]`}>
           {extensions.map((ex: Extenstion, i: number) => (
             <div
               onMouseMove={() => select(i)}
@@ -209,7 +215,6 @@ const List = ({ extensions, setter, select, selected }) => {
                 <ex.icon />
                 <span className="font-bold">{ex.title} </span>
               </div>
-
               <span className="text-zinc-700">value: {ex.value} </span>
               <span className="text-zinc-500">
                 Keywords:{" "}

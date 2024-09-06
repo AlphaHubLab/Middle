@@ -3,8 +3,8 @@ import { FaTasks } from "react-icons/fa"
 import { IoSettingsOutline } from "react-icons/io5"
 import { RiHomeLine } from "react-icons/ri"
 
-import TodoList from "./todo/todo-container"
 import Home from "./home"
+import TodoList from "./todo/todo-container"
 
 const routes = [
   { route: "Home", icon: RiHomeLine },
@@ -12,7 +12,7 @@ const routes = [
   { route: "Preferences", icon: IoSettingsOutline }
 ]
 
-export default function Main({ children }: { children: ReactNode }) {
+export default function Main() {
   const [activePage, setActivePage] = useState("Home")
 
   return (

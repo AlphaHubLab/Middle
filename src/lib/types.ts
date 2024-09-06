@@ -1,3 +1,5 @@
+import type { IconType } from "react-icons"
+
 export interface IBookmark {
   name: string
   url: string
@@ -6,4 +8,11 @@ export interface IBookmark {
 
 export interface IBookmarks {
   [key: string]: Array<IBookmark>
+}
+
+export interface Extenstion {
+  icon: IconType
+  title: string
+  value: string
+  keywords: Array<string>
 }
