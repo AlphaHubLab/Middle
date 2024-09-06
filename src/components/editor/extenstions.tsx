@@ -1,14 +1,6 @@
-import type { IconType } from "react-icons"
 import { IoFilterCircleOutline } from "react-icons/io5"
 import { LuListFilter } from "react-icons/lu"
 import { MdFilterHdr } from "react-icons/md"
-
-export interface Extenstion {
-  icon: IconType
-  title: string
-  value: string
-  keywords: Array<string>
-}
 
 export const extensions = [
   {
