@@ -18,7 +18,6 @@ export default function TaskBox() {
   const [selected, setSelected] = useState(0)
 
   const input = useRef(null)
-  const list = useRef(null)
 
   const cycleNextExtension = () => {
     if (selected + 1 > serachedResults.length - 1) {
@@ -78,14 +77,14 @@ export default function TaskBox() {
         setShowCommand(false)
       }
 
-      // When move text cursor before '/'
+      // When move text caret before '/'
       else if (e.key === "ArrowLeft") {
         if (e.target.selectionStart === startCommand + 1) {
           setShowCommand(false)
         }
       }
 
-      // When move text cursor forward
+      // When move text caret forward
       else if (e.key === "ArrowRight") {
         if (e.target.selectionStart > startCommand + command.length) {
           setShowCommand(false)
@@ -109,7 +108,7 @@ export default function TaskBox() {
         e.preventDefault()
         setter(serachedResults[selected])
       }
-      // If typing command and change caret with mouse outside of command word
+      // If typing command and change caret with mouse outside of the active command word
       else {
         if (
           e.target.selectionStart > startCommand + command.length + 1 ||
@@ -149,7 +148,7 @@ export default function TaskBox() {
   }
 
   return (
-    <div className="w-96 flex flex-col text-sm">
+    <div className="w-full flex flex-col text-sm max-w-[650px] p-12">
       <textarea
         ref={input}
         placeholder="Start typing or press / to search commands"
@@ -180,16 +179,11 @@ export default function TaskBox() {
 }
 
 const List = ({ extensions, setter, select, selected }) => {
-  //   const showableIndices =
-  //     extensions.length <= 5
-  //       ? Array.from({ length: extensions.length })
-  //       : () => {
-  //           extensions.length - 5
-  //         }
   const ref = useRef(null)
+
   useEffect(() => {
     const _selected = ref?.current?.querySelector(".active")
-    console.log(_selected)
+
     if (_selected) {
       _selected?.scrollIntoView({
         behavior: "smooth",
@@ -231,6 +225,7 @@ const List = ({ extensions, setter, select, selected }) => {
   )
 }
 
+// This is a simple search
 // Searching can be replaced with fusejs for fuzzy search if needed
 // https://www.fusejs.io/
 const search = (_command: string, _extensions: Array<Extenstion>) => {
