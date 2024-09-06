@@ -1,5 +1,4 @@
 import { Command } from "cmdk"
-import { useRouter } from "next/router"
 import { useEffect, useRef, useState } from "react"
 
 export const CommandMenu = () => {
