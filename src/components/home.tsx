@@ -12,7 +12,7 @@ export default function Home() {
         <nav className="h-16">
           <WidgetBox className="bg-zinc-800">
             <div className="flex justify-around text-zinc-300 items-center h-full">
-              <p>ETH: 1.1</p>
+              <p>ETH: 1.2</p>
               <p>BASE: 0.1</p>
               <p>SCROLL: 0.2</p>
             </div>
