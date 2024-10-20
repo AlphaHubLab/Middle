@@ -1,5 +1,5 @@
 import Apps from "~components/apps/apps"
-import TaskBox from "~components/editor/editor"
+import TaskBox from "~archive/editor/editor"
 
 export default function Page() {
   return (

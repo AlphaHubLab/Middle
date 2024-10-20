@@ -10,9 +10,26 @@ export interface IBookmarks {
   [key: string]: Array<IBookmark>
 }
 
+export type NodeType = "h" | "a" | "p"
+
+export interface Node {
+  type: NodeType
+  value: string
+}
+
+export interface Store {
+  id: string
+  task: Node[]
+  range: number
+  focusedNode: number
+  params: { dueDate: number; tags: string[] }
+}
+
 export interface Extenstion {
   icon: IconType
   title: string
-  value: string
-  keywords: Array<string>
+  value: any
+  action: string
+  description: string
+  keywords: string[]
 }

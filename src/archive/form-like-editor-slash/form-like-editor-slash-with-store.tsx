@@ -1,40 +1,48 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import type { ChangeEvent, KeyboardEvent } from "react"
-import uuid4 from "uuid4"
 
-import useDebounceStore from "~hooks/useDebounceStore"
-import * as helpers from "~lib/task-helpers"
-import type { Extenstion, Node, NodeType, Store } from "~lib/types"
+import { Storage } from "@plasmohq/storage"
+import { useStorage } from "@plasmohq/storage/hook"
 
-import { Command } from "./commands"
-import { extensions } from "./extenstions"
+import { CommandInDep as Command, extensions } from "./commands-indep"
+import * as helpers from "./helpers"
 import { RenderElement } from "./render-element"
 import { RenderElementReadOnly } from "./render-element-readonly"
 import { DateWithProps, TagsWithProps } from "./render-params"
 
 const tagRegexp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z_]+\w*/g)
 
-const getAvailableExtensions = (_task: Node[], _extensions: Extenstion[]) => {
+const getAvailableExtensions = (_task, _extensions) => {
   // Remove Title if There is one
-  return helpers.hasTitle(_task)
+  return _task[0].type === "h"
     ? _extensions.filter((ex) => ex.value !== "h")
     : _extensions
 }
 
-export default function Editor() {
+export default function FormLikeEditorSlashWithStore() {
+  // useStorage is plasmo hook (see: https://docs.plasmo.com/framework/storage)
+  // const [tasks, setTasks, { remove }] = useStorage(
+  //   {
+  //     key: "middle-tasks",
+  //     instance: new Storage({
+  //       area: "local" // use "sync" for production to sync with logged in email.
+  //     })
+  //   },
+  //   // A funtion to get storage by provided key ("middle-tasks") if exists.
+  //   // if not exists (first use), initilize the empty array for storing tasks.
+  //   (v: Array<any>) => (!v ? [] : v)
+  // )
+
+  const [taskParams, setTaskParams] = useState({ dueDate: -1, tags: [] })
   const [isCommandActive, setIsCommandActive] = useState(false)
   const [command, setCommand] = useState("")
 
   /** Main store */
-  const [store, setStore] = useState<Store>({
-    id: uuid4(),
+  const [store, setStore] = useState({
     task: [{ type: "h", value: "" }],
     range: 0,
-    focusedNode: 0,
-    params: { dueDate: -1, tags: [] }
+    focusedNode: 0
   })
-
-  const { tasks, isLoading } = useDebounceStore(store, 1000)
 
   const nodes = useRef([])
   const undos = useRef([])
@@ -66,7 +74,9 @@ export default function Editor() {
     nodes.current[store.focusedNode].setSelectionRange(store.range, store.range)
   }, [store.range, store.task])
 
-  useEffect(() => nodes?.current[store.focusedNode].focus())
+  useEffect(() => {
+    nodes?.current[store.focusedNode].focus()
+  })
 
   useEffect(() => {
     addTags()
@@ -89,7 +99,7 @@ export default function Editor() {
     setStore(last)
   }
 
-  const updateHistory = (store: Store) => {
+  const updateHistory = (store) => {
     if (undos.current.length > 15) undos.current.shift()
     if (redos.current.length > 0) redos.current = []
     undos.current.push(store)
@@ -132,13 +142,14 @@ export default function Editor() {
   }
 
   /** Node functions */
-  const addNode = (type: NodeType, value = "") => {
+  const addNode = (type: string, value = "") => {
     // 'h' can not be added twice
     if (type === "h") {
-      if (helpers.hasTitle(store.task)) return
+      if (store.task[0].type === "h") return
+
       const newstore = {
         ...store,
-        task: [{ type, value }, ...store.task],
+        task: [{ type: "h", value }, ...store.task],
         focusedNode: 0,
         range: 0
       }
@@ -150,7 +161,7 @@ export default function Editor() {
         ...store,
         range: -1,
         focusedNode: store.focusedNode - 1,
-        task: store.task.toSpliced(store.focusedNode + 1, 0, {
+        task: [...store.task].toSpliced(store.focusedNode + 1, 0, {
           type,
           value: ""
         })
@@ -161,10 +172,10 @@ export default function Editor() {
     }
   }
 
-  const replaceNodes = (nodes: Node[], range = null) => {
+  const replaceNodes = (nodes, range = null) => {
     const newStore = {
       ...store,
-      task: store.task.toSpliced(store.focusedNode, 1, ...nodes),
+      task: [...store.task].toSpliced(store.focusedNode, 1, ...nodes),
       range: range ? range : 0,
       focusedNode: store.focusedNode + nodes.length - 1
     }
@@ -182,19 +193,15 @@ export default function Editor() {
     setStore({ ...store, task, range: -1 })
   }
 
-  const splitNode = (
-    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  ) => {
-    const node = store.task[store.focusedNode]
+  const splitNode = (e) => {
+    const { value: nodeValue, type: nodeType } = store.task[store.focusedNode]
 
-    const p1 = node.value.slice(0, e.target.selectionStart).trim()
-    const p2 = node.value.slice(e.target.selectionStart).trim()
+    const p1 = nodeValue.slice(0, e.target.selectionStart)
+    const p2 = nodeValue.slice(e.target.selectionStart)
 
-    const t1 = helpers.getNodeType(node, p1)
-    const t2 = helpers.getNodeType({ value: node.value, type: null }, p2)
     const nodes = [
-      { type: t1, value: p1 },
-      { type: t2, value: p2 }
+      { type: nodeType, value: p1 },
+      { type: "p", value: p2 }
     ]
 
     replaceNodes(nodes)
@@ -202,21 +209,16 @@ export default function Editor() {
 
   const mergeNode = () => {
     if (store.focusedNode === 0) return
+    if (store.focusedNode === 1 && store.task[0].type === "h") return
 
     const p1 = store.task[store.focusedNode - 1].value
     const p2 = store.task[store.focusedNode].value
-    const mergedValue = p1 + p2
 
-    const type = helpers.getNodeType(
-      store.task[store.focusedNode - 1],
-      mergedValue
-    )
-
-    const mergedNode = { type, value: mergedValue }
+    const mergedNode = { type: "p", value: p1 + p2 }
 
     const newStore = {
       ...store,
-      task: store.task.toSpliced(store.focusedNode - 1, 2, mergedNode),
+      task: [...store.task].toSpliced(store.focusedNode - 1, 2, mergedNode),
       range: p1.length,
       focusedNode: store.focusedNode - 1
     }
@@ -238,27 +240,10 @@ export default function Editor() {
 
     const newTags = Array.from(new Set(_tags.map((t) => t.toLowerCase())))
 
-    const params = { ...store.params, tags: newTags }
-    setStore({ ...store, params })
+    setTaskParams({ ...taskParams, tags: newTags })
   }
 
-  const addDate = (dueDate: number) => {
-    const params = { ...store.params, dueDate }
-
-    const newStore = {
-      ...store,
-      task: store.task.toSpliced(store.focusedNode, 1, {
-        type: store.task[store.focusedNode].type as NodeType,
-        value: nodeSnapshot.current
-      }),
-      range: nodeSnapshot.current.length,
-      focusedNode: store.focusedNode,
-      params
-    }
-
-    updateHistory(store)
-    setStore(newStore)
-  }
+  const addDate = (dueDate: number) => setTaskParams({ ...taskParams, dueDate })
 
   /** Setter */
   const setter = (_extension: any) => {
@@ -286,6 +271,16 @@ export default function Editor() {
         const now = new Date().getTime()
         const dueDate = Math.floor(now / 10_000) * 10_000 + _extension.value
         addDate(dueDate)
+
+        replaceNodes(
+          [
+            {
+              type: store.task[store.focusedNode].type,
+              value: nodeSnapshot.current
+            }
+          ],
+          nodeSnapshot.current.length
+        )
         break
 
       case "addNode":
@@ -348,7 +343,7 @@ export default function Editor() {
         }
       }
     }
-
+    //
     if (!isCommandActive) {
       if (e.key === "Enter") {
         e.preventDefault()
@@ -363,7 +358,7 @@ export default function Editor() {
 
         return splitNode(e)
       }
-      // Cycle next node
+      // Cycle next noe
       else if (e.key === "ArrowUp") {
         return prevNode(e)
       }
@@ -427,13 +422,11 @@ export default function Editor() {
   // }
 
   return (
-    <div className="w-full">
-      {store.params.dueDate !== -1 && (
-        <DateWithProps value={store.params.dueDate} setter={addDate} />
+    <div className="w-[600px] border p-2">
+      {taskParams.dueDate !== -1 && (
+        <DateWithProps value={taskParams.dueDate} setter={addDate} />
       )}
-      {store.params.tags.length > 0 && (
-        <TagsWithProps tags={store.params.tags} />
-      )}
+      {taskParams.tags.length > 0 && <TagsWithProps tags={taskParams.tags} />}
 
       {store.task.map((t, i) => (
         <div className="flex flex-col" key={`textarea-${i}`}>
@@ -445,8 +438,6 @@ export default function Editor() {
             onChange={updateNode}
             onFocus={handleFocus}
             onPaste={handlePaste}
-            store={store}
-            isLoading={isLoading}
           />
           {isCommandActive && store.focusedNode === i && (
             <div className="ml-4 h-[0px]">
@@ -459,17 +450,12 @@ export default function Editor() {
           )}
         </div>
       ))}
-      {helpers.isTaskEmpty(store) && (
-        <p className="text-zinc-400 text-sm pl-6">
-          Type anything or press '/' for commands...
-        </p>
-      )}
       <div>
         {" "}
-        <div className="mt-10 text-zinc-500">
-          {/* <button className="px-2 py-1 bg-gray-200 mb-10" onClick={onSubmit}>
+        {/* <div className="mt-10 text-zinc-500">
+        <button className="px-2 py-1 bg-gray-200 mb-10" onClick={onSubmit}>
         Aim
-      </button> */}
+      </button>
           INBOX
           {tasks &&
             tasks.length > 0 &&
@@ -483,13 +469,13 @@ export default function Editor() {
               </div>
             ))}
           <div className="my-2 border-t-[0.5px] py-2 border-rose-500">
-            {/* <button
+            <button
               className="text-xs text-rose-500 border border-rose-500 rounded-lg p-1 hover:bg-gray-200 border-"
               onClick={() => remove()}>
               reset storage (dev only)
-            </button> */}
+            </button>
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   )

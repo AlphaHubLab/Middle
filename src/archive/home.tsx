@@ -1,9 +1,9 @@
 import { Command } from "cmdk"
 
-import BookmarkContainer from "./bookmark/bookmark-container"
+import BookmarkContainer from "../components/bookmark/bookmark-container"
 import { CommandMenu } from "./command"
 import TodoList from "./todo/todo-container"
-import WidgetBox from "./ui/widget-box"
+import WidgetBox from "./widget-box"
 
 export default function Home() {
   return (

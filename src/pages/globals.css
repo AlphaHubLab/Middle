@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.placeholders {
+  padding: 5px;
+}
+
+.placeholders[placeholder]:empty:before {
+  content: attr(placeholder);
+  color: #555;
+}
+
+.widget-grid {
+  padding: var(--offset);
+  grid-template-columns: repeat(var(--col), minamx(0, 1fr));
+  gap: var(--offset);
+}
