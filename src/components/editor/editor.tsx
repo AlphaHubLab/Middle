@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import type { ChangeEvent, KeyboardEvent } from "react"
 import uuid4 from "uuid4"
 
-import useDebounceStore from "~hooks/useDebounceStore"
+import useDraft from "~hooks/useDraft"
 import * as helpers from "~lib/task-helpers"
 import type { Extenstion, Node, NodeType, Store } from "~lib/types"
 
@@ -21,7 +21,13 @@ const getAvailableExtensions = (_task: Node[], _extensions: Extenstion[]) => {
     : _extensions
 }
 
-export default function Editor() {
+export default function Editor({
+  drafts,
+  setDrafts,
+  storageLoading,
+  // setShowList,
+  disabled
+}) {
   const [isCommandActive, setIsCommandActive] = useState(false)
   const [command, setCommand] = useState("")
 
@@ -34,7 +40,7 @@ export default function Editor() {
     params: { dueDate: -1, tags: [] }
   })
 
-  const { tasks, isLoading } = useDebounceStore(store, 1000)
+  const { isLoading } = useDraft(store, drafts, setDrafts, storageLoading, 1000)
 
   const nodes = useRef([])
   const undos = useRef([])
@@ -56,7 +62,6 @@ export default function Editor() {
         setIsCommandActive(false)
       }
     }
-
     document.addEventListener("click", deactivate)
     return () => document.removeEventListener("click", deactivate)
   }, [])
@@ -66,7 +71,11 @@ export default function Editor() {
     nodes.current[store.focusedNode].setSelectionRange(store.range, store.range)
   }, [store.range, store.task])
 
-  useEffect(() => nodes?.current[store.focusedNode].focus())
+  // useLayoutEffect(() => nodes?.current[0].blur(), [])
+  useEffect(() => {
+    if (disabled) return
+    nodes?.current[store.focusedNode].focus()
+  })
 
   useEffect(() => {
     addTags()
@@ -192,6 +201,7 @@ export default function Editor() {
 
     const t1 = helpers.getNodeType(node, p1)
     const t2 = helpers.getNodeType({ value: node.value, type: null }, p2)
+
     const nodes = [
       { type: t1, value: p1 },
       { type: t2, value: p2 }
@@ -296,6 +306,10 @@ export default function Editor() {
 
   /** Handling Events/focus */
   const handleFocus = (index: number) => {
+    // if (store.focusedNode === 0 && helpers.isTaskEmpty(store)) {
+    //   setShowList(false)
+    // }
+    // setShowList(false)
     if (store.focusedNode === index) return
     setStore({ ...store, focusedNode: index })
   }
@@ -427,7 +441,7 @@ export default function Editor() {
   // }
 
   return (
-    <div className="w-full">
+    <div className={`w-full`}>
       {store.params.dueDate !== -1 && (
         <DateWithProps value={store.params.dueDate} setter={addDate} />
       )}
@@ -464,16 +478,12 @@ export default function Editor() {
           Type anything or press '/' for commands...
         </p>
       )}
-      <div>
-        {" "}
+      {/* <div>
         <div className="mt-10 text-zinc-500">
-          {/* <button className="px-2 py-1 bg-gray-200 mb-10" onClick={onSubmit}>
-        Aim
-      </button> */}
           INBOX
-          {tasks &&
-            tasks.length > 0 &&
-            tasks.map((t, i) => (
+          {drafts &&
+            drafts.length > 0 &&
+            drafts.map((t, i) => (
               <div className="border rounded-lg" key={`tasks_${i}`}>
                 {t.task.map((node, i) => (
                   <div key={`node_${i}`}>
@@ -483,14 +493,14 @@ export default function Editor() {
               </div>
             ))}
           <div className="my-2 border-t-[0.5px] py-2 border-rose-500">
-            {/* <button
+            <button
               className="text-xs text-rose-500 border border-rose-500 rounded-lg p-1 hover:bg-gray-200 border-"
               onClick={() => remove()}>
               reset storage (dev only)
-            </button> */}
+            </button>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

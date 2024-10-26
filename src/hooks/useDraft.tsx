@@ -1,22 +1,15 @@
 import React, { useEffect } from "react"
 
-import { Storage } from "@plasmohq/storage"
-import { useStorage } from "@plasmohq/storage/hook"
-
 import { isTaskEmpty } from "~lib/task-helpers"
 import type { Store } from "~lib/types"
 
-export default function useDebounceStore(store: Store, delay: number = 500) {
-  const [drafts, setDrafts, { isLoading: storageLoading }] = useStorage(
-    {
-      key: "middle-drafts",
-      instance: new Storage({
-        area: "local"
-      })
-    },
-    (v: Array<any>) => (!v ? [] : v)
-  )
-
+export default function useDraft(
+  store: Store,
+  drafts: any[],
+  setDraft: (args: any) => void,
+  storageLoading: boolean,
+  delay: number = 500
+) {
   const [debounceLoading, setDebounceLoading] = React.useState(false)
 
   useEffect(() => {
@@ -35,12 +28,12 @@ export default function useDebounceStore(store: Store, delay: number = 500) {
         _drafts.push({ id: store.id, task: store.task, params: store.params })
       }
 
-      setDrafts([..._drafts])
       setDebounceLoading(false)
+      setDraft(_drafts)
     }, delay)
 
     return () => clearTimeout(timer)
   }, [store, delay])
 
-  return { drafts, isLoading: storageLoading || debounceLoading }
+  return { isLoading: storageLoading || debounceLoading }
 }

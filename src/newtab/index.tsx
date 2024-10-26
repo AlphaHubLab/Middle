@@ -1,10 +1,12 @@
+// import { Space_Grotesk } from "next/font/google"
+import { Profiler, useState } from "react"
+
 import "../style.css"
 
-import { Space_Grotesk } from "next/font/google"
-
-import Layout from "./Layout"
-
-// import Main from "~components/main"
+// import Apps from "~components/apps/apps"
+import TodoMainSlash from "~components/editor/todo-main"
+import NavbarContainer from "~components/navbar/navbar-container"
+import WidgetGrid, { Wid } from "~components/widgets/widgets"
 
 // const SG = Space_Grotesk({
 //   weight: ["300", "400", "500", "600", "700"],
@@ -13,17 +15,67 @@ import Layout from "./Layout"
 
 export default function Page() {
   return (
-    <Layout>
-      <div className="flex h-screen">
-        <div role="content" className="flex w-full md:w-[calc(100%-350px)] bg-green-200">
-          a
+    <div className="h-screen">
+      <NavbarContainer />
+      <div
+        // className={`h-[calc(100%-96px)] pt-24 w-screen flex ${SG.className}`}>
+        className={`h-[calc(100%-96px)] pt-24 w-screen flex `}>
+        <div className="flex w-[calc(100%-288px)] justify-center">
+          <div className="w-full max-w-[650px] mx-auto p-4">
+            {/* <TodoMainSlash /> */}
+          </div>
         </div>
-        <div
-          role="sidebar"
-          className="flex hidden md:flex w-[350px] bg-green-200">
-          b
+        <div className="w-[288px]">
+          <WidgetGrid col={4} row={10} offset={8}>
+            <Wid w={1} h={1}>
+              1
+            </Wid>
+            <Wid w={1} h={1}>
+              1
+            </Wid>
+            <Wid w={1} h={1}>
+              1
+            </Wid>
+            <Wid w={1} h={1}>
+              1
+            </Wid>
+            <Wid w={4} h={1}>
+              1
+            </Wid>
+            <Wid w={2} h={2}>
+              1
+            </Wid>
+            <Wid w={2} h={2}>
+              1
+            </Wid>
+            <Wid w={2} h={2} shape="circle">
+              1
+            </Wid>
+            <Wid w={2} h={1}>
+              1
+            </Wid>
+            <Wid w={1} h={1}>
+              1
+            </Wid>
+            <Wid w={1} h={1}>
+              1
+            </Wid>
+            <Wid w={4} h={2}>
+              1
+            </Wid>
+          </WidgetGrid>
         </div>
       </div>
-    </Layout>
+    </div>
   )
+}
+function onRender(
+  id,
+  phase,
+  actualDuration,
+  baseDuration,
+  startTime,
+  commitTime
+) {
+  console.log(id, "ad:", actualDuration, "bd:", baseDuration)
 }
