@@ -5,7 +5,7 @@ import { useStorage } from "@plasmohq/storage/hook"
 
 import Editor from "./editor"
 
-export default function TodoMainSlash({ disabled }) {
+export default function TodoMainSlash({ disabled, setStorage }) {
   const [drafts, setDrafts, { isLoading: storageLoading }] = useStorage(
     {
       key: "middle-drafts",
@@ -20,8 +20,9 @@ export default function TodoMainSlash({ disabled }) {
     <Editor
       disabled={disabled}
       drafts={drafts}
-      storageLoading={storageLoading}
       setDrafts={setDrafts}
+      setStorage={setStorage}
+      storageLoading={storageLoading}
     />
   )
 }

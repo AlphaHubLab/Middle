@@ -1,9 +1,13 @@
 import { Space_Grotesk } from "next/font/google"
 import { Profiler, useState } from "react"
 
+import { Storage } from "@plasmohq/storage"
+import { useStorage } from "@plasmohq/storage/hook"
+
 // import Apps from "~components/apps/apps"
 import TodoMainSlash from "~components/editor/todo-main"
 import NavbarContainer from "~components/navbar/navbar-container"
+import TaskList from "~components/tasklist"
 import WidgetGrid, { Wid } from "~components/widgets/widgets"
 
 const SG = Space_Grotesk({
@@ -12,19 +16,28 @@ const SG = Space_Grotesk({
 })
 
 export default function Page() {
+  const setTasks = useStorage(
+    {
+      key: "middle-tasks",
+      instance: new Storage({
+        area: "local"
+      })
+    },
+    (v: Array<any>) => (!v ? [] : v)
+  )[1]
+
   const [disabled, setDisabled] = useState(true)
   return (
     <div className={`h-screen ${SG.className} overflow-hidden`}>
       <NavbarContainer />
       <div className="h-[calc(100%-96px)]">
         <div className="w-full h-full flex">
+          {/* <Profiler id="todo" onRender={onRender}> */}
           <div className="relative h-full w-[calc(100%-288px)]">
-            {/* <Profiler id="todo" onRender={onRender}> */}
-
             <div
               onClick={() => setDisabled(false)}
-              className={` w-full max-w-[650px] mx-auto p-4 transition-all ${disabled ? "hover:cursor-text opacity-50 scale-90" : "opacity-100 scale-100"}`}>
-              <TodoMainSlash disabled={disabled} />
+              className={`w-full max-w-[650px] mx-auto p-4 transition-all ${disabled ? "hover:cursor-text opacity-50 scale-90" : "opacity-100 scale-100"}`}>
+              <TodoMainSlash disabled={disabled} setStorage={setTasks} />
             </div>
             <div className="flex w-full justify-center">
               <div
@@ -92,18 +105,4 @@ function onRender(
   commitTime
 ) {
   console.log(id, "ad:", actualDuration, "bd:", baseDuration)
-}
-
-const TaskList = ({ show }) => {
-  console.log(show)
-  return (
-    <div
-      className={`bg-white/20 px-2 absolute transition-all w-full h-full duration-200 ${show ? "top-0 " : "top-[80%]"}`}>
-      {Array.from({ length: 20 }).map((_, i) => (
-        <div className="z-30 py-1" key={`task-${i}`}>
-          <div className="bg-white border rounded-md">s</div>
-        </div>
-      ))}
-    </div>
-  )
 }

@@ -1,3 +1,90 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.placeholders {
+  padding: 5px;
+}
+
+.placeholders[placeholder]:empty:before {
+  content: attr(placeholder);
+  color: #555;
+}
+
+.widget-grid {
+  padding: var(--offset);
+  grid-template-columns: repeat(var(--col), minamx(0, 1fr));
+  gap: var(--offset);
+}
+
+.gradientback {
+  position: absolute;
+
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 20%;
+  pointer-events: none;
+  background: -moz-linear-gradient(
+    top,
+    transparent 0%,
+    rgb(255, 255, 255) 100%
+  ); /* FF3.6+ */
+  background: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    color-stop(0%, rgba(255, 255, 255, 0)),
+    color-stop(100%, rgb(255, 255, 255))
+  ); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(
+    top,
+    transparent 0%,
+    rgb(255, 255, 255) 100%
+  ); /* Chrome10+, Safari5.1+ */
+  background: -o-linear-gradient(
+    top,
+    transparent 0%,
+    rgb(255, 255, 255) 100%
+  ); /* Opera 11.10+ */
+  background: -ms-linear-gradient(
+    top,
+    transparent 0%,
+    rgb(255, 255, 255) 100%
+  ); /* IE10+ */
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgb(255, 255, 255) 100%
+  ); /* W3C */
+  filter: progid: dximagetransform.microsoft.gradient(startColorstr='transparent', endColorstr='#000000', GradientType=0); /* IE6-9 */
+}
+
+/* @keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.fadeIn {
+  animation: fade-in 0.4s forwards;
+}
+
+.fadeOut {
+  animation: fade-out 0.4s forwards;
+} */

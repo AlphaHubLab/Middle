@@ -1,7 +1,9 @@
-import React, { useEffect } from "react"
+import React, { useEffect, useRef } from "react"
 
 import { isTaskEmpty } from "~lib/task-helpers"
 import type { Store } from "~lib/types"
+
+const isEqual = require("react-fast-compare")
 
 export default function useDraft(
   store: Store,
@@ -12,9 +14,11 @@ export default function useDraft(
 ) {
   const [debounceLoading, setDebounceLoading] = React.useState(false)
 
-  useEffect(() => {
-    if (isTaskEmpty(store)) return
+  const task = useRef(store.task)
 
+  useEffect(() => {
+    // Prevent drafting while changing focus
+    if (isEqual(store.task, task.current)) return
     setDebounceLoading(true)
 
     const timer = setTimeout(() => {
@@ -28,6 +32,8 @@ export default function useDraft(
         _drafts.push({ id: store.id, task: store.task, params: store.params })
       }
 
+      task.current = store.task
+      
       setDebounceLoading(false)
       setDraft(_drafts)
     }, delay)
