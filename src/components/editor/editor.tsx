@@ -14,13 +14,6 @@ import { RenderElement } from "./render-element"
 
 const tagRegexp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z_]+\w*/g)
 
-const getAvailableExtensions = (_task: Node[], _extensions: Extenstion[]) => {
-  // Remove Title if There is one
-  return helpers.hasTitle(_task)
-    ? _extensions.filter((ex) => ex.value !== "h")
-    : _extensions
-}
-
 export default function Editor({
   disabled,
   drafts,
@@ -33,7 +26,7 @@ export default function Editor({
 
   /** Main store */
   const [store, setStore] = useState<Store>(helpers.getInitialStore())
-
+  console.log(store)
   const { isLoading } = useDraft(store, drafts, setDrafts, storageLoading, 1000)
 
   const nodes = useRef([])
@@ -42,8 +35,7 @@ export default function Editor({
   const cmdStartPos = useRef(0)
   const nodeSnapshot = useRef("")
 
-  // nodes.current = []
-
+  nodes.current = []
   const addToRef = (el: HTMLElement) => {
     if (el && !nodes.current.includes(el)) nodes.current.push(el)
   }
@@ -137,7 +129,8 @@ export default function Editor({
   const addNode = (type: NodeType, value = "") => {
     // 'h' can not be added twice
     if (type === "h") {
-      if (helpers.hasTitle(store.task)) return
+      if (helpers.hasTitle(store)) return
+
       const newstore = {
         ...store,
         task: [{ type, value }, ...store.task],
@@ -182,7 +175,7 @@ export default function Editor({
 
     // Shallow copy also works, but maybe produces some bugs
     // const task = [...store.task]
-    
+
     const task = structuredClone(store.task)
     task[store.focusedNode].value = e.target.value
     const newStore = { ...store, task, range: -1 }
@@ -302,7 +295,8 @@ export default function Editor({
     }
   }
 
-  const storeAndReset = () => {
+  const persistAndClear = () => {
+    // should re evaluate tags
     setStorage((prev) => [...prev, store])
     setStore(helpers.getInitialStore())
     setCommand("")
@@ -368,14 +362,6 @@ export default function Editor({
     if (!isCommandActive) {
       if (e.key === "Enter") {
         e.preventDefault()
-        // Empty Title can be skipped and turned to 'p'
-        // if (
-        //   store.focusedNode === 0 &&
-        //   e.target.value.length === 0 &&
-        //   store.task[0].type === "h"
-        // ) {
-        //   return replaceNodes([{ type: "p", value: "" }])
-        // }
         return splitNode(e)
       }
 
@@ -440,7 +426,7 @@ export default function Editor({
 
   return (
     <div className={`w-full`}>
-      <button disabled={disabled} onClick={storeAndReset}>
+      <button disabled={disabled} onClick={persistAndClear}>
         store
       </button>
       <div>
@@ -453,7 +439,7 @@ export default function Editor({
               addToRef={addToRef}
               onKeyDown={handleOnKeyDown}
               onChange={updateNode}
-              onFocus={() => handleFocus(i)}
+              onFocus={()=>handleFocus(i)}
               onPaste={handlePaste}
               store={store}
               isLoading={isLoading}
@@ -461,7 +447,7 @@ export default function Editor({
             {isCommandActive && store.focusedNode === i && (
               <div className="ml-4 h-[0px]">
                 <Command
-                  extensions={getAvailableExtensions(store.task, extensions)}
+                  extensions={helpers.getAvailableExtensions(store, extensions)}
                   setter={setter}
                   command={command}
                 />

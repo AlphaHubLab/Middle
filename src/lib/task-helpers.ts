@@ -1,7 +1,6 @@
-import type { ChangeEvent, ClipboardEventHandler } from "react"
 import uuid4 from "uuid4"
 
-import type { Node, NodeType, Store } from "./types"
+import type { Extenstion, Node, NodeType, Store } from "./types"
 
 const urlRegex =
   /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi
@@ -23,16 +22,14 @@ export const isTaskEmpty = (store: Store) =>
 
 /**
  *
- * @param _task
+ * @param store
  */
-export const hasTitle = (_task) => _task[0].type === "h"
+export const hasTitle = (store: Store) => store.task[0].type === "h"
 
 /**
  *
  * @param e
- * @param _task
- * @param focusedNodezR
- * @param createTitle
+ * @param store
  */
 export const splitTextByUrls = (e: ClipboardEvent, store: Store) => {
   const current =
@@ -78,7 +75,7 @@ export const splitTextByUrls = (e: ClipboardEvent, store: Store) => {
     }
   }
 
-  if (isTaskEmpty(store) && hasTitle(store.task)) nodes[0].type = "h"
+  if (isTaskEmpty(store) && hasTitle(store)) nodes[0].type = "h"
 
   return nodes
 }
@@ -97,8 +94,7 @@ export const getNodeType = (_node: Node, _newValue = null): NodeType => {
 
 /**
  *
- * @param _nodes
- * @param _taskParams
+ * @param store
  * @returns
  */
 export const getLabels = (store: Store) => {
@@ -120,3 +116,19 @@ export const getInitialStore = () =>
     focusedNode: 0,
     params: { dueDate: -1, tags: [] }
   }) as Store
+
+/**
+ *
+ * @param store
+ * @param extensions
+ * @returns
+ */
+export const getAvailableExtensions = (
+  store: Store,
+  extensions: Extenstion[]
+) => {
+  // Remove Title if There is one
+  return hasTitle(store)
+    ? extensions.filter((ex) => ex.value !== "h")
+    : extensions
+}

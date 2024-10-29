@@ -6,9 +6,7 @@ export interface IBookmark {
   icon: string
 }
 
-export interface IBookmarks {
-  [key: string]: Array<IBookmark>
-}
+export type IBookmarks = Record<string, IBookmark[]>
 
 export type NodeType = "h" | "a" | "p"
 

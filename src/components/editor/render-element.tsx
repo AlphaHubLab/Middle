@@ -133,6 +133,7 @@ interface ITextAreaProps {
   onKeyDown: (e: any) => void
   onChange: (e: any) => void
   onPaste: (e: any) => void
+  index: number
 }
 
 const ParagraphInputWithProps = ({
@@ -141,7 +142,8 @@ const ParagraphInputWithProps = ({
   onChange,
   onKeyDown,
   onFocus,
-  onPaste
+  onPaste,
+  index
 }: ITextAreaProps) => {
   const ref = useRef(null)
 
@@ -158,7 +160,7 @@ const ParagraphInputWithProps = ({
 
   return (
     <textarea
-      placeholder={"Let's aim..."}
+      placeholder={index === 1 ? "Let's aim..." : ""}
       ref={_addToRef}
       className="appearance-none ml-4 w-calc[100%-16px] text-zinc-500 text-sm px-2 py-[2px] overflow-y-hidden leading-tight resize-none focus:bg-zinc-100 focus:outline-none rounded-md"
       value={value}
