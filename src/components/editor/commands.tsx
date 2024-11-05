@@ -63,7 +63,7 @@ export const Command = ({ extensions, setter, command }) => {
   return (
     <div
       ref={cmd}
-      className="relative top-0 bg-white/40 backdrop-blur-sm border rounded-xl p-1 z-100">
+      className="relative top-0 bg-white/40 backdrop-blur-sm border rounded-xl p-1">
       {searched.length === 0 && (
         <div className="flex text-zinc-500 bg-transparent h-10 items-center text-xs">
           No results

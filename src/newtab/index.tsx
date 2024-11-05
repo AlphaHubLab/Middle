@@ -10,7 +10,7 @@ import { useStorage } from "@plasmohq/storage/hook"
 import TodoMainSlash from "~components/editor/todo-main"
 import NavbarContainer from "~components/navbar/navbar-container"
 import TaskList from "~components/tasklist"
-import WidgetGrid, { Wid } from "~components/widgets/widgets"
+import { WidgetContainer } from "~components/widgets/widgets"
 
 // const SG = Space_Grotesk({
 //   weight: ["300", "400", "500", "600", "700"],
@@ -31,68 +31,35 @@ export default function Page() {
   const [disabled, setDisabled] = useState(true)
   return (
     <div className={`h-screen overflow-hidden`}>
-      <button onClick={() => remove()}>r</button>
-      <NavbarContainer />
-      <div className="h-[calc(100%-96px)]">
+      <div className="h-screen">
         <div className="w-full h-full flex">
           {/* <Profiler id="todo" onRender={onRender}> */}
           <div className="relative h-full w-[calc(100%-288px)]">
-            <div
-              onClick={() => setDisabled(false)}
-              className={`w-full max-w-[650px] mx-auto p-4 transition-all ${disabled ? "hover:cursor-text opacity-50 scale-90" : "opacity-100 scale-100"}`}>
-              <TodoMainSlash disabled={disabled} setStorage={setTasks} />
+            <NavbarContainer />
+            <div className="">
+              <div
+                // style={{ scale: disabled ? "95%" : "100%" }}
+                className={`relative w-full max-w-[650px] mx-auto p-4
+                `}>
+                {disabled && (
+                  <div
+                    onClick={() => setDisabled(false)}
+                    className="hover:cursor-text absolute w-full h-full left-0 top-0 bg-white/50"></div>
+                )}
+                <TodoMainSlash disabled={disabled} setStorage={setTasks} />
+              </div>
             </div>
             <div className="flex w-full justify-center">
               <div
-                className={`absolute ${disabled ? "z-50" : "-z-10"} max-w-[650px] mx-auto top-[130px] h-[calc(100%-230px)] overflow-y-hidden w-full z-100`}>
-                <TaskList show={disabled} />
+                className={`absolute overflow-y-hidden max-w-[650px] mx-auto top-[230px] h-[calc(100%-330px)] w-full`}>
+                <TaskList show={disabled} setShow={setDisabled} />
                 <div className="gradientback"></div>
               </div>
             </div>
           </div>
           {/* </Profiler> */}
-          <div className="w-[288px]">
-            <WidgetGrid col={4} row={10} offset={8}>
-              <Wid w={1} h={1}>
-                1
-              </Wid>
-              <Wid w={1} h={1}>
-                1
-              </Wid>
-              <Wid w={1} h={1}>
-                1
-              </Wid>
-              <Wid w={1} h={1}>
-                1
-              </Wid>
-              <Wid w={4} h={1}>
-                1
-              </Wid>
-              <Wid w={2} h={2}>
-                1
-              </Wid>
-              <Wid w={2} h={2}>
-                1
-              </Wid>
-              <Wid w={2} h={2} shape="circle">
-                1
-              </Wid>
-              <Wid w={2} h={1}>
-                1
-              </Wid>
-              <Wid w={1} h={1}>
-                1
-              </Wid>
-              <Wid w={1} h={1}>
-                1
-              </Wid>
-              <Wid w={4} h={2}>
-                1
-              </Wid>
-              <button className="z-200" onClick={() => setDisabled(true)}>
-                show
-              </button>
-            </WidgetGrid>
+          <div className="w-[288px] bg-[#272727]">
+            <WidgetContainer />
           </div>
         </div>
       </div>

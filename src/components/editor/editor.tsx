@@ -26,7 +26,6 @@ export default function Editor({
 
   /** Main store */
   const [store, setStore] = useState<Store>(helpers.getInitialStore())
-  console.log(store)
   const { isLoading } = useDraft(store, drafts, setDrafts, storageLoading, 1000)
 
   const nodes = useRef([])
@@ -131,7 +130,7 @@ export default function Editor({
     if (type === "h") {
       if (helpers.hasTitle(store)) return
 
-      const newstore = {
+      const newStore = {
         ...store,
         task: [{ type, value }, ...store.task],
         focusedNode: 0,
@@ -139,7 +138,7 @@ export default function Editor({
       }
 
       updateHistory(store)
-      setStore(newstore)
+      setStore(newStore)
     } else {
       const newStore = {
         ...store,
@@ -425,7 +424,7 @@ export default function Editor({
   }
 
   return (
-    <div className={`w-full`}>
+    <div className="w-full">
       <button disabled={disabled} onClick={persistAndClear}>
         store
       </button>
@@ -439,7 +438,7 @@ export default function Editor({
               addToRef={addToRef}
               onKeyDown={handleOnKeyDown}
               onChange={updateNode}
-              onFocus={()=>handleFocus(i)}
+              onFocus={() => handleFocus(i)}
               onPaste={handlePaste}
               store={store}
               isLoading={isLoading}
