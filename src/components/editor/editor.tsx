@@ -242,6 +242,17 @@ export default function Editor({
     setStore({ ...store, params })
   }
 
+  const modifyDate = (dueDate: number) => {
+    const params = { ...store.params, dueDate }
+    const newStore = {
+      ...store,
+      params
+    }
+
+    updateHistory(store)
+    setStore(newStore)
+  }
+
   const addDate = (dueDate: number) => {
     const params = { ...store.params, dueDate }
 
@@ -433,7 +444,7 @@ export default function Editor({
           <div className="flex flex-col" key={`textarea-${i}`}>
             <RenderElement
               {...t}
-              addDate={addDate}
+              addDate={modifyDate}
               index={i}
               addToRef={addToRef}
               onKeyDown={handleOnKeyDown}

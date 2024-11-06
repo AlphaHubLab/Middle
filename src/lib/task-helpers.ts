@@ -11,14 +11,23 @@ const onlyUrlRegex = new RegExp(
 /**
  *
  * @param store
+ * @param type
  * @returns
  */
-export const isTaskEmpty = (store: Store) =>
-  store.task.length === 1 &&
-  store.task[0].value === "" &&
-  store.params.dueDate === -1 &&
-  store.params.tags.length === 0
-// _task.every((n) => n.value.length === 0)
+export const isTaskEmpty = (store: Store, type = "strict") => {
+  if (type === "strict") {
+    return (
+      store.task.length === 1 &&
+      store.task[0].value === "" &&
+      store.params.dueDate === -1 &&
+      store.params.tags.length === 0
+    )
+  }
+
+  if (type === "loose") {
+    return store.task.every((n) => n.value.length === 0)
+  }
+}
 
 /**
  *
@@ -75,7 +84,7 @@ export const splitTextByUrls = (e: ClipboardEvent, store: Store) => {
     }
   }
 
-  if (isTaskEmpty(store) && hasTitle(store)) nodes[0].type = "h"
+  if (store.focusedNode === 0) nodes[0].type = "h"
 
   return nodes
 }
@@ -99,8 +108,9 @@ export const getNodeType = (_node: Node, _newValue = null): NodeType => {
  */
 export const getLabels = (store: Store) => {
   const labels = []
-  if (store.task.find((n) => n.type === "a")) labels.push("a")
+  if (store.task.find((n) => n.type === "a")) labels.push("link")
   if (store.params.dueDate !== -1) labels.push("date")
+  if (store.params.tags.length > 0) labels.push("tag")
   return labels
 }
 

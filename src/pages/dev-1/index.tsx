@@ -49,10 +49,10 @@ export default function Page() {
             </div>
             <div className="flex w-full justify-center">
               <div
-                className={`absolute overflow-y-hidden max-w-[650px] mx-auto top-[230px] h-[calc(100%-330px)] w-full`}>
+                className={`${disabled ? "top-[296px]" : "top-[calc(100%-126px)]"} transform duration-200 bg-red-100/20 absolute overflow-y-hidden max-w-[650px] mx-auto top-[230px] h-[calc(100%-330px)] w-full`}>
                 <TaskList show={disabled} setShow={setDisabled} />
-                <div className="gradientback"></div>
               </div>
+              <div className="gradientback"></div>
             </div>
           </div>
           {/* </Profiler> */}

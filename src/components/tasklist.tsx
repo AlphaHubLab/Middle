@@ -22,9 +22,12 @@ export default function TaskList({ show, setShow }) {
   return (
     <div
       dir="rtl"
+      // className={`absolute w-full h-full px-4
+      //   bg-white/80 transition-all duration-200
+      //   ${show ? "top-[96px] " : "top-[calc(100%-96px)]"}
+      // `}
       className={`absolute w-full h-full px-4 
         bg-white/80 transition-all duration-200
-        ${show ? "top-[96px] " : "top-[calc(100%-96px)]"}
       `}>
       {!show && (
         <div
@@ -52,7 +55,7 @@ export default function TaskList({ show, setShow }) {
         </div>
       )}
       <div
-        className={`${show ? " overflow-y-auto  " : " overflow-y-hidden"} h-full px-4`}>
+        className={`${show ? "overflow-y-auto" : "overflow-y-hidden"} h-full px-4`}>
         <div dir="ltr" className={`relative px-4 mb-4`}>
           {!show && (
             <div className="absolute bg-white/50 h-full top-0 left-0 w-full"></div>

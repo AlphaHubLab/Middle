@@ -2,6 +2,7 @@ import isUrl from "is-url"
 import { useEffect, useRef } from "react"
 import { PiLinkThin } from "react-icons/pi"
 
+import { isTaskEmpty } from "~lib/task-helpers"
 import type { Store } from "~lib/types"
 
 import { DateWithProps, TagsWithProps } from "./render-params"
@@ -65,7 +66,7 @@ const HeaderWithProps = ({
           placeholder="LFG..."
           type="text"
           ref={addToRef}
-          className="text-4xl w-full p-2 font-bold appearance-none leading-tight focus:bg-zinc-50 focus:outline-none rounded-lg"
+          className="hover:bg-zinc-50 text-4xl w-full p-2 font-bold appearance-none leading-tight focus:bg-zinc-100 focus:outline-none rounded-lg"
           value={value}
           onPaste={onPaste}
           onChange={onChange}
@@ -74,13 +75,15 @@ const HeaderWithProps = ({
         />
         <Status store={store} isLoading={isLoading} />
       </div>
+
       {store.params.dueDate === -1 ? (
-        <p className="h-10 pl-6 text-xs text-zinc-300">No Due Date</p>
+        <p className="h-0 pl-6 text-xs text-zinc-300"></p>
       ) : (
         <DateWithProps value={store.params.dueDate} setter={addDate} />
       )}
+
       {store.params.tags.length === 0 ? (
-        <p className="h-10 pl-6 text-xs text-zinc-300">No Tags</p>
+        <p className="h-0 pl-6 text-xs text-zinc-300"></p>
       ) : (
         <TagsWithProps tags={store.params.tags} />
       )}
@@ -113,7 +116,7 @@ const LinkInputWithProps = ({
       <input
         placeholder="add link..."
         ref={addToRef}
-        className={`text-sm w-full px-2 py-[2px] h-[20px] underline ${isUrl(value) ? "text-blue-500" : "text-zinc-400"} leading-tight focus:bg-zinc-100 focus:outline-none rounded-md`}
+        className={`hover:bg-zinc-50 text-sm w-full px-2 py-[2px] h-[20px] underline ${isUrl(value) ? "text-blue-500" : "text-zinc-400"} leading-tight focus:bg-zinc-100 focus:outline-none rounded-md`}
         type="text"
         value={value}
         onChange={onChange}
@@ -134,6 +137,7 @@ interface ITextAreaProps {
   onChange: (e: any) => void
   onPaste: (e: any) => void
   index: number
+  store: Store
 }
 
 const ParagraphInputWithProps = ({
@@ -143,7 +147,8 @@ const ParagraphInputWithProps = ({
   onKeyDown,
   onFocus,
   onPaste,
-  index
+  index,
+  store
 }: ITextAreaProps) => {
   const ref = useRef(null)
 
@@ -160,9 +165,11 @@ const ParagraphInputWithProps = ({
 
   return (
     <textarea
-      placeholder={index === 1 ? "Let's aim..." : ""}
+      placeholder={
+        index === 1 && isTaskEmpty(store, "loose") ? "Let's aim..." : ""
+      }
       ref={_addToRef}
-      className="appearance-none ml-4 w-calc[100%-16px] text-zinc-500 text-sm px-2 py-[2px] overflow-y-hidden leading-tight resize-none focus:bg-zinc-100 focus:outline-none rounded-md"
+      className="hover:bg-zinc-50 appearance-none ml-4 w-calc[100%-16px] text-zinc-500 text-sm px-2 py-[2px] overflow-y-hidden leading-tight resize-none focus:bg-zinc-100 focus:outline-none rounded-md"
       value={value}
       onChange={onChange}
       onKeyDown={onKeyDown}
