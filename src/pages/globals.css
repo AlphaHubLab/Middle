@@ -135,12 +135,8 @@
   border: 1px solid #242424;
 }
 
-::-webkit-scrollbar {
-  width: 0.25rem;
-  height: 0.25rem;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #676767;
-  border-radius: 9999px;
+.styled-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #eaeaea #ffffff00;
+  scrollbar-gutter: stable;
 }

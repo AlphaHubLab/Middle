@@ -61,6 +61,24 @@
   filter: progid: dximagetransform.microsoft.gradient(startColorstr='transparent', endColorstr='#000000', GradientType=0); /* IE6-9 */
 }
 
+.middle-btn-hover {
+  background:
+    linear-gradient(to bottom right, #434343 5%, #545454 95%) padding-box,
+    linear-gradient(to bottom right, #6f6f6f 5%, #474747 95%) border-box;
+  border: 1px solid transparent;
+}
+
+.middle-btn-static {
+  background-color: #2d2d2d;
+  border: 1px solid #242424;
+}
+
+.styled-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #eaeaea #ffffff00;
+  scrollbar-gutter: stable;
+}
+
 /* @keyframes fade-in {
   0% {
     opacity: 0;

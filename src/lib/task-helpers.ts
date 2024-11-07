@@ -104,7 +104,6 @@ export const getNodeType = (_node: Node, _newValue = null): NodeType => {
 /**
  *
  * @param store
- * @returns
  */
 export const getLabels = (store: Store) => {
   const labels = []
@@ -115,8 +114,7 @@ export const getLabels = (store: Store) => {
 }
 
 /**
- *
- * @returns
+ * Create and return an Empty new task template with UUID
  */
 export const getInitialStore = () =>
   ({

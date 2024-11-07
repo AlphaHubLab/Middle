@@ -15,10 +15,17 @@ export default function useDraft(
   const [debounceLoading, setDebounceLoading] = React.useState(false)
 
   const task = useRef(store.task)
+  const params = useRef(store.params)
 
   useEffect(() => {
-    // Prevent drafting while changing focus
-    if (isEqual(store.task, task.current)) return
+    // Prevent drafting while changing focus or range
+    if (
+      isEqual(store.params, params.current) &&
+      isEqual(store.params, params.current)
+    ) {
+      return
+    }
+
     setDebounceLoading(true)
 
     const timer = setTimeout(() => {
@@ -33,7 +40,7 @@ export default function useDraft(
       }
 
       task.current = store.task
-      
+      params.current = store.params
       setDebounceLoading(false)
       setDraft(_drafts)
     }, delay)
