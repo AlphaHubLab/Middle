@@ -1,9 +1,9 @@
 import { IoFilterCircleOutline } from "react-icons/io5"
 import { MdFilterHdr } from "react-icons/md"
 
-import type { Extenstion } from "~lib/types"
+import type { IExtenstion } from "~lib/types"
 
-export const extensions: Extenstion[] = [
+export const extensions: IExtenstion[] = [
   {
     icon: MdFilterHdr,
     title: "Add Title",

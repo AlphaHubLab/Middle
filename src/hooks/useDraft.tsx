@@ -1,26 +1,21 @@
-import React, { useEffect, useRef } from "react"
+import React from "react"
+import isEqual from "react-fast-compare"
 
-import { isTaskEmpty } from "~lib/task-helpers"
-import type { Store } from "~lib/types"
+import { useDraftContext } from "~contexts/draft-context"
+import type { IStore } from "~lib/types"
 
-const isEqual = require("react-fast-compare")
-
-export default function useDraft(
-  store: Store,
-  drafts: any[],
-  setDraft: (args: any) => void,
-  storageLoading: boolean,
-  delay: number = 500
-) {
+export default function useDraft(store: IStore, delay: number = 1000) {
   const [debounceLoading, setDebounceLoading] = React.useState(false)
 
-  const task = useRef(store.task)
-  const params = useRef(store.params)
+  const { drafts, setDrafts, storageLoading } = useDraftContext()
 
-  useEffect(() => {
+  const nodes = React.useRef(store.nodes)
+  const params = React.useRef(store.params)
+
+  React.useEffect(() => {
     // Prevent drafting while changing focus or range
     if (
-      isEqual(store.params, params.current) &&
+      isEqual(store.nodes, nodes.current) &&
       isEqual(store.params, params.current)
     ) {
       return
@@ -31,18 +26,26 @@ export default function useDraft(
     const timer = setTimeout(() => {
       const _drafts = [...drafts]
       const found = _drafts.find((d) => d.id === store.id)
+      const dateDrafted = new Date().getTime()
 
       if (found) {
-        found.task = store.task
+        found.nodes = store.nodes
         found.params = store.params
+        found.dateDrafted = dateDrafted
       } else {
-        _drafts.push({ id: store.id, task: store.task, params: store.params })
+        _drafts.push({
+          id: store.id,
+          nodes: store.nodes,
+          params: store.params,
+          dateDrafted
+        })
       }
 
-      task.current = store.task
+      nodes.current = store.nodes
       params.current = store.params
+
       setDebounceLoading(false)
-      setDraft(_drafts)
+      setDrafts(_drafts)
     }, delay)
 
     return () => clearTimeout(timer)

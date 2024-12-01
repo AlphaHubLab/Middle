@@ -2,8 +2,9 @@ import isUrl from "is-url"
 import { useEffect, useRef } from "react"
 import { PiLinkThin } from "react-icons/pi"
 
+import useDraft from "~hooks/useDraft"
 import { isTaskEmpty } from "~lib/task-helpers"
-import type { Store } from "~lib/types"
+import type { IStore } from "~lib/types"
 
 import { DateWithProps, TagsWithProps } from "./render-params"
 import Status from "./status"
@@ -17,8 +18,8 @@ interface RenderElementProps {
   onKeyDown: (e: any) => void
   onChange: (e: any) => void
   onPaste: (e: any) => void
-  store: Store
-  isLoading: boolean
+  store: IStore
+
   addDate: (dueDate: number) => void
 }
 
@@ -43,9 +44,8 @@ interface IHeaderProps {
   onKeyDown: (e: any) => void
   onChange: (e: any) => void
   onPaste: (e: any) => void
-  isLoading: boolean
   addDate: (dueDate: number) => void
-  store: Store
+  store: IStore
 }
 
 const HeaderWithProps = ({
@@ -55,10 +55,10 @@ const HeaderWithProps = ({
   onChange,
   onKeyDown,
   onPaste,
-  isLoading,
   store,
   addDate
 }: IHeaderProps) => {
+  const { isLoading } = useDraft(store)
   return (
     <div>
       <div className="flex ml-4 w-[calc(100%-16px)] gap-2">
@@ -137,7 +137,7 @@ interface ITextAreaProps {
   onChange: (e: any) => void
   onPaste: (e: any) => void
   index: number
-  store: Store
+  store: IStore
 }
 
 const ParagraphInputWithProps = ({

@@ -10,20 +10,41 @@ export type IBookmarks = Record<string, IBookmark[]>
 
 export type NodeType = "h" | "a" | "p"
 
-export interface Node {
+export interface INode {
   type: NodeType
   value: string
 }
 
-export interface Store {
-  id: string
-  task: Node[]
-  range: number
-  focusedNode: number
-  params: { dueDate: number; tags: string[] }
+export interface ITaskParams {
+  dueDate: number
+  tags: string[]
 }
 
-export interface Extenstion {
+export interface ITaskCore {
+  id: string
+  nodes: INode[]
+  params: ITaskParams
+}
+
+export interface IDraft extends ITaskCore {
+  dateDrafted: number
+}
+
+export interface ITask extends ITaskCore {
+  done: boolean
+  dateAdded: number
+}
+
+export interface IHistory extends ITask {
+  dateDone: number
+}
+
+export interface IStore extends ITaskCore {
+  range: number
+  focusedNode: number
+}
+
+export interface IExtenstion {
   icon: IconType
   title: string
   value: any

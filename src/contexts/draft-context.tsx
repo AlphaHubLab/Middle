@@ -1,0 +1,33 @@
+import { createContext, useContext } from "react"
+
+import { Storage } from "@plasmohq/storage"
+import { useStorage } from "@plasmohq/storage/hook"
+
+import type { IDraft } from "~lib/types"
+
+interface DraftContext {
+  drafts: IDraft[]
+  setDrafts: (args: IDraft[] | ((prev: IDraft[]) => void)) => Promise<void>
+  storageLoading: boolean
+}
+
+const Drafting = createContext({} as DraftContext)
+
+export default function DraftProvider({ children }) {
+  const [drafts, setDrafts, { isLoading: storageLoading,remove }] = useStorage(
+    {
+      key: "middle-drafts",
+      instance: new Storage({
+        area: "local"
+      })
+    },
+    (v: IDraft[]) => (!v ? [] : v)
+  )
+
+
+  const context = { drafts, setDrafts, storageLoading }
+
+  return <Drafting.Provider value={context}>{children}</Drafting.Provider>
+}
+
+export const useDraftContext = () => useContext(Drafting)

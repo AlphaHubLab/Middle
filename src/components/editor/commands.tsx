@@ -1,19 +1,10 @@
 import { useEffect, useRef, useState } from "react"
 
-import type { Extenstion } from "~lib/types"
-
-const scrollToView = (el: HTMLDivElement) => {
-  if (el) {
-    el.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest"
-    })
-  }
-}
+import type { IExtenstion } from "~lib/types"
 
 export const Command = ({ extensions, setter, command }) => {
   const [selected, setSelected] = useState(0)
-  const [searched, setSearched] = useState<Extenstion[]>(extensions)
+  const [searched, setSearched] = useState<IExtenstion[]>(extensions)
 
   const cmd = useRef<HTMLDivElement>(null)
 
@@ -90,10 +81,18 @@ export const Command = ({ extensions, setter, command }) => {
   )
 }
 
+const scrollToView = (el: HTMLDivElement) => {
+  if (el) {
+    el.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest"
+    })
+  }
+}
 // This is a simple search
 // Searching can be replaced with fusejs for fuzzy search if needed
 // https://www.fusejs.io/
-const search = (_command: string, _extensions: Extenstion[]) => {
+const search = (_command: string, _extensions: IExtenstion[]) => {
   if (_command.match(/\/|\\|\*|\[|\]|\(|\)|\+|\?|\:|\^|\$|\|/g)) {
     return []
   }

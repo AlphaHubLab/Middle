@@ -1,6 +1,14 @@
 import uuid4 from "uuid4"
 
-import type { Extenstion, Node, NodeType, Store } from "./types"
+import type {
+  IDraft,
+  IExtenstion,
+  INode,
+  IStore,
+  ITaskCore,
+  ITaskParams,
+  NodeType
+} from "./types"
 
 const urlRegex =
   /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi
@@ -14,18 +22,22 @@ const onlyUrlRegex = new RegExp(
  * @param type
  * @returns
  */
-export const isTaskEmpty = (store: Store, type = "strict") => {
+export const isTaskEmpty = (store: IStore, type = "strict") => {
   if (type === "strict") {
     return (
-      store.task.length === 1 &&
-      store.task[0].value === "" &&
+      store.nodes.length === 1 &&
+      store.nodes[0].value === "" &&
       store.params.dueDate === -1 &&
       store.params.tags.length === 0
     )
   }
 
+  if (type === "medium") {
+    return store.nodes.every((n) => n.value.length === 0)
+  }
+
   if (type === "loose") {
-    return store.task.every((n) => n.value.length === 0)
+    return store.nodes.every((n) => n.value.trim().length === 0)
   }
 }
 
@@ -33,21 +45,22 @@ export const isTaskEmpty = (store: Store, type = "strict") => {
  *
  * @param store
  */
-export const hasTitle = (store: Store) => store.task[0].type === "h"
+export const hasTitle = (store: IStore) => store.nodes[0].type === "h"
 
 /**
  *
  * @param e
  * @param store
  */
-export const splitTextByUrls = (e: ClipboardEvent, store: Store) => {
+export const splitTextByUrls = (e: ClipboardEvent, store: IStore) => {
   const current =
-    store.task[store.focusedNode].value + e.clipboardData.getData("Text").trim()
+    store.nodes[store.focusedNode].value +
+    e.clipboardData.getData("Text").trim()
 
   const splittedByLine = current.trim().split(/\n/)
   const urls: string[] = current.match(urlRegex) || []
 
-  const nodes: Node[] = []
+  const nodes: INode[] = []
   const splittedBySpace: string[][] = []
 
   splittedByLine.forEach((s) => splittedBySpace.push(s.split(" ")))
@@ -94,7 +107,7 @@ export const splitTextByUrls = (e: ClipboardEvent, store: Store) => {
  * @param _node
  * @param _addedValue
  */
-export const getNodeType = (_node: Node, _newValue = null): NodeType => {
+export const getNodeType = (_node: INode, _newValue = null): NodeType => {
   _newValue = typeof _newValue === "string" ? _newValue : _node.value
   if (_node.type === "h") return "h"
   if (_newValue.match(onlyUrlRegex)) return "a"
@@ -105,25 +118,31 @@ export const getNodeType = (_node: Node, _newValue = null): NodeType => {
  *
  * @param store
  */
-export const getLabels = (store: Store) => {
+export const getLabels = ({
+  nodes,
+  params
+}: {
+  nodes: INode[]
+  params: ITaskParams
+}) => {
   const labels = []
-  if (store.task.find((n) => n.type === "a")) labels.push("link")
-  if (store.params.dueDate !== -1) labels.push("date")
-  if (store.params.tags.length > 0) labels.push("tag")
+  if (nodes.find((n) => n.type === "a")) labels.push("link")
+  if (params.dueDate !== -1) labels.push("date")
+  if (params.tags.length > 0) labels.push("tag")
   return labels
 }
 
 /**
  * Create and return an Empty new task template with UUID
  */
-export const getInitialStore = () =>
+export const createInitialStore = () =>
   ({
     id: uuid4(),
-    task: [{ type: "h", value: "" }],
+    nodes: [{ type: "h", value: "" }],
     range: 0,
     focusedNode: 0,
     params: { dueDate: -1, tags: [] }
-  }) as Store
+  }) as IStore
 
 /**
  *
@@ -132,11 +151,30 @@ export const getInitialStore = () =>
  * @returns
  */
 export const getAvailableExtensions = (
-  store: Store,
-  extensions: Extenstion[]
+  store: IStore,
+  extensions: IExtenstion[]
 ) => {
   // Remove Title if There is one
   return hasTitle(store)
     ? extensions.filter((ex) => ex.value !== "h")
     : extensions
+}
+
+export const convertToStore = ({ id, nodes, params }: ITaskCore): IStore => {
+  return {
+    id: id,
+    nodes: [...nodes],
+    params: { ...params },
+    focusedNode: nodes.length - 1,
+    range: nodes[nodes.length - 1].value.length
+  }
+}
+
+export const getFirstNonEmptyNode = (nodes: INode[]) => {
+  const len = nodes.length
+
+  for (let i = 1; i < len; i++) {
+    if (nodes[i].value.length > 0) return nodes[i]
+  }
+  return { type: "p", value: "[empty]" }
 }

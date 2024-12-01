@@ -1,45 +1,42 @@
 import { useEffect, useRef, useState } from "react"
 import type { ChangeEvent, KeyboardEvent } from "react"
 
-import useDraft from "~hooks/useDraft"
+import { useAppState } from "~contexts/app-context"
+import { useDraftContext } from "~contexts/draft-context"
 import * as helpers from "~lib/task-helpers"
-import type { Extenstion, Node, NodeType, Store } from "~lib/types"
+import type { INode, IStore, NodeType } from "~lib/types"
 
 import { Command } from "./commands"
 import { extensions } from "./extenstions"
 import { RenderElement } from "./render-element"
 
-// import { RenderElementReadOnly } from "./render-element-readonly"
-// import { DateWithProps, TagsWithProps } from "./render-params"
+type HTMLInputs = HTMLInputElement | HTMLTextAreaElement
 
 const tagRegexp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z_]+\w*/g)
 
-export default function Editor({
-  disabled,
-  drafts,
-  setDrafts,
-  setStorage,
-  storageLoading
-}) {
+export default function Editor({ disabled, handlePersist }) {
+  const { goEditMode, initialStore } = useAppState()
+  const { setDrafts } = useDraftContext()
+  const [store, setStore] = useState<IStore>(initialStore)
   const [isCommandActive, setIsCommandActive] = useState(false)
   const [command, setCommand] = useState("")
 
-  /** Main store */
-  const [store, setStore] = useState<Store>(helpers.getInitialStore())
-  const { isLoading } = useDraft(store, drafts, setDrafts, storageLoading, 1000)
-
-  const nodes = useRef([])
-  const undos = useRef([])
-  const redos = useRef([])
+  const nodes = useRef<HTMLInputs[]>([])
+  const undos = useRef<IStore[]>([])
+  const redos = useRef<IStore[]>([])
   const cmdStartPos = useRef(0)
   const nodeSnapshot = useRef("")
 
   nodes.current = []
-  const addToRef = (el: HTMLElement) => {
+
+  const addToRef = (el: HTMLInputs) => {
     if (el && !nodes.current.includes(el)) nodes.current.push(el)
   }
 
   /** Effects */
+
+  useEffect(() => setStore(initialStore), [initialStore])
+
   useEffect(() => {
     const deactivate = () => {
       if (!nodes.current.some((el) => el === document.activeElement)) {
@@ -53,8 +50,9 @@ export default function Editor({
 
   useEffect(() => {
     if (store.range === -1) return
+
     nodes.current[store.focusedNode].setSelectionRange(store.range, store.range)
-  }, [store.range, store.task])
+  }, [store.range, store.nodes])
 
   useEffect(() => {
     if (disabled) return
@@ -82,24 +80,20 @@ export default function Editor({
     setStore(last)
   }
 
-  const updateHistory = (store: Store) => {
+  const updateHistory = (store: IStore) => {
     if (undos.current.length > 15) undos.current.shift()
     if (redos.current.length > 0) redos.current = []
     undos.current.push(store)
   }
 
-  const initCommand = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const initCommand = (e: ChangeEvent<HTMLInputs>) => {
     setIsCommandActive(true)
     setCommand("")
     cmdStartPos.current = e.target.selectionStart
-    nodeSnapshot.current = store.task[store.focusedNode].value
+    nodeSnapshot.current = store.nodes[store.focusedNode].value
   }
 
-  const updateCommand = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const updateCommand = (e: ChangeEvent<HTMLInputs>) => {
     const _command = e.target.value.slice(
       cmdStartPos.current + 1,
       e.target.value.length - nodeSnapshot.current.length + cmdStartPos.current
@@ -113,14 +107,14 @@ export default function Editor({
 
     setStore({
       ...store,
-      range: store.task[store.focusedNode - 1].value.length,
+      range: store.nodes[store.focusedNode - 1].value.length,
       focusedNode: store.focusedNode - 1
     })
   }
 
   const nextNode = (e: KeyboardEvent) => {
     e.preventDefault()
-    if (store.focusedNode === store.task.length - 1) return
+    if (store.focusedNode === store.nodes.length - 1) return
     setStore({ ...store, focusedNode: store.focusedNode + 1 })
   }
 
@@ -132,7 +126,7 @@ export default function Editor({
 
       const newStore = {
         ...store,
-        task: [{ type, value }, ...store.task],
+        nodes: [{ type, value }, ...store.nodes],
         focusedNode: 0,
         range: 0
       }
@@ -144,7 +138,7 @@ export default function Editor({
         ...store,
         range: -1,
         focusedNode: store.focusedNode - 1,
-        task: store.task.toSpliced(store.focusedNode + 1, 0, {
+        nodes: store.nodes.toSpliced(store.focusedNode + 1, 0, {
           type,
           value: ""
         })
@@ -155,10 +149,10 @@ export default function Editor({
     }
   }
 
-  const replaceNodes = (nodes: Node[], range = null) => {
+  const replaceNodes = (nodes: INode[], range = null) => {
     const newStore = {
       ...store,
-      task: store.task.toSpliced(store.focusedNode, 1, ...nodes),
+      nodes: store.nodes.toSpliced(store.focusedNode, 1, ...nodes),
       range: range ? range : 0,
       focusedNode: store.focusedNode + nodes.length - 1
     }
@@ -167,24 +161,20 @@ export default function Editor({
     setStore(newStore)
   }
 
-  const updateNode = (
-    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  ) => {
+  const updateNode = (e: ChangeEvent<HTMLInputs>) => {
     if (isCommandActive) updateCommand(e)
 
-    // Shallow copy also works, but maybe produces some bugs
-    // const task = [...store.task]
+    // Shallow copy also works, but may produces some bugs
+    // const nodes = [...store.nodes]
 
-    const task = structuredClone(store.task)
-    task[store.focusedNode].value = e.target.value
-    const newStore = { ...store, task, range: -1 }
+    const nodes = structuredClone(store.nodes)
+    nodes[store.focusedNode].value = e.target.value
+    const newStore = { ...store, nodes, range: -1 }
     setStore(newStore)
   }
 
-  const splitNode = (
-    e: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  ) => {
-    const node = store.task[store.focusedNode]
+  const splitNode = (e: ChangeEvent<HTMLInputs>) => {
+    const node = store.nodes[store.focusedNode]
 
     const p1 = node.value.slice(0, e.target.selectionStart).trim()
     const p2 = node.value.slice(e.target.selectionStart).trim()
@@ -203,12 +193,12 @@ export default function Editor({
   const mergeNode = () => {
     if (store.focusedNode === 0) return
 
-    const p1 = store.task[store.focusedNode - 1].value
-    const p2 = store.task[store.focusedNode].value
+    const p1 = store.nodes[store.focusedNode - 1].value
+    const p2 = store.nodes[store.focusedNode].value
     const mergedValue = p1 + p2
 
     const type = helpers.getNodeType(
-      store.task[store.focusedNode - 1],
+      store.nodes[store.focusedNode - 1],
       mergedValue
     )
 
@@ -216,7 +206,7 @@ export default function Editor({
 
     const newStore = {
       ...store,
-      task: store.task.toSpliced(store.focusedNode - 1, 2, mergedNode),
+      nodes: store.nodes.toSpliced(store.focusedNode - 1, 2, mergedNode),
       range: p1.length,
       focusedNode: store.focusedNode - 1
     }
@@ -229,7 +219,7 @@ export default function Editor({
   const addTags = () => {
     const _tags = []
 
-    store.task.forEach((t) => {
+    store.nodes.forEach((t) => {
       if (t.type !== "a") {
         const nodeTags = t.value.match(tagRegexp)
         if (nodeTags && nodeTags.length > 0) _tags.push(...nodeTags)
@@ -258,8 +248,8 @@ export default function Editor({
 
     const newStore = {
       ...store,
-      task: store.task.toSpliced(store.focusedNode, 1, {
-        type: store.task[store.focusedNode].type as NodeType,
+      nodes: store.nodes.toSpliced(store.focusedNode, 1, {
+        type: store.nodes[store.focusedNode].type as NodeType,
         value: nodeSnapshot.current
       }),
       range: nodeSnapshot.current.length,
@@ -277,7 +267,7 @@ export default function Editor({
 
     switch (_extension.action) {
       case "replaceNode":
-        if (store.task[store.focusedNode].value.trim() === `/${command}`) {
+        if (store.nodes[store.focusedNode].value.trim() === `/${command}`) {
           // Replace current node if it is empty
           replaceNodes([{ type: _extension.value, value: "" }])
           break
@@ -286,7 +276,7 @@ export default function Editor({
         // Add a new node if current node has text
         const newNode = { type: _extension.value, value: "" }
         const currentNode = {
-          type: store.task[store.focusedNode].type,
+          type: store.nodes[store.focusedNode].type,
           value: nodeSnapshot.current
         }
 
@@ -305,10 +295,11 @@ export default function Editor({
     }
   }
 
-  const persistAndClear = () => {
+  const persistAndReset = () => {
     // should re evaluate tags
-    setStorage((prev) => [...prev, store])
-    setStore(helpers.getInitialStore())
+    handlePersist(store)
+    setDrafts((prev) => prev.filter((draft) => draft.id !== store.id))
+    goEditMode(helpers.createInitialStore())
     setCommand("")
     setIsCommandActive(false)
   }
@@ -327,8 +318,7 @@ export default function Editor({
   }
 
   const handleOnKeyDown = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement> &
-      KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputs> & KeyboardEvent<HTMLInputs>
   ) => {
     const prevChar = e.target.value.charAt(e.target.selectionStart - 1).trim()
 
@@ -400,7 +390,8 @@ export default function Editor({
       // Cycle prev node if caret is on the end
       else if (e.key === "ArrowRight") {
         if (
-          e.target.selectionStart === store.task[store.focusedNode].value.length
+          e.target.selectionStart ===
+          store.nodes[store.focusedNode].value.length
         ) {
           return nextNode(e)
         }
@@ -408,7 +399,7 @@ export default function Editor({
     }
 
     if (isCommandActive) {
-      // Be handled on Command Component
+      // Handled by <Command> Component
       if (e.key === "Enter") {
         e.preventDefault()
       }
@@ -418,14 +409,14 @@ export default function Editor({
         return setIsCommandActive(false)
       }
 
-      // When move caret before initializre '/'
+      // When move caret before initializer slash
       else if (e.key === "ArrowLeft") {
         if (e.target.selectionStart === cmdStartPos.current + 1) {
           setIsCommandActive(false)
         }
       }
 
-      // When move caret after command boundry
+      // When move caret after command word boundary
       else if (e.key === "ArrowRight") {
         if (e.target.selectionStart > cmdStartPos.current + command.length) {
           setIsCommandActive(false)
@@ -436,14 +427,14 @@ export default function Editor({
 
   return (
     <div className="w-full">
-      <button disabled={disabled} onClick={persistAndClear}>
+      <button disabled={disabled} onClick={persistAndReset}>
         store
       </button>
       <div>
-        {store.task.map((t, i) => (
+        {store.nodes.map((n, i) => (
           <div className="flex flex-col" key={`textarea-${i}`}>
             <RenderElement
-              {...t}
+              {...n}
               addDate={modifyDate}
               index={i}
               addToRef={addToRef}
@@ -452,7 +443,6 @@ export default function Editor({
               onFocus={() => handleFocus(i)}
               onPaste={handlePaste}
               store={store}
-              isLoading={isLoading}
             />
             {isCommandActive && store.focusedNode === i && (
               <div className="ml-4 h-[0px]">
