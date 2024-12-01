@@ -144,9 +144,10 @@ const TaskItem = ({
         {show === true && (
           <div
             // style={{ opacity: opacity }}
-            className="transition-all duration-300 flex gap-2">
+            className="w-full transition-all duration-300 flex gap-2 items-start px-2">
             {type === "task" && (
               <input
+              className="mt-2"
                 type="checkbox"
                 onChange={() => {
                   handleDone(task.id)
@@ -154,11 +155,13 @@ const TaskItem = ({
                 }}
               />
             )}
+            <div className="w-full">
             {task.nodes.map((n, i) => (
               <div key={`node-readonly-${i}`}>
                 <RenderElementReadOnlyWithCopy {...n} />
               </div>
             ))}
+            </div>
           </div>
         )}
       </div>
