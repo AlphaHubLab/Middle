@@ -7,18 +7,15 @@ interface RenderElementProps {
   value: string | number | readonly string[]
 }
 
-export const RenderElementReadOnly = ({
-  type,
-  ...props
-}: RenderElementProps) => {
+export const RenderElementReadOnly = ({ type, value }: RenderElementProps) => {
   if (type === "h") {
-    return <TitleّReadOnlyWithProps {...props} />
+    return <TitleّReadOnlyWithProps value={value} />
   }
   if (type === "p") {
-    return <ParagraphReadOnlyWithProps {...props} />
+    return <ParagraphReadOnlyWithProps value={value} />
   }
   if (type === "a") {
-    return <LinkReadOnlyWithProps {...props} />
+    return <LinkReadOnlyWithProps value={value} />
   }
 }
 
@@ -62,7 +59,7 @@ const ParagraphReadOnlyWithProps = ({ value }: ITextAreaProps) => {
   )
 }
 
-export const RenderElementReadOnlyWithCopy = (props) => {
+export const RenderElementReadOnlyWithCopy = (props: RenderElementProps) => {
   const [copy, setCopy] = useState(false)
 
   useEffect(() => {

@@ -2,6 +2,7 @@ import React from "react"
 import isEqual from "react-fast-compare"
 
 import { useDraftContext } from "~contexts/draft-context"
+import { isTaskEmpty } from "~lib/task-helpers"
 import type { IStore } from "~lib/types"
 
 export default function useDraft(store: IStore, delay: number = 1000) {
@@ -13,7 +14,12 @@ export default function useDraft(store: IStore, delay: number = 1000) {
   const params = React.useRef(store.params)
 
   React.useEffect(() => {
-    // Prevent drafting while changing focus or range
+    // Prevent creating empty draft with whitespaces on a new task
+    if (isTaskEmpty(store, "loose")) {
+      return
+    }
+
+    // Prevent drafting while changing store.focusedNodes or store.range
     if (
       isEqual(store.nodes, nodes.current) &&
       isEqual(store.params, params.current)
@@ -48,7 +54,10 @@ export default function useDraft(store: IStore, delay: number = 1000) {
       setDrafts(_drafts)
     }, delay)
 
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(timer)
+      setDebounceLoading(false)
+    }
   }, [store, delay])
 
   return { isLoading: storageLoading || debounceLoading }

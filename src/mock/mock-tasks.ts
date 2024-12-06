@@ -27,10 +27,13 @@ export const mockTask: ITask[] = [
       id: `${i}`,
       done: false,
       dateAdded: new Date().getTime(),
-      params: {} as ITaskParams,
+      params: {
+        tags: [],
+        dueDate: new Date().getTime() + Math.random() * 7 * Math.random() * 24 * 60 * 60 * 1000
+      } as ITaskParams,
       nodes: [
         { type: "h", value: `task ${i}` },
-        mockNodes[Math.floor(Math.random() * mockNodes.length)]
+        ...mockNodes[Math.floor(Math.random() * mockNodes.length)]
       ] as INode[]
     })))()
 ]

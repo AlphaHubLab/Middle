@@ -5,9 +5,9 @@ import { useDraftContext } from "~contexts/draft-context"
 import { usePersistContext } from "~contexts/persisting-context"
 import { getFirstNonEmptyNode as f } from "~lib/task-helpers"
 import type { ITaskCore } from "~lib/types"
-import { mockTask } from "~mock/mock-tasks"
+// import { mockTask } from "~mock/mock-tasks"
 
-export default function NavbarContainer({ dev }) {
+export default function NavbarContainer() {
   const [search, setSearch] = useState("")
   // const [searchWord, setSearchWord] = useState("")
   const [showSearch, setShowSearch] = useState(false)
@@ -40,18 +40,14 @@ export default function NavbarContainer({ dev }) {
         <div
           className={`z-10 absolute top-[96px] left-0 w-full bg-transparent h-screen p-2 flex justify-center backdrop-blur`}>
           {/* {isPending && <div>pends</div>} */}
-          <SearchPanel
-            dev={dev}
-            search={search}
-            onClose={() => setShowSearch(false)}
-          />
+          <SearchPanel search={search} onClose={() => setShowSearch(false)} />
         </div>
       )}
     </nav>
   )
 }
 
-const SearchPanel = ({ search, onClose, dev }) => {
+const SearchPanel = ({ search, onClose }) => {
   const [style, setStyle] = useState({ opacity: 0 })
   // const [data, setData] = useState({
   //   taskResults: [],
@@ -62,8 +58,6 @@ const SearchPanel = ({ search, onClose, dev }) => {
   const { tasks, history } = usePersistContext()
   const { drafts } = useDraftContext()
 
-  // For dev
-  const taskStorage = !tasks.length ? (dev ? mockTask : []) : tasks
   useEffect(() => {
     style?.opacity === 0 && setStyle({ opacity: 1 })
   }, [style])
@@ -86,8 +80,8 @@ const SearchPanel = ({ search, onClose, dev }) => {
   // useEffect(() => {
   //   s()
   // }, [search])
-  const taskResults =
-    search.trim().length === 0 ? [] : searching(search, taskStorage)
+
+  const taskResults = search.trim().length === 0 ? [] : searching(search, tasks)
   const historyResults =
     search.trim().length === 0 ? [] : searching(search, history)
   const draftsResults =

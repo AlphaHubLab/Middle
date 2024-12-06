@@ -3,8 +3,9 @@ import { createContext, useContext, useEffect } from "react"
 import { Storage } from "@plasmohq/storage"
 import { useStorage } from "@plasmohq/storage/hook"
 
+// import { config } from "~fetch.config"
 import type { IHistory, IStore, ITask } from "~lib/types"
-
+import { mockTask } from "~mock/mock-tasks"
 
 interface PersistContext {
   tasks: ITask[]
@@ -18,18 +19,23 @@ interface PersistContext {
 
 const Persisting = createContext({} as PersistContext)
 
-export default function PersistProvider({ children }) {
-  const [tasks, setTasks, { isLoading: storageLoading }] = useStorage(
-    {
-      key: "middle-tasks",
-      instance: new Storage({
-        area: "local"
-      })
-    },
-    (v: ITask[]) => (!v ? [] : v)
-  )
+export default function PersistProvider({ children, isDev = false }) {
+  const [tasks, setTasks, { isLoading: storageLoading, remove: removeTasks }] =
+    useStorage(
+      {
+        key: "middle-tasks",
+        instance: new Storage({
+          area: "local"
+        })
+      },
+      (v: ITask[]) => (!v ? [] : v)
+    )
 
-  const [history, setHistory, { isLoading: historyLoading }] = useStorage(
+  const [
+    history,
+    setHistory,
+    { isLoading: historyLoading, remove: removeHistory }
+  ] = useStorage(
     {
       key: "middle-history",
       instance: new Storage({
@@ -38,6 +44,20 @@ export default function PersistProvider({ children }) {
     },
     (v: IHistory[]) => (!v ? [] : v)
   )
+
+  // uncomment the following lines to reset storage and
+  // refresh the page with cmd + r ~ 7-8 times
+
+  // useEffect(() => {
+  //   if (tasks.length) {
+  //     removeTasks()
+  //     removeHistory()
+  //   }
+  // }, [tasks])
+
+  useEffect(() => {
+    if (isDev && tasks.length === 0) setTasks(mockTask)
+  }, [tasks])
 
   const handleDone = (id: string) => {
     const _tasks = [...tasks]
@@ -89,6 +109,7 @@ export default function PersistProvider({ children }) {
         dateAdded: new Date().getTime()
       })
     }
+
     setTasks(_tasks)
   }
 

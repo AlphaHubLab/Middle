@@ -15,8 +15,9 @@ type HTMLInputs = HTMLInputElement | HTMLTextAreaElement
 const tagRegexp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z_]+\w*/g)
 
 export default function Editor({ disabled, handlePersist }) {
-  const { goEditMode, initialStore } = useAppState()
+  const { openEditMode, initialStore, editorType } = useAppState()
   const { setDrafts } = useDraftContext()
+
   const [store, setStore] = useState<IStore>(initialStore)
   const [isCommandActive, setIsCommandActive] = useState(false)
   const [command, setCommand] = useState("")
@@ -295,13 +296,21 @@ export default function Editor({ disabled, handlePersist }) {
     }
   }
 
-  const persistAndReset = () => {
-    // should re evaluate tags
-    handlePersist(store)
-    setDrafts((prev) => prev.filter((draft) => draft.id !== store.id))
-    goEditMode(helpers.createInitialStore())
+  const newTask = () => {
+    openEditMode(helpers.createInitialStore(), "new")
     setCommand("")
     setIsCommandActive(false)
+  }
+
+  const deleteDraft = () => {
+    setDrafts((prev) => prev.filter((draft) => draft.id !== store.id))
+    newTask()
+  }
+
+  const persistTask = () => {
+    // should re evaluate tags
+    handlePersist(store)
+    deleteDraft()
   }
 
   /** Handling Events/focus */
@@ -427,9 +436,36 @@ export default function Editor({ disabled, handlePersist }) {
 
   return (
     <div className="w-full">
-      <button disabled={disabled} onClick={persistAndReset}>
-        store
-      </button>
+      <div
+        className={`text-xs items-center flex gap-2 pl-4 sticky top-0 bg-white h-12 transition-all duration-200 ${!disabled ? "visible opacity-100" : "invisible opacity-0"}`}>
+        {/* {!disabled && ( */}
+        <>
+          <button
+            className="border p-1 rounded-md border-zinc-500 text-zinc-500 hover:text-emerald-300"
+            disabled={disabled}
+            onClick={persistTask}>
+            {editorType === "new" || editorType === "draft"
+              ? "Store"
+              : "Save Changes"}
+          </button>
+          <button
+            className="border p-1 rounded-md border-zinc-500 text-zinc-500 hover:text-rose-300"
+            disabled={disabled}
+            onClick={deleteDraft}>
+            {editorType === "new" || editorType === "draft"
+              ? "Discard"
+              : "Discard Changes"}
+          </button>
+          <button
+            className="border p-1 rounded-md border-zinc-500 text-zinc-500 hover:text-rose-300"
+            disabled={disabled}
+            onClick={newTask}>
+            + new
+          </button>
+        </>
+        {/* )} */}
+      </div>
+
       <div>
         {store.nodes.map((n, i) => (
           <div className="flex flex-col" key={`textarea-${i}`}>

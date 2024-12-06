@@ -33,11 +33,19 @@ export const isTaskEmpty = (store: IStore, type = "strict") => {
   }
 
   if (type === "medium") {
-    return store.nodes.every((n) => n.value.length === 0)
+    return (
+      store.nodes.every((n) => n.value.length === 0) &&
+      store.params.dueDate === -1 &&
+      store.params.tags.length === 0
+    )
   }
 
   if (type === "loose") {
-    return store.nodes.every((n) => n.value.trim().length === 0)
+    return (
+      store.nodes.every((n) => n.value.trim().length === 0) &&
+      store.params.dueDate === -1 &&
+      store.params.tags.length === 0
+    )
   }
 }
 

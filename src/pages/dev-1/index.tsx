@@ -11,11 +11,11 @@ const S = Space_Grotesk({
 
 export default function Page() {
   return (
-    <div className={`h-screen ${S.className} overflow-hidden`}>
-      <div className="h-screen">
+    <div className={`h-screen ${S.className} min-h-[600px] overflow-hidden`}>
+      <div className="h-screen min-h-[600px]">
         <div className="w-full h-full flex">
           <AppStateProvider>
-            <Main dev={true} />
+            <Main isDev={true} />
           </AppStateProvider>
           <div className="w-[288px] bg-[#272727]">
             <WidgetContainer />
