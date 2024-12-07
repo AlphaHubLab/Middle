@@ -35,7 +35,6 @@ export default function Editor({ disabled, handlePersist }) {
   }
 
   /** Effects */
-
   useEffect(() => setStore(initialStore), [initialStore])
 
   useEffect(() => {
@@ -438,7 +437,6 @@ export default function Editor({ disabled, handlePersist }) {
     <div className="w-full">
       <div
         className={`text-xs items-center flex gap-2 pl-4 sticky top-0 bg-white h-12 transition-all duration-200 ${!disabled ? "visible opacity-100" : "invisible opacity-0"}`}>
-        {/* {!disabled && ( */}
         <>
           <button
             className="border p-1 rounded-md border-zinc-500 text-zinc-500 hover:text-emerald-300"
@@ -463,7 +461,6 @@ export default function Editor({ disabled, handlePersist }) {
             + new
           </button>
         </>
-        {/* )} */}
       </div>
 
       <div>

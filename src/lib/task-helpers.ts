@@ -133,10 +133,10 @@ export const getLabels = ({
   nodes: INode[]
   params: ITaskParams
 }) => {
-  const labels = []
-  if (nodes.find((n) => n.type === "a")) labels.push("link")
-  if (params.dueDate !== -1) labels.push("date")
-  if (params.tags.length > 0) labels.push("tag")
+  const labels = { date: false, link: false, tag: false }
+  if (params.dueDate !== -1) labels.date = true
+  if (nodes.find((n) => n.type === "a")) labels.link = true
+  if (params.tags.length > 0) labels.tag = true
   return labels
 }
 
@@ -178,11 +178,65 @@ export const convertToStore = ({ id, nodes, params }: ITaskCore): IStore => {
   }
 }
 
+/**
+ * Return the first node that has a value
+ * @param nodes
+ */
 export const getFirstNonEmptyNode = (nodes: INode[]) => {
   const len = nodes.length
 
   for (let i = 1; i < len; i++) {
     if (nodes[i].value.length > 0) return nodes[i]
   }
+
+  return null
+}
+
+/**
+ * Create a preview node for upcomming list.
+ * @param nodes
+ * @param limit The number of showable characters
+ */
+export const getUpcommingPreview = (nodes: INode[], limit = 25): INode => {
+  if (nodes[0].value.length > 0) {
+    return { type: "h", value: strShortening(nodes[0].value, limit) }
+  }
+
+  const nonEmptyNode = getFirstNonEmptyNode(nodes)
+  if (nonEmptyNode) {
+    return { type: "p", value: strShortening(nonEmptyNode.value, limit) }
+  }
+
   return { type: "p", value: "[empty]" }
+}
+
+/**
+ * Create a 2-nodes length preview for more detailed preview.
+ * @param nodes
+ * @param limit The number of showable characters
+ */
+export const getDetailedPreview = (nodes: INode[], limit = 25): INode[] => {
+  const preview = []
+
+  // Handle the title
+  if (nodes[0].value.length > 0) {
+    preview.push({ type: "h", value: strShortening(nodes[0].value, limit) })
+  } else {
+    preview.push({ type: "h", value: "[no title]" })
+  }
+
+  // Handle second node
+  const nonEmptyNode = getFirstNonEmptyNode(nodes)
+
+  if (nonEmptyNode) {
+    preview.push({ type: "p", value: strShortening(nonEmptyNode.value, limit) })
+  } else {
+    preview.push({ type: "p", value: "[empty]" })
+  }
+
+  return preview
+}
+
+const strShortening = (str: string, limit: number) => {
+  return str.length > limit ? str.slice(0, limit) + "..." : str
 }

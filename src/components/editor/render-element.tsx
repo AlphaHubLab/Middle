@@ -73,7 +73,7 @@ const HeaderWithProps = ({
           onKeyDown={onKeyDown}
           onFocus={onFocus}
         />
-        <Status store={store} isLoading={isLoading} />
+        <Status store={store} isLoading={isLoading} isEditor={true} />
       </div>
 
       {store.params.dueDate === -1 ? (

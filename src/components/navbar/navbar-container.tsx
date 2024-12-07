@@ -3,8 +3,9 @@ import { CiSearch } from "react-icons/ci"
 
 import { useDraftContext } from "~contexts/draft-context"
 import { usePersistContext } from "~contexts/persisting-context"
-import { getFirstNonEmptyNode as f } from "~lib/task-helpers"
+import { getDetailedPreview as gdp } from "~lib/task-helpers"
 import type { ITaskCore } from "~lib/types"
+
 // import { mockTask } from "~mock/mock-tasks"
 
 export default function NavbarContainer() {
@@ -105,40 +106,49 @@ const SearchPanel = ({ search, onClose }) => {
         {taskResults.length > 0 && (
           <div className="py-4">
             <h2 className="border-b-[1px] text-zinc-600">Tasks</h2>
-            {taskResults.map((r, i) => (
-              <div
-                key={`task-search-${i}`}
-                className="border-b-[1px] text-xs p-2 hover:bg-zinc-400/30">
-                <p className="font-bold text-zinc-700">{r.nodes[0].value}</p>
-                <p className="text-zinc-700">{f(r.nodes).value}</p>
-              </div>
-            ))}
+            {taskResults.map((r, i) => {
+              const preview = gdp(r.nodes)
+              return (
+                <div
+                  key={`task-search-${i}`}
+                  className="border-b-[1px] text-xs p-2 hover:bg-zinc-400/30">
+                  <p className="font-bold text-zinc-700">{preview[0].value}</p>
+                  <p className="text-zinc-700">{preview[1].value}</p>
+                </div>
+              )
+            })}
           </div>
         )}
         {draftsResults.length > 0 && (
           <div className="py-4">
             <h2 className="border-b-[1px] text-zinc-600">Drafts</h2>
-            {draftsResults.map((r, i) => (
-              <div
-                key={`draft-search-${i}`}
-                className="border-b-[1px] text-xs p-2 hover:bg-zinc-400/30">
-                <p className="font-bold text-zinc-700">{r.nodes[0].value}</p>
-                <p className="text-zinc-700">{f(r.nodes).value}</p>
-              </div>
-            ))}
+            {draftsResults.map((r, i) => {
+              const preview = gdp(r.nodes)
+              return (
+                <div
+                  key={`draft-search-${i}`}
+                  className="border-b-[1px] text-xs p-2 hover:bg-zinc-400/30">
+                  <p className="font-bold text-zinc-700">{preview[0].value}</p>
+                  <p className="text-zinc-700">{preview[11].value}</p>
+                </div>
+              )
+            })}
           </div>
         )}
         {historyResults.length > 0 && (
           <div className="py-4">
             <h2 className="border-b-[1px] text-zinc-600">History</h2>
-            {historyResults.map((r, i) => (
-              <div
-                key={`history-search-${i}`}
-                className="border-b-[1px] text-xs p-2 hover:bg-zinc-400/30">
-                <p className="font-bold text-zinc-700">{r.nodes[0].value}</p>
-                <p className="text-zinc-700">{f(r.nodes).value}</p>
-              </div>
-            ))}
+            {historyResults.map((r, i) => {
+              const preview = gdp(r.nodes)
+              return (
+                <div
+                  key={`history-search-${i}`}
+                  className="border-b-[1px] text-xs p-2 hover:bg-zinc-400/30">
+                  <p className="font-bold text-zinc-700">{preview[0].value}</p>
+                  <p className="text-zinc-700">{preview[1].value}</p>
+                </div>
+              )
+            })}
           </div>
         )}
       </div>
