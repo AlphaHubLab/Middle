@@ -3,7 +3,7 @@ import { Profiler, useState } from "react"
 
 import "../style.css"
 
-import Main from "~components/main"
+import Main from "~components/pages/main"
 import { WidgetContainer } from "~components/widgets/widgets"
 import { AppStateProvider } from "~contexts/app-context"
 
@@ -15,10 +15,11 @@ import { AppStateProvider } from "~contexts/app-context"
 export default function Page() {
   return (
     <div className={`h-screen overflow-hidden`}>
+      <a href="/options">Option</a>
       <div className="h-screen">
         <div className="w-full h-full flex">
           <AppStateProvider>
-            <Main dev={false} />
+            <Main isDev={false} />
           </AppStateProvider>
           <div className="w-[288px] bg-[#272727]">
             <WidgetContainer />

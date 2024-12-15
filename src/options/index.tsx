@@ -1,5 +1,5 @@
 import OptionMain from "~components/pages/options"
 
-export default function Otions() {
+export default function Options() {
   return <OptionMain />
 }

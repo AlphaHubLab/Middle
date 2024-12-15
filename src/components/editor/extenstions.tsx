@@ -11,7 +11,6 @@ export const extensions: IExtenstion[] = [
     action: "addNode",
     description: "Add a main title",
     keywords: ["header", "title"]
-    // run: () => console.log("run pen")
   },
   {
     icon: MdFilterHdr,
@@ -20,7 +19,6 @@ export const extensions: IExtenstion[] = [
     action: "replaceNode",
     description: "Add a simple paragraph",
     keywords: ["write", "text", "paragraph"]
-    // run: () => console.log("run pen")
   },
 
   {
@@ -30,7 +28,6 @@ export const extensions: IExtenstion[] = [
     action: "replaceNode",
     description: "Add a link",
     keywords: ["link", "web", "site"]
-    // run: () => console.log("run apple")
   },
 
   {
@@ -40,7 +37,6 @@ export const extensions: IExtenstion[] = [
     action: "addDate",
     description: "Add a due date",
     keywords: ["expire", "due"]
-    // run: () => console.log("run Cae")
   },
   {
     icon: MdFilterHdr,
@@ -49,7 +45,6 @@ export const extensions: IExtenstion[] = [
     action: "addDate",
     description: "Do in next 24H",
     keywords: ["24", "24h", "day", "date"]
-    // run: () => console.log("run Cae")
   },
   {
     icon: MdFilterHdr,
@@ -58,6 +53,13 @@ export const extensions: IExtenstion[] = [
     action: "addDate",
     description: "Do in the next week",
     keywords: ["7", "7d", "week", "date"]
-    // run: () => console.log("run Cae")
+  },
+  {
+    icon: MdFilterHdr,
+    title: "Store",
+    value: null,
+    action: "persist",
+    description: "Store",
+    keywords: ["save", "store", "ok"]
   }
 ]

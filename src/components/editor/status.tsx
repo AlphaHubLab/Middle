@@ -1,68 +1,80 @@
+import moment from "moment"
 import { IoTimeOutline } from "react-icons/io5"
 import { PiLinkThin } from "react-icons/pi"
 
 import Loading from "~components/ui/loading/loading"
 import { getLabels } from "~lib/task-helpers"
+import type { ITaskCore } from "~lib/types"
+
+const MINUTE = 60 * 1000
+const HOUR = 60 * 60 * 1000
+const ONE_DAY = 24 * 60 * 60 * 1000
+
+const remainingTime = (taskCore: ITaskCore) => {
+  const { dueDate } = taskCore.params
+
+  const current = new Date().getTime()
+  const remain = dueDate - current
+
+  if (Math.abs(remain) < HOUR) {
+    return { value: Math.floor(remain / MINUTE), appendix: "m" }
+  }
+
+  if (Math.abs(remain) < ONE_DAY) {
+    return { value: Math.ceil(remain / HOUR), appendix: "h" }
+  }
+}
 
 export default function Status({
-  store,
+  taskCore,
   isLoading,
   hasLoading = true,
   isEditor = false
+}: {
+  taskCore: ITaskCore
+  isLoading: boolean
+  hasLoading?: boolean
+  isEditor?: boolean
 }) {
-  const labels = getLabels(store)
+  const { date, link, tag } = getLabels(taskCore)
 
-  const untilDue = (store) => {
-    const { dueDate } = store.params
-    const current = new Date().getTime()
-    const remain = dueDate - current
-    if (remain < 60 * 60 * 1000) return Math.floor(remain / (60 * 1000)) + "m"
-    if (remain < 24 * 60 * 60 * 1000)
-      return Math.ceil(remain / (60 * 60 * 1000)) + "h"
-  }
+  const NEXT_24 = new Date().getTime() + ONE_DAY
+
+  const remaining = remainingTime(taskCore)
 
   return (
     <div className="flex gap-2 items-center">
       {!isEditor &&
-        store.params.dueDate !== -1 &&
-        store.params.dueDate < new Date().getTime() + 24 * 60 * 60 * 1000 && (
-          <span className="text-xs text-zinc-400">{untilDue(store)}</span>
+        taskCore.params.dueDate !== -1 &&
+        taskCore.params.dueDate < NEXT_24 && (
+          <span
+            className={`text-xs 
+                      ${remaining.value < 0 && "text-rose-500"}
+                      ${remaining.value >= 0 && remaining.appendix === "m" && "text-orange-500"}
+                      ${remaining.value > 0 && remaining.appendix === "h" && "text-zinc-400"}        
+      `}>
+            {/* {remaining.value + remaining.appendix}{" "} */}
+            {moment(taskCore.params.dueDate).fromNow()}
+          </span>
         )}
-      <span className="text-zinc-400 min-w-4">
-        {labels.date && <IoTimeOutline />}
-      </span>
-      <span className="text-zinc-400 min-w-4">
-        {labels.link && <PiLinkThin />}
-      </span>
-      <span className="text-zinc-400 min-w-4">
-        {labels.tag && "#"}
-      </span>
-      {/* {labels.map((l, i) => (
-        <span
-          role="Icon"
-          className="min-w-4 flex justify-center text-zinc-400"
-          key={`label-${i}`}>
-          {l === "date" && <IoTimeOutline />}
-          {l === "link" && <PiLinkThin />}
-          {l === "tag" && "#"}
-        </span>
-      ))} */}
+      <span className="text-zinc-400 min-w-4">{date && <IoTimeOutline />}</span>
+      <span className="text-zinc-400 min-w-4">{link && <PiLinkThin />}</span>
+      <span className="text-zinc-400 min-w-4">{tag && "#"}</span>
+
       {hasLoading && (
         <div className="w-24 text-xs rounded-md bg-zinc-100 text-zinc-400">
-          {isLoading ? (
-            <div className="flex justify-center gap-2 items-center">
-              Drafting
-              <Loading r={10} color="#aaaaaa" />
-            </div>
-          ) : (
-            <div className="flex justify-center gap-2 items-center">
-              Drafted
-            </div>
-          )}
+          <div className="flex justify-center gap-2 items-center">
+            {isLoading ? (
+              <>
+                Drafting
+                <Loading r={10} color="#aaaaaa" />
+              </>
+            ) : (
+              "Drafted"
+            )}
+          </div>
         </div>
       )}
     </div>
   )
 }
-
-export function TaskStatus({}) {}

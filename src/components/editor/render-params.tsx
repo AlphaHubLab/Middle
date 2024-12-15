@@ -1,8 +1,8 @@
 import moment from "moment"
 import { IoTimeOutline } from "react-icons/io5"
 
-export const DateWithProps = ({ value, setter }) => {
-  const m = moment(value)
+export const DateWithProps = ({ timestamp, setter }) => {
+  const m = moment(timestamp)
   const date = m.format().slice(0, -9)
 
   const handleOnChange = (e) => {
@@ -24,12 +24,12 @@ export const DateWithProps = ({ value, setter }) => {
       <div className="flex gap-2 text-xs items-center justify-center">
         <button
           className="hover:bg-zinc-100 border rounded-md px-2 py-1"
-          onClick={() => setter(value + 24 * 60 * 60 * 1000)}>
+          onClick={() => setter(timestamp + 24 * 60 * 60 * 1000)}>
           +24H
         </button>
         <button
           className="border hover:bg-zinc-100 rounded-md px-2 py-1"
-          onClick={() => setter(value + 7 * 24 * 60 * 60 * 1000)}>
+          onClick={() => setter(timestamp + 7 * 24 * 60 * 60 * 1000)}>
           +7D
         </button>
         <button

@@ -12,7 +12,7 @@ import { RenderElement } from "./render-element"
 
 type HTMLInputs = HTMLInputElement | HTMLTextAreaElement
 
-const tagRegexp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z_]+\w*/g)
+const tagRegExp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z_]+\w*/g)
 
 export default function Editor({ disabled, handlePersist }) {
   const { openEditMode, initialStore, editorType } = useAppState()
@@ -221,7 +221,7 @@ export default function Editor({ disabled, handlePersist }) {
 
     store.nodes.forEach((t) => {
       if (t.type !== "a") {
-        const nodeTags = t.value.match(tagRegexp)
+        const nodeTags = t.value.match(tagRegExp)
         if (nodeTags && nodeTags.length > 0) _tags.push(...nodeTags)
       }
     })

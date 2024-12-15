@@ -1,124 +1,266 @@
 <div class="checkbox-wrapper-52">
-    <label for="todo-52" class="item">
-      <input type="checkbox" id="todo-52" class="hidden"/>
-      <label for="todo-52" class="cbx">      
-        <svg width="14px" height="12px" viewBox="0 0 14 12">
-          <polyline points="1 7.6 5 11 13 1"></polyline>
-        </svg>
-      </label>
-      <label for="todo-52" class="cbx-lbl">To-do</label>
+  <label for="todo-52" class="item">
+    <input type="checkbox" id="todo-52" class="hidden" />
+    <label for="todo-52" class="cbx">
+      <svg width="14px" height="12px" viewBox="0 0 14 12">
+        <polyline points="1 7.6 5 11 13 1"></polyline>
+      </svg>
     </label>
-  </div>
-  
-  <style>
-    .checkbox-wrapper-52 input[type="checkbox"] {
-      visibility: hidden;
-      display: none;
-    }
-  
-    .checkbox-wrapper-52 label {
-      margin: 0;
-      padding: 0;
-      border: 0;
-      font-size: 100%;
-      font: inherit;
-      vertical-align: baseline;
-      line-height: 1;
-    }
-  
-    .checkbox-wrapper-52 *,
-    .checkbox-wrapper-52 ::after,
-    .checkbox-wrapper-52 ::before {
-      box-sizing: border-box;
-    }
-  
-    .checkbox-wrapper-52 .item .cbx {
-      position: relative;
-      top: 1px;
-      display: inline-block;
-      width: 14px;
-      height: 14px;
-      margin-right: 6px;
-      border: 1px solid #c8ccd4;
-      border-radius: 3px;
-      cursor: pointer;
-    }
-    .checkbox-wrapper-52 .item .cbx svg {
-      position: relative;
-      top: -1px;
-      transform: scale(0);
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-    .checkbox-wrapper-52 .item .cbx svg polyline {
-      stroke-width: 2;
-      stroke: #18cda6;
-    }
-    .checkbox-wrapper-52 .item .cbx:before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      margin: -10px 0 0 -10px;
-      width: 20px;
-      height: 20px;
-      border-radius: 100%;
-      background: #18cda6;
-      transform: scale(0);
-    }
-    .checkbox-wrapper-52 .item .cbx:after {
-      content: '';
-      position: absolute;
-      top: 5px;
-      left: 5px;
-      width: 2px;
-      height: 2px;
-      border-radius: 2px;
-      box-shadow: 0 -18px 0 #18cda6, 12px -12px 0 #18cda6, 18px 0 0 #18cda6, 12px 12px 0 #18cda6, 0 18px 0 #18cda6, -12px 12px 0 #18cda6, -18px 0 0 #18cda6, -12px -12px 0 #18cda6;
-      transform: scale(0);
-    }
-    .checkbox-wrapper-52 .item .cbx-lbl {
-      position: relative;
-      cursor: pointer;
-      transition: color 0.3s ease;
-    }
-    .checkbox-wrapper-52 .item .cbx-lbl:after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0;
-      width: 0;
-      height: 1px;
-      background: #9098a9;
-    }
-    .checkbox-wrapper-52 .item input {
-      display: none;
-    }
-    .checkbox-wrapper-52 .item input:checked + .cbx {
-      border-color: transparent;
-    }
-    .checkbox-wrapper-52 .item input:checked + .cbx svg {
-      transform: scale(1);
-      transition: all 0.4s ease;
-      transition-delay: 0.1s;
-    }
-    .checkbox-wrapper-52 .item input:checked + .cbx:before {
-      transform: scale(1);
-      opacity: 0;
-      transition: all 0.3s ease;
-    }
-    .checkbox-wrapper-52 .item input:checked + .cbx:after {
-      transform: scale(1);
-      opacity: 0;
-      transition: all 0.6s ease;
-    }
-    .checkbox-wrapper-52 .item input:checked ~ .cbx-lbl {
-      color: #9098a9;
-    }
-    .checkbox-wrapper-52 .item input:checked ~ .cbx-lbl:after {
-      width: 100%;
-      transition: all 0.4s ease;
-    }
-  </style>
-  
+    <label for="todo-52" class="cbx-lbl">To-do</label>
+  </label>
+</div>
+
+<style>
+  .checkbox-wrapper-52 input[type="checkbox"] {
+    visibility: hidden;
+    display: none;
+  }
+
+  .checkbox-wrapper-52 label {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+    line-height: 1;
+  }
+
+  .checkbox-wrapper-52 *,
+  .checkbox-wrapper-52 ::after,
+  .checkbox-wrapper-52 ::before {
+    box-sizing: border-box;
+  }
+
+  .checkbox-wrapper-52 .item .cbx {
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-right: 6px;
+    border: 1px solid #c8ccd4;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  .checkbox-wrapper-52 .item .cbx svg {
+    position: relative;
+    top: -1px;
+    transform: scale(0);
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .checkbox-wrapper-52 .item .cbx svg polyline {
+    stroke-width: 2;
+    stroke: #18cda6;
+  }
+  .checkbox-wrapper-52 .item .cbx:before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -10px 0 0 -10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    background: #18cda6;
+    transform: scale(0);
+  }
+  .checkbox-wrapper-52 .item .cbx:after {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 2px;
+    height: 2px;
+    border-radius: 2px;
+    box-shadow:
+      0 -18px 0 #18cda6,
+      12px -12px 0 #18cda6,
+      18px 0 0 #18cda6,
+      12px 12px 0 #18cda6,
+      0 18px 0 #18cda6,
+      -12px 12px 0 #18cda6,
+      -18px 0 0 #18cda6,
+      -12px -12px 0 #18cda6;
+    transform: scale(0);
+  }
+  .checkbox-wrapper-52 .item .cbx-lbl {
+    position: relative;
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  .checkbox-wrapper-52 .item .cbx-lbl:after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: #9098a9;
+  }
+  .checkbox-wrapper-52 .item input {
+    display: none;
+  }
+  .checkbox-wrapper-52 .item input:checked + .cbx {
+    border-color: transparent;
+  }
+  .checkbox-wrapper-52 .item input:checked + .cbx svg {
+    transform: scale(1);
+    transition: all 0.4s ease;
+    transition-delay: 0.1s;
+  }
+  .checkbox-wrapper-52 .item input:checked + .cbx:before {
+    transform: scale(1);
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+  .checkbox-wrapper-52 .item input:checked + .cbx:after {
+    transform: scale(1);
+    opacity: 0;
+    transition: all 0.6s ease;
+  }
+  .checkbox-wrapper-52 .item input:checked ~ .cbx-lbl {
+    color: #9098a9;
+  }
+  .checkbox-wrapper-52 .item input:checked ~ .cbx-lbl:after {
+    width: 100%;
+    transition: all 0.4s ease;
+  }
+</style>
+
+
+
+<!-- off and on -->
+<div class="checkbox-wrapper-35">
+  <input class="switch" type="checkbox" id="switch" name="switch" value="private">
+  <label for="switch">
+    <span class="switch-x-text">This is </span>
+    <span class="switch-x-toggletext">
+      <span class="switch-x-unchecked"><span class="switch-x-hiddenlabel">Unchecked: </span>Off</span>
+      <span class="switch-x-checked"><span class="switch-x-hiddenlabel">Checked: </span>On</span>
+    </span>
+  </label>
+</div>
+
+<style>
+  .checkbox-wrapper-35 .switch {
+    display: none;
+  }
+
+  .checkbox-wrapper-35 .switch + label {
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    color: #78768d;
+    cursor: pointer;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    line-height: 15px;
+    position: relative;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .checkbox-wrapper-35 .switch + label::before,
+  .checkbox-wrapper-35 .switch + label::after {
+    content: '';
+    display: block;
+  }
+
+  .checkbox-wrapper-35 .switch + label::before {
+    background-color: #05012c;
+    border-radius: 500px;
+    height: 15px;
+    margin-right: 8px;
+    -webkit-transition: background-color 0.125s ease-out;
+    transition: background-color 0.125s ease-out;
+    width: 25px;
+  }
+
+  .checkbox-wrapper-35 .switch + label::after {
+    background-color: #fff;
+    border-radius: 13px;
+    box-shadow: 0 3px 1px 0 rgba(37, 34, 71, 0.05), 0 2px 2px 0 rgba(37, 34, 71, 0.1), 0 3px 3px 0 rgba(37, 34, 71, 0.05);
+    height: 13px;
+    left: 1px;
+    position: absolute;
+    top: 1px;
+    -webkit-transition: -webkit-transform 0.125s ease-out;
+    transition: -webkit-transform 0.125s ease-out;
+    transition: transform 0.125s ease-out;
+    transition: transform 0.125s ease-out, -webkit-transform 0.125s ease-out;
+    width: 13px;
+  }
+
+  .checkbox-wrapper-35 .switch + label .switch-x-text {
+    display: block;
+    margin-right: .3em;
+  }
+
+  .checkbox-wrapper-35 .switch + label .switch-x-toggletext {
+    display: block;
+    font-weight: bold;
+    height: 15px;
+    overflow: hidden;
+    position: relative;
+    width: 25px;
+  }
+
+  .checkbox-wrapper-35 .switch + label .switch-x-unchecked,
+  .checkbox-wrapper-35 .switch + label .switch-x-checked {
+    left: 0;
+    position: absolute;
+    top: 0;
+    -webkit-transition: opacity 0.125s ease-out, -webkit-transform 0.125s ease-out;
+    transition: opacity 0.125s ease-out, -webkit-transform 0.125s ease-out;
+    transition: transform 0.125s ease-out, opacity 0.125s ease-out;
+    transition: transform 0.125s ease-out, opacity 0.125s ease-out, -webkit-transform 0.125s ease-out;
+  }
+
+  .checkbox-wrapper-35 .switch + label .switch-x-unchecked {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+
+  .checkbox-wrapper-35 .switch + label .switch-x-checked {
+    opacity: 0;
+    -webkit-transform: translate3d(0, 100%, 0);
+    transform: translate3d(0, 100%, 0);
+  }
+
+  .checkbox-wrapper-35 .switch + label .switch-x-hiddenlabel {
+    position: absolute;
+    visibility: hidden;
+  }
+
+  .checkbox-wrapper-35 .switch:checked + label::before {
+    background-color: #ffb500;
+  }
+
+  .checkbox-wrapper-35 .switch:checked + label::after {
+    -webkit-transform: translate3d(10px, 0, 0);
+    transform: translate3d(10px, 0, 0);
+  }
+
+  .checkbox-wrapper-35 .switch:checked + label .switch-x-unchecked {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -100%, 0);
+    transform: translate3d(0, -100%, 0);
+  }
+
+  .checkbox-wrapper-35 .switch:checked + label .switch-x-checked {
+    opacity: 1;
+    -webkit-transform: none;
+    transform: none;
+  }
+</style>

@@ -1,6 +1,6 @@
 import { Space_Grotesk } from "next/font/google"
 
-import Main from "~components/main"
+import Main from "~components/pages/main"
 import { WidgetContainer } from "~components/widgets/widgets"
 import { AppStateProvider } from "~contexts/app-context"
 

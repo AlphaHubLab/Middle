@@ -126,13 +126,8 @@ export const getNodeType = (_node: INode, _newValue = null): NodeType => {
  *
  * @param store
  */
-export const getLabels = ({
-  nodes,
-  params
-}: {
-  nodes: INode[]
-  params: ITaskParams
-}) => {
+export const getLabels = (taskCore: ITaskCore) => {
+  const { nodes, params } = taskCore
   const labels = { date: false, link: false, tag: false }
   if (params.dueDate !== -1) labels.date = true
   if (nodes.find((n) => n.type === "a")) labels.link = true

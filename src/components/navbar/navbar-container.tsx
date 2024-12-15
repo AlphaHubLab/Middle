@@ -1,12 +1,16 @@
-import { startTransition, useEffect, useState, useTransition } from "react"
+import Fuse from "fuse.js"
+import { useEffect, useMemo, useState, useTransition } from "react"
 import { CiSearch } from "react-icons/ci"
 
+import {
+  TaskGroup,
+  TaskItemWithSearchedWrapper,
+} from "~components/tasks/tasklist"
 import { useDraftContext } from "~contexts/draft-context"
 import { usePersistContext } from "~contexts/persisting-context"
 import { getDetailedPreview as gdp } from "~lib/task-helpers"
 import type { ITaskCore } from "~lib/types"
 
-// import { mockTask } from "~mock/mock-tasks"
 
 export default function NavbarContainer() {
   const [search, setSearch] = useState("")
@@ -38,8 +42,10 @@ export default function NavbarContainer() {
         />
       </div>
       {showSearch === true && (
-        <div
-          className={`z-10 absolute top-[96px] left-0 w-full bg-transparent h-screen p-2 flex justify-center backdrop-blur`}>
+        <div className="w-full h-screen absolute top-[96px] left-0">
+          <div
+            onClick={() => setShowSearch(false)}
+            className={`z-10 absolute top-0 left-0 w-full bg-white/50 h-screen p-2 flex justify-center backdrop-blur`}></div>
           {/* {isPending && <div>pends</div>} */}
           <SearchPanel search={search} onClose={() => setShowSearch(false)} />
         </div>
@@ -63,14 +69,9 @@ const SearchPanel = ({ search, onClose }) => {
     style?.opacity === 0 && setStyle({ opacity: 1 })
   }, [style])
 
-  // const s = () => {
+  // const srch = () => {
   //   startTransition(() => {
-  //     const taskResults =
-  //       search.trim().length === 0 ? [] : searching(search, taskStorage)
-  //     const historyResults =
-  //       search.trim().length === 0 ? [] : searching(search, history)
-  //     const draftsResults =
-  //       search.trim().length === 0 ? [] : searching(search, drafts)
+  //    // searching...
   //     setData({
   //       taskResults,
   //       historyResults,
@@ -79,79 +80,96 @@ const SearchPanel = ({ search, onClose }) => {
   //   })
   // }
   // useEffect(() => {
-  //   s()
+  //   srch
   // }, [search])
 
-  const taskResults = search.trim().length === 0 ? [] : searching(search, tasks)
-  const historyResults =
-    search.trim().length === 0 ? [] : searching(search, history)
-  const draftsResults =
-    search.trim().length === 0 ? [] : searching(search, drafts)
+  const all = [...tasks, ...history, ...drafts]
+  const fuse = new Fuse(all, {
+    keys: ["nodes.value", "params.tags"],
+    minMatchCharLength: 2
+  })
+
+  const results = fuse.search(search).map((s) => s.item)
+  // const visibleTasks = filterTasks(taskResults)
 
   // const { draftsResults, historyResults, taskResults } = data
   // console.log(data)
   return (
     <div
       style={style}
-      className={`z-10 flex flex-col transform duration-200 bg-zinc-400/10 border border-zinc-200/50 transform duration-200 w-[650px] mx-auto rounded-lg h-[calc(75%-96px)] p-2 shadow-md`}>
+      className={`relative z-20 flex flex-col transform duration-300 bg-zinc-400/10 border border-zinc-200/50 transform duration-200 w-[650px] mx-auto rounded-lg h-[calc(75%-96px)] p-2 shadow-md`}>
       <div className="w-full">
         <button onClick={onClose}>x</button>
       </div>
-      <p className="border-b-[1px] font-bold mb-2">Searching for: {search}</p>
+      {search.length < 2 && (
+        <p className="text-sm w-full h-full items-center justify-center flex text-zinc-400">
+          Please type at least 2 chars
+        </p>
+      )}
 
-      <div className="h-full overflow-y-auto styled-scrollbar">
-        {taskResults.length === 0 &&
-          draftsResults.length === 0 &&
-          historyResults.length === 0 && <div>Not {"f(ound)"}</div>}
-        {taskResults.length > 0 && (
-          <div className="py-4">
-            <h2 className="border-b-[1px] text-zinc-600">Tasks</h2>
-            {taskResults.map((r, i) => {
-              const preview = gdp(r.nodes)
-              return (
-                <div
-                  key={`task-search-${i}`}
-                  className="border-b-[1px] text-xs p-2 hover:bg-zinc-400/30">
-                  <p className="font-bold text-zinc-700">{preview[0].value}</p>
-                  <p className="text-zinc-700">{preview[1].value}</p>
+      {search.length >= 2 && (
+        <div className="h-full overflow-y-auto styled-scrollbar p-2">
+          {results.length === 0 && (
+            <div className="text-sm w-full h-full items-center justify-center flex text-zinc-400">
+              Not {"F(ound) any :("}
+            </div>
+          )}
+          {/* <TaskGroup group={"Tasks"} name="top" bg={false}> */}
+          {results.map((item, i) => {
+            return (
+              i < 10 && (
+                <div className="py-1" key={`overdue-${i}`}>
+                  <TaskItemWithSearchedWrapper item={item} type="task" />
                 </div>
               )
-            })}
-          </div>
-        )}
-        {draftsResults.length > 0 && (
-          <div className="py-4">
-            <h2 className="border-b-[1px] text-zinc-600">Drafts</h2>
-            {draftsResults.map((r, i) => {
-              const preview = gdp(r.nodes)
-              return (
-                <div
-                  key={`draft-search-${i}`}
-                  className="border-b-[1px] text-xs p-2 hover:bg-zinc-400/30">
-                  <p className="font-bold text-zinc-700">{preview[0].value}</p>
-                  <p className="text-zinc-700">{preview[11].value}</p>
-                </div>
-              )
-            })}
-          </div>
-        )}
-        {historyResults.length > 0 && (
-          <div className="py-4">
-            <h2 className="border-b-[1px] text-zinc-600">History</h2>
-            {historyResults.map((r, i) => {
-              const preview = gdp(r.nodes)
-              return (
-                <div
-                  key={`history-search-${i}`}
-                  className="border-b-[1px] text-xs p-2 hover:bg-zinc-400/30">
-                  <p className="font-bold text-zinc-700">{preview[0].value}</p>
-                  <p className="text-zinc-700">{preview[1].value}</p>
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </div>
+            )
+          })}
+          {/* </TaskGroup> */}
+
+          {/* <TaskGroup group={"Overdues"} name="overdue" isOverdue>
+          {visibleTasks.overdue.map((t, i) => (
+            <div className="py-1" key={`overdue-${i}`}>
+              <TaskItemWithUpcommingWrapper item={t} type="task" />
+            </div>
+          ))}
+        </TaskGroup>
+        <TaskGroup group={"So close!"} name="urgent">
+          {visibleTasks.urgent.map((t, i) => (
+            <div className="py-1" key={`urgent-${i}`}>
+              <TaskItemWithUpcommingWrapper item={t} type="task" />
+            </div>
+          ))}
+        </TaskGroup>
+        <TaskGroup group={"Next 24 Hours"} name="next24">
+          {visibleTasks.next24.map((t, i) => (
+            <div className="py-1" key={`next24-${i}`}>
+              <TaskItemWithUpcommingWrapper item={t} type="task" />
+            </div>
+          ))}
+        </TaskGroup>
+        <TaskGroup group={"Next 48 Hours"} name="next48">
+          {visibleTasks.next48.map((t, i) => (
+            <div className="py-1" key={`next48-${i}`}>
+              <TaskItemWithUpcommingWrapper item={t} type="task" />
+            </div>
+          ))}
+        </TaskGroup>
+        <TaskGroup group={"Unschaduled"} name="unschaduled">
+          {visibleTasks.unschaduled.map((t, i) => (
+            <div className="py-1" key={`unschaduled-${i}`}>
+              <TaskItemWithUpcommingWrapper item={t} type="task" />
+            </div>
+          ))}
+        </TaskGroup>
+        <TaskGroup group={"Other"} name="other">
+          {visibleTasks.other.map((t, i) => (
+            <div className="py-1" key={`other-${i}`}>
+              <TaskItemWithUpcommingWrapper item={t} type="task" />
+            </div>
+          ))}
+        </TaskGroup> */}
+        </div>
+      )}
     </div>
   )
 }
@@ -173,8 +191,6 @@ const searching = (str: string, storage: ITaskCore[]) => {
 
   return storage.filter(
     (item) =>
-      // ex.value.match(searchKey) ||
-      // item.task[0].value.match(searchKey) ||
       item.params.tags
         .map((t) => t.toLowerCase().match(searchKey))
         .filter((r) => r).length > 0 ||

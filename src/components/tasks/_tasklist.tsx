@@ -8,12 +8,12 @@ import { usePersistContext } from "~contexts/persisting-context"
 import { getUpcommingPreview } from "~lib/task-helpers"
 import type { IDraft, ITask } from "~lib/types"
 
-import { RenderElementReadOnlyWithCopy } from "./editor/render-element-readonly"
-import Status from "./editor/status"
-import { Handle } from "./ui/svgs/handle"
+import { RenderElementReadOnlyWithCopy } from "../editor/render-element-readonly"
+import Status from "../editor/status"
+import { Handle } from "../ui/svgs/handle"
 
 const filterTasks = (tasks: ITask[]) => {
-  const ONE_HOUR = 1 * 60 * 60 * 1000
+  const ONE_HOUR = 60 * 60 * 1000
   const ONE_DAY = 24 * 60 * 60 * 1000
   const TWO_DAY = 48 * 60 * 60 * 1000
 
@@ -46,10 +46,10 @@ const filterTasks = (tasks: ITask[]) => {
 
   return {
     overdue: overdue.sort((a, b) => a.params.dueDate - b.params.dueDate),
-    urgent:urgent.sort((a, b) => a.params.dueDate - b.params.dueDate),
-    unschaduled,
-    next24:next24.sort((a, b) => a.params.dueDate - b.params.dueDate),
+    urgent: urgent.sort((a, b) => a.params.dueDate - b.params.dueDate),
+    next24: next24.sort((a, b) => a.params.dueDate - b.params.dueDate),
     next48,
+    unschaduled,
     other
   }
 }
@@ -85,7 +85,7 @@ export default function TaskList({ show, setHide }) {
       )}
       <div
         className={`relative styled-scrollbar ${show ? "overflow-y-auto" : "overflow-y-hidden"} h-full px-4`}>
-        {/* <a href="#other">OTHER</a> */}
+        <a href="#other">OTHER</a>
         <div dir="ltr" className="relative px-4 mb-4">
           {show === false && (
             <div className="absolute bg-white/50 h-full top-0 left-0 w-full"></div>
@@ -246,10 +246,6 @@ const TaskItem = ({
                     duration-200 flex flex-col px-2 rounded-md oveflow-y-hidden
                   `}>
         {show === false && (
-          // <div>
-          //   {item.params.dueDate !== -1 && (
-          //     <p>{new Date(item.params.dueDate).toLocaleDateString()}</p>
-          //   )}
           <div className="flex gap-2 items-center h-full px-2">
             {type === "task" && (
               <input
@@ -264,9 +260,8 @@ const TaskItem = ({
             <h2 className="font-bold flex-auto px-2">
               {getUpcommingPreview(item.nodes).value}
             </h2>
-            <Status store={item} isLoading={false} hasLoading={false} />
+            <Status taskCore={item} isLoading={false} hasLoading={false} />
           </div>
-          // </div>
         )}
         {show === true && (
           <div
