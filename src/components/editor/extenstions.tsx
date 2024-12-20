@@ -1,9 +1,9 @@
 import { IoFilterCircleOutline } from "react-icons/io5"
 import { MdFilterHdr } from "react-icons/md"
 
-import type { IExtenstion } from "~lib/types"
+import type { IExtenstion, IIdentity } from "~lib/types"
 
-export const extensions: IExtenstion[] = [
+export const GENERAL_EXTENTIONS: IExtenstion[] = [
   {
     icon: MdFilterHdr,
     title: "Add Title",
@@ -60,6 +60,27 @@ export const extensions: IExtenstion[] = [
     value: null,
     action: "persist",
     description: "Store",
-    keywords: ["save", "store", "ok"]
+    keywords: ["save", "store", "ok", "done"]
   }
 ]
+
+/**
+ * Create Dynamic Command Extensions based on user inputed identities
+ * @param identities
+ */
+export const createIdentityExtenstions = (
+  identities: IIdentity[]
+): IExtenstion[] => {
+  return identities.map((identity) => ({
+    icon: () => <IdentityIcon color={identity.color} />,
+    title: `Assign ${identity.label} to task`,
+    value: identity,
+    action: "addIdentity",
+    description: "Assign identity",
+    keywords: ["id", "identity", ...identity.items.map((item) => item.key)]
+  }))
+}
+
+const IdentityIcon = ({ color }) => (
+  <div className="w-3 h-3 rounded-full" style={{ background: color }}></div>
+)

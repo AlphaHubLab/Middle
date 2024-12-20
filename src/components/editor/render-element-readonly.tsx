@@ -33,6 +33,7 @@ export const RenderAllElementsReadOnlyWithCopy = ({
     </div>
   )
 }
+
 export const RenderElementReadOnly = ({
   type,
   value

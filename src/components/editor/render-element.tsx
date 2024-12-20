@@ -2,11 +2,16 @@ import isUrl from "is-url"
 import { useEffect, useRef } from "react"
 import { PiLinkThin } from "react-icons/pi"
 
+import { useAppState } from "~contexts/app-context"
 import useDraft from "~hooks/useDraft"
 import { isTaskEmpty } from "~lib/task-helpers"
 import type { IStore } from "~lib/types"
 
-import { DateWithProps, TagsWithProps } from "./render-params"
+import {
+  DateWithProps,
+  IdentityWithProps,
+  TagsWithProps
+} from "./render-params"
 import Status from "./status"
 
 interface IRenderElementProps {
@@ -20,7 +25,20 @@ interface IRenderElementProps {
   onPaste: (e: any) => void
   store: IStore
   addDate: (dueDate: number) => void
+  removeIdentity: (id: number) => void
 }
+
+type IHeaderProps = Omit<IRenderElementProps, "type">
+
+type ITextAreaProps = Omit<
+  IRenderElementProps,
+  "type" | "addDate" | "removeIdentity"
+>
+
+type ILinkProps = Omit<
+  IRenderElementProps,
+  "type" | "addDate" | "removeIdentity" | "store" | "index"
+>
 
 export const RenderElement = ({ type, ...props }: IRenderElementProps) => {
   switch (type) {
@@ -35,21 +53,10 @@ export const RenderElement = ({ type, ...props }: IRenderElementProps) => {
   }
 }
 
-interface IHeaderProps {
-  addToRef: (el: HTMLElement) => void
-  onFocus: () => void
-  index: number
-  value: string
-  onKeyDown: (e: any) => void
-  onChange: (e: any) => void
-  onPaste: (e: any) => void
-  addDate: (dueDate: number) => void
-  store: IStore
-}
-
 const HeaderWithProps = (props: IHeaderProps) => {
   const { store } = props
-  const { isLoading } = useDraft(store)
+  const { editorType } = useAppState()
+  const { isLoading } = useDraft(store, editorType !== "task")
 
   return (
     <div>
@@ -65,13 +72,21 @@ const HeaderWithProps = (props: IHeaderProps) => {
           onKeyDown={props.onKeyDown}
           onFocus={props.onFocus}
         />
-        <Status taskCore={store} isLoading={isLoading} isEditor={true} />
+        <Status
+          taskCore={store}
+          isLoading={isLoading}
+          hasLoading={editorType !== "task"}
+          isEditor={true}
+        />
       </div>
 
       {store.params.dueDate === -1 ? (
         <p className="h-0 pl-6 text-xs text-zinc-300"></p>
       ) : (
-        <DateWithProps value={store.params.dueDate} setter={props.addDate} />
+        <DateWithProps
+          timestamp={store.params.dueDate}
+          setter={props.addDate}
+        />
       )}
 
       {store.params.tags.length === 0 ? (
@@ -79,17 +94,17 @@ const HeaderWithProps = (props: IHeaderProps) => {
       ) : (
         <TagsWithProps tags={store.params.tags} />
       )}
+
+      {store.params.identities.length === 0 ? (
+        <p className="h-0 pl-6 text-xs text-zinc-300"></p>
+      ) : (
+        <IdentityWithProps
+          identities={store.params.identities}
+          removeIdentity={props.removeIdentity}
+        />
+      )}
     </div>
   )
-}
-
-interface ILinkProps {
-  addToRef: (el: HTMLElement) => void
-  onFocus: () => void
-  value: string
-  onKeyDown: (e: any) => void
-  onChange: (e: any) => void
-  onPaste: (e: any) => void
 }
 
 const LinkInputWithProps = (props: ILinkProps) => {
@@ -101,7 +116,7 @@ const LinkInputWithProps = (props: ILinkProps) => {
       <input
         placeholder="add link..."
         ref={props.addToRef}
-        className={`hover:bg-zinc-50 text-sm w-full px-2 py-[2px] h-[20px] underline ${isUrl(props.value) ? "text-blue-500" : "text-zinc-400"} leading-tight focus:bg-zinc-100 focus:outline-none rounded-md`}
+        className={`hover:bg-zinc-50 text-sm w-full px-2 py-[2px] underline ${isUrl(props.value) ? "text-blue-500" : "text-zinc-400"} leading-tight focus:bg-zinc-100 focus:outline-none rounded-md`}
         type="text"
         value={props.value}
         onChange={props.onChange}
@@ -112,17 +127,6 @@ const LinkInputWithProps = (props: ILinkProps) => {
       />
     </div>
   )
-}
-
-interface ITextAreaProps {
-  addToRef: (el: HTMLElement) => void
-  onFocus: () => void
-  value: string
-  onKeyDown: (e: any) => void
-  onChange: (e: any) => void
-  onPaste: (e: any) => void
-  index: number
-  store: IStore
 }
 
 const ParagraphInputWithProps = (props: ITextAreaProps) => {

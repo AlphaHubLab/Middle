@@ -1,13 +1,21 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import type { ChangeEvent, KeyboardEvent } from "react"
 
+import ButtonFetch from "~components/ui/button-fetch"
 import { useAppState } from "~contexts/app-context"
 import { useDraftContext } from "~contexts/draft-context"
+import { useSettingContext } from "~contexts/setting-context"
 import * as helpers from "~lib/task-helpers"
-import type { INode, IStore, NodeType } from "~lib/types"
+import type {
+  IExtenstion,
+  IIdentity,
+  INode,
+  IStore,
+  NodeType
+} from "~lib/types"
 
 import { Command } from "./commands"
-import { extensions } from "./extenstions"
+import { createIdentityExtenstions, GENERAL_EXTENTIONS } from "./extenstions"
 import { RenderElement } from "./render-element"
 
 type HTMLInputs = HTMLInputElement | HTMLTextAreaElement
@@ -17,6 +25,7 @@ const tagRegExp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z_]+\w*/g)
 export default function Editor({ disabled, handlePersist }) {
   const { openEditMode, initialStore, editorType } = useAppState()
   const { setDrafts } = useDraftContext()
+  const { setting } = useSettingContext()
 
   const [store, setStore] = useState<IStore>(initialStore)
   const [isCommandActive, setIsCommandActive] = useState(false)
@@ -29,6 +38,11 @@ export default function Editor({ disabled, handlePersist }) {
   const nodeSnapshot = useRef("")
 
   nodes.current = []
+
+  const extensions = useMemo<IExtenstion[]>(() => {
+    const identityExtensions = createIdentityExtenstions(setting.identities)
+    return [...GENERAL_EXTENTIONS, ...identityExtensions]
+  }, [setting])
 
   const addToRef = (el: HTMLInputs) => {
     if (el && !nodes.current.includes(el)) nodes.current.push(el)
@@ -164,7 +178,8 @@ export default function Editor({ disabled, handlePersist }) {
   const updateNode = (e: ChangeEvent<HTMLInputs>) => {
     if (isCommandActive) updateCommand(e)
 
-    // Shallow copy also works, but may produces some bugs
+    // Shallow copy also works,
+    // but cannot use debounce drafting and may produces some bugs
     // const nodes = [...store.nodes]
 
     const nodes = structuredClone(store.nodes)
@@ -261,19 +276,58 @@ export default function Editor({ disabled, handlePersist }) {
     setStore(newStore)
   }
 
+  const addIdentity = (identity: IIdentity) => {
+    const identities = [...store.params.identities]
+
+    // Prevent to add duplicate
+    if (identities.find((existed) => existed.id === identity.id)) return
+
+    identities.push(identity)
+
+    const params = { ...store.params, identities }
+
+    const newStore = {
+      ...store,
+      nodes: store.nodes.toSpliced(store.focusedNode, 1, {
+        type: store.nodes[store.focusedNode].type as NodeType,
+        value: nodeSnapshot.current
+      }),
+      range: nodeSnapshot.current.length,
+      focusedNode: store.focusedNode,
+      params
+    }
+
+    updateHistory(store)
+    setStore(newStore)
+  }
+
+  const removeIdentity = (id: number) => {
+    let identities = [...store.params.identities]
+    identities = identities.filter((identity) => identity.id !== id)
+
+    const params = { ...store.params, identities }
+
+    const newStore = { ...store, params }
+
+    updateHistory(store)
+    setStore(newStore)
+  }
   /** Setter */
   const setter = (_extension: any) => {
     setIsCommandActive(false)
 
     switch (_extension.action) {
       case "replaceNode":
-        if (store.nodes[store.focusedNode].value.trim() === `/${command}`) {
-          // Replace current node if it is empty
+        // Replace current node if it is empty and not a title
+        if (
+          store.nodes[store.focusedNode].value.trim() === `/${command}` &&
+          store.nodes[store.focusedNode].type !== "h"
+        ) {
           replaceNodes([{ type: _extension.value, value: "" }])
           break
         }
 
-        // Add a new node if current node has text
+        // Add a new node if current node has text or is title
         const newNode = { type: _extension.value, value: "" }
         const currentNode = {
           type: store.nodes[store.focusedNode].type,
@@ -291,6 +345,14 @@ export default function Editor({ disabled, handlePersist }) {
 
       case "addNode":
         addNode(_extension.value)
+        break
+
+      case "persist":
+        persistTask()
+        break
+
+      case "addIdentity":
+        addIdentity(_extension.value)
         break
     }
   }
@@ -436,30 +498,33 @@ export default function Editor({ disabled, handlePersist }) {
   return (
     <div className="w-full">
       <div
-        className={`text-xs items-center flex gap-2 pl-4 sticky top-0 bg-white h-12 transition-all duration-200 ${!disabled ? "visible opacity-100" : "invisible opacity-0"}`}>
+        role="toolbar"
+        className={`${!disabled ? "visible opacity-100" : "invisible opacity-0"}
+                    text-sm items-center flex gap-2 pl-4 sticky top-0 bg-white h-12 transition-all duration-200`}>
         <>
-          <button
-            className="border p-1 rounded-md border-zinc-500 text-zinc-500 hover:text-emerald-300"
+          <ButtonFetch
+            variant="primary"
             disabled={disabled}
             onClick={persistTask}>
             {editorType === "new" || editorType === "draft"
               ? "Store"
               : "Save Changes"}
-          </button>
-          <button
-            className="border p-1 rounded-md border-zinc-500 text-zinc-500 hover:text-rose-300"
-            disabled={disabled}
+          </ButtonFetch>
+          <ButtonFetch
+            variant="primary"
+            // className="border p-1 rounded-md border-zinc-500 text-zinc-500 hover:text-rose-300"
+            disabled={disabled || helpers.isTaskEmpty(store, "loose")}
             onClick={deleteDraft}>
             {editorType === "new" || editorType === "draft"
               ? "Discard"
               : "Discard Changes"}
-          </button>
-          <button
-            className="border p-1 rounded-md border-zinc-500 text-zinc-500 hover:text-rose-300"
-            disabled={disabled}
+          </ButtonFetch>
+          <ButtonFetch
+            variant="primary"
+            // className="border p-1 rounded-md border-zinc-500 text-zinc-500 hover:text-rose-300"
             onClick={newTask}>
             + new
-          </button>
+          </ButtonFetch>
         </>
       </div>
 
@@ -469,6 +534,7 @@ export default function Editor({ disabled, handlePersist }) {
             <RenderElement
               {...n}
               addDate={modifyDate}
+              removeIdentity={removeIdentity}
               index={i}
               addToRef={addToRef}
               onKeyDown={handleOnKeyDown}
@@ -497,13 +563,3 @@ export default function Editor({ disabled, handlePersist }) {
     </div>
   )
 }
-
-// function useAsRef<T>(data: T) {
-//   const ref = useRef<T>(data)
-
-//   useLayoutEffect(() => {
-//     ref.current = data
-//   })
-
-//   return ref
-// }

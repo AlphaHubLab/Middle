@@ -18,9 +18,7 @@ const remainingTime = (taskCore: ITaskCore) => {
 
   if (Math.abs(remain) < HOUR) {
     return { value: Math.floor(remain / MINUTE), appendix: "m" }
-  }
-
-  if (Math.abs(remain) < ONE_DAY) {
+  } else {
     return { value: Math.ceil(remain / HOUR), appendix: "h" }
   }
 }

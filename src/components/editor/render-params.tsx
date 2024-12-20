@@ -1,11 +1,24 @@
 import moment from "moment"
+import type { ChangeEvent } from "react"
 import { IoTimeOutline } from "react-icons/io5"
 
-export const DateWithProps = ({ timestamp, setter }) => {
-  const m = moment(timestamp)
-  const date = m.format().slice(0, -9)
+import * as C from "~components/ui/collapsible"
+import type { IIdentity } from "~lib/types"
 
-  const handleOnChange = (e) => {
+interface IDateProps {
+  timestamp: number
+  setter: (timestamp: number) => void
+}
+
+interface IIdentityProps {
+  identities: IIdentity[]
+  removeIdentity: (id: number) => void
+}
+
+export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
+  const date = moment(timestamp).format().slice(0, -9)
+
+  const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
     const date = new Date(e.target.value).getTime()
     setter(date)
   }
@@ -21,44 +34,112 @@ export const DateWithProps = ({ timestamp, setter }) => {
         value={date}
         onChange={handleOnChange}
       />
-      <div className="flex gap-2 text-xs items-center justify-center">
+      <div className="flex flex-auto gap-2 text-xs items-center justify-start">
         <button
-          className="hover:bg-zinc-100 border rounded-md px-2 py-1"
+          className="border hover:bg-zinc-100 rounded-md px-2 py-[3px]"
           onClick={() => setter(timestamp + 24 * 60 * 60 * 1000)}>
           +24H
         </button>
         <button
-          className="border hover:bg-zinc-100 rounded-md px-2 py-1"
+          className="border hover:bg-zinc-100 rounded-md px-2 py-[3px]"
           onClick={() => setter(timestamp + 7 * 24 * 60 * 60 * 1000)}>
           +7D
         </button>
         <button
-          className="border hover:bg-zinc-100 rounded-md px-2 py-1"
+          className="border hover:bg-zinc-100 rounded-md px-2 py-[3px]"
           onClick={() => setter((new Date().getTime() / 10_000) * 10_000)}>
           Now
         </button>
-        <button
-          className="text-red-500 hover:text-red-300"
-          onClick={() => setter(-1)}>
-          Remove
-        </button>
       </div>
+      <button
+        className="text-rose-500 hover:text-rose-300 text-xs"
+        onClick={() => setter(-1)}>
+        Remove
+      </button>
     </div>
   )
 }
 
 export const TagsWithProps = ({ tags }: { tags: string[] }) => {
   return (
-    <div className="ml-6 min-h-10 flex pb-1 flex-wrap oveflow-hidden items-center gap-1">
-      {tags.map((t, i) => (
-        <span
-          role="tag"
-          className="before:content-[x] text-zinc-400 bg-zinc-100 rounded-md text-xs px-2 py-1"
-          key={`tags_${i}`}>
-          {t}
-        </span>
+    <div className="flex">
+      <div className="w-4 flex items-center justify-center text-zinc-500 text-xs">#</div>
+      <div className="pl-2 min-h-10 flex pb-1 flex-wrap oveflow-hidden items-center gap-1">
+        {tags.map((tag, i) => (
+          <span
+            role="status"
+            className="before:content-[x] text-zinc-400 bg-zinc-100 rounded-md text-xs px-2 py-1"
+            key={`tags-${i}`}>
+            {tag}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export const IdentityWithProps = ({
+  identities,
+  removeIdentity
+}: IIdentityProps) => {
+  // Maybe managing by id
+  //
+  // const { setting } = useSettingContext()
+  // const { identities } = setting
+
+  // const selectedIdentities = (() => {
+  //   const _identities = []
+
+  //   identities.forEach((identity) => {
+  //     if (ids.includes(identity.id)) {
+  //       _identities.push(identity)
+  //     }
+  //   })
+
+  //   return _identities
+  // })()
+
+  return (
+    <div>
+      {identities.map((identity, i) => (
+        <div key={`added-identity-${i}`} className="flex items-center">
+          <div
+            style={{ color: identity.color }}
+            className="w-4 text-xs h-full flex items-center justify-center">
+            <p>ID</p>
+          </div>
+          <div className="w-full flex text-sm text-zinc-700 py-1">
+            <div className="w-full">
+              <C.Collapsible>
+                <C.Toggle>
+                  <div className="font-bold py-[2px] cursor-pointer px-2 hover:bg-zinc-100 rounded-md ">
+                    <p>{identity.label}</p>
+                  </div>
+                </C.Toggle>
+                <C.Content>
+                  <div className="pl-2">
+                    {identity.items.map((item) => (
+                      <div
+                        style={{ borderColor: identity.color }}
+                        className="flex px-2 gap-2 border-l">
+                        <p>{item.key}:</p>
+                        <p>{item.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                </C.Content>
+              </C.Collapsible>
+            </div>
+            <div className="flex items-start pt-1 pl-2">
+              <button
+                onClick={() => removeIdentity(identity.id)}
+                className="text-xs text-rose-500 hover:text-rose-300">
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
       ))}
     </div>
   )
 }
-// #base #test #shit #shit #chain #1w #w1 #ed/ #_a #_ #1_ #ff #f #fff #f3f3f #f2f2f323f
