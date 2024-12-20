@@ -97,6 +97,7 @@ export default function PersistProvider({ children, isDev = false }) {
     const found = _tasks.find((t) => t.id === store.id)
     // Do not need cloning since data will be serialized in storage
     // const clone = structuredClone(store)
+
     if (found) {
       found.nodes = store.nodes
       found.params = store.params

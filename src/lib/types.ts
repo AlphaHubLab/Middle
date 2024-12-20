@@ -18,6 +18,7 @@ export interface INode {
 export interface ITaskParams {
   dueDate: number
   tags: string[]
+  identities: IIdentity[]
 }
 
 export interface ITaskCore {
@@ -45,10 +46,20 @@ export interface IStore extends ITaskCore {
 }
 
 export interface IExtenstion {
-  icon: IconType
+  icon: IconType | (() => Element)
   title: string
   value: any
   action: string
   description: string
   keywords: string[]
+}
+
+export interface IIdentity {
+  id: number
+  label: string
+  color: string
+  items: {
+    key: string
+    value: string
+  }[]
 }

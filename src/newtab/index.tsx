@@ -15,7 +15,7 @@ import { AppStateProvider } from "~contexts/app-context"
 export default function Page() {
   return (
     <div className={`h-screen overflow-hidden`}>
-      <a href="/options">Option</a>
+      <a href="/options.html">Options</a>
       <div className="h-screen">
         <div className="w-full h-full flex">
           <AppStateProvider>

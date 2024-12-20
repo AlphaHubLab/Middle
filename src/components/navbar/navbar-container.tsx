@@ -1,16 +1,81 @@
 import Fuse from "fuse.js"
-import { useEffect, useMemo, useState, useTransition } from "react"
+import { useEffect, useState } from "react"
 import { CiSearch } from "react-icons/ci"
 
-import {
-  TaskGroup,
-  TaskItemWithSearchedWrapper,
-} from "~components/tasks/tasklist"
+import { RenderAllElementsReadOnlyWithCopy } from "~components/editor/render-element-readonly"
+import Status from "~components/editor/status"
+import { TaskToolbar } from "~components/task-manager/tasklist"
+// import {
+//   TaskGroup,
+//   TaskItemWithSearchedWrapper,
+// } from "~components/tasks/tasklist"
+import * as Collapsible from "~components/ui/collapsible"
 import { useDraftContext } from "~contexts/draft-context"
 import { usePersistContext } from "~contexts/persisting-context"
-import { getDetailedPreview as gdp } from "~lib/task-helpers"
-import type { ITaskCore } from "~lib/types"
+import { getDetailedPreview } from "~lib/task-helpers"
+import type { ITask, ITaskCore } from "~lib/types"
 
+export const SearchedItemWrapper = ({ children }) => {
+  return (
+    <div
+      className={`h-full border-b-[1px] hover:bg-zinc-300 flex flex-col justify-center`}>
+      {children}
+    </div>
+  )
+}
+
+const SearchedItemWithCollapsible =
+  Collapsible.withCollapsibleAndToolbar(SearchedItemWrapper)
+
+const SearchedItem = ({
+  item,
+  type
+}: {
+  item: ITaskCore
+  type: "task" | "draft"
+}) => {
+  const { handleDone } = usePersistContext()
+
+  const handleCheck = () => {
+    handleDone(item.id)
+    // setAnimState(0)
+    // setShow(false)
+  }
+
+  const preview = getDetailedPreview(item.nodes)
+
+  return (
+    <SearchedItemWithCollapsible>
+      <Collapsible.Toolbar>
+        <TaskToolbar item={item} type={type} />
+      </Collapsible.Toolbar>
+      <Collapsible.Toggle>
+        <div className="flex gap-2 items-center h-full px-2">
+          {type === "task" && (
+            <input
+              checked={(item as ITask).done}
+              type="checkbox"
+              onChange={handleCheck}
+            />
+          )}
+          <h2 className="font-bold flex-auto px-2">{preview[0].value}</h2>
+          <Status taskCore={item} isLoading={false} hasLoading={false} />
+        </div>
+      </Collapsible.Toggle>
+      <Collapsible.Content>
+        {type === "task" && (
+          <input
+            className="mt-2"
+            type="checkbox"
+            checked={(item as ITask).done}
+            onChange={handleCheck}
+          />
+        )}
+        <RenderAllElementsReadOnlyWithCopy taskCore={item} />
+      </Collapsible.Content>
+    </SearchedItemWithCollapsible>
+  )
+}
 
 export default function NavbarContainer() {
   const [search, setSearch] = useState("")
@@ -19,12 +84,11 @@ export default function NavbarContainer() {
   // const [isPending, startTransition] = useTransition()
   return (
     <nav className="relative w-full h-24 flex items-center justify-center gap-8 px-8">
-      <a className="font-bold text-4xl" href="#">
+      {/* <a className="invisible lg:visible absolute left-10 top-6 font-bold text-4xl" href="#">
         Fetch
-      </a>
-      <div className="w-full has-[:focus]:outline shadow-sm border rounded-lg h-6 flex gap-2 px-1 items-center justify-center h-fit">
+      </a> */}
+      <div className="w-full max-w-[540px] mx-auto has-[:focus]:outline shadow-sm border rounded-lg h-6 flex gap-2 px-1 items-center justify-center h-fit">
         <CiSearch />
-
         <input
           id="search-bar"
           placeholder="F(ound) something..."
@@ -119,55 +183,11 @@ const SearchPanel = ({ search, onClose }) => {
             return (
               i < 10 && (
                 <div className="py-1" key={`overdue-${i}`}>
-                  <TaskItemWithSearchedWrapper item={item} type="task" />
+                  <SearchedItem item={item} type="task" />
                 </div>
               )
             )
           })}
-          {/* </TaskGroup> */}
-
-          {/* <TaskGroup group={"Overdues"} name="overdue" isOverdue>
-          {visibleTasks.overdue.map((t, i) => (
-            <div className="py-1" key={`overdue-${i}`}>
-              <TaskItemWithUpcommingWrapper item={t} type="task" />
-            </div>
-          ))}
-        </TaskGroup>
-        <TaskGroup group={"So close!"} name="urgent">
-          {visibleTasks.urgent.map((t, i) => (
-            <div className="py-1" key={`urgent-${i}`}>
-              <TaskItemWithUpcommingWrapper item={t} type="task" />
-            </div>
-          ))}
-        </TaskGroup>
-        <TaskGroup group={"Next 24 Hours"} name="next24">
-          {visibleTasks.next24.map((t, i) => (
-            <div className="py-1" key={`next24-${i}`}>
-              <TaskItemWithUpcommingWrapper item={t} type="task" />
-            </div>
-          ))}
-        </TaskGroup>
-        <TaskGroup group={"Next 48 Hours"} name="next48">
-          {visibleTasks.next48.map((t, i) => (
-            <div className="py-1" key={`next48-${i}`}>
-              <TaskItemWithUpcommingWrapper item={t} type="task" />
-            </div>
-          ))}
-        </TaskGroup>
-        <TaskGroup group={"Unschaduled"} name="unschaduled">
-          {visibleTasks.unschaduled.map((t, i) => (
-            <div className="py-1" key={`unschaduled-${i}`}>
-              <TaskItemWithUpcommingWrapper item={t} type="task" />
-            </div>
-          ))}
-        </TaskGroup>
-        <TaskGroup group={"Other"} name="other">
-          {visibleTasks.other.map((t, i) => (
-            <div className="py-1" key={`other-${i}`}>
-              <TaskItemWithUpcommingWrapper item={t} type="task" />
-            </div>
-          ))}
-        </TaskGroup> */}
         </div>
       )}
     </div>

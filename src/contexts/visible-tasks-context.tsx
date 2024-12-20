@@ -81,6 +81,7 @@ export default function VisibleTasksProvider({
     if (tasks.length === 0) return
 
     setVisibleTasks(filterTasks(tasks))
+    
     const interval = setInterval(
       () => setVisibleTasks(filterTasks(tasks)),
       60 * 1000

@@ -144,7 +144,7 @@ export const createInitialStore = () =>
     nodes: [{ type: "h", value: "" }],
     range: 0,
     focusedNode: 0,
-    params: { dueDate: -1, tags: [] }
+    params: { dueDate: -1, tags: [], identities: [] }
   }) as IStore
 
 /**

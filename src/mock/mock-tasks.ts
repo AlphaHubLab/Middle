@@ -29,7 +29,10 @@ export const mockTask: ITask[] = [
       dateAdded: new Date().getTime(),
       params: {
         tags: [],
-        dueDate: new Date().getTime() + Math.random() * 7 * Math.random() * 24 * 60 * 60 * 1000
+        identities: [],
+        dueDate:
+          new Date().getTime() +
+          Math.random() * 7 * Math.random() * 24 * 60 * 60 * 1000
       } as ITaskParams,
       nodes: [
         { type: "h", value: `task ${i}` },

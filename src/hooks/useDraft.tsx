@@ -5,7 +5,11 @@ import { useDraftContext } from "~contexts/draft-context"
 import { isTaskEmpty } from "~lib/task-helpers"
 import type { IStore } from "~lib/types"
 
-export default function useDraft(store: IStore, delay: number = 1000) {
+export default function useDraft(
+  store: IStore,
+  enabled: boolean = true,
+  delay: number = 1000
+) {
   const [debounceLoading, setDebounceLoading] = React.useState(false)
 
   const { drafts, setDrafts, storageLoading } = useDraftContext()
@@ -14,10 +18,10 @@ export default function useDraft(store: IStore, delay: number = 1000) {
   const params = React.useRef(store.params)
 
   React.useEffect(() => {
+    if (!enabled) return
+
     // Prevent creating empty draft with whitespaces on a new task
-    if (isTaskEmpty(store, "loose")) {
-      return
-    }
+    if (isTaskEmpty(store, "loose")) return
 
     // Prevent drafting while changing store.focusedNodes or store.range
     if (
