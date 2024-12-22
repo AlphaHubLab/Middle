@@ -1,5 +1,5 @@
-import moment from "moment"
-import type { ChangeEvent } from "react"
+import { DateTime } from "luxon"
+import { useRef, useState } from "react"
 import { IoTimeOutline } from "react-icons/io5"
 
 import * as C from "~components/ui/collapsible"
@@ -16,11 +16,29 @@ interface IIdentityProps {
 }
 
 export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
-  const date = moment(timestamp).format().slice(0, -9)
+  const [zone, setZone] = useState("local")
 
-  const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const date = new Date(e.target.value).getTime()
-    setter(date)
+  const getDate = (zone) => {
+    const date = DateTime.fromMillis(timestamp).setZone(zone)
+
+    return {
+      iso: date.toFormat("yyyy-MM-dd'T'T"),
+      date: date.toFormat("yyyy-MM-dd"),
+      time: date.toFormat("T")
+    }
+  }
+
+  const form = useRef<HTMLFormElement>(null)
+
+  const handleOnChange = () => {
+    const formData = new FormData(form.current)
+    const time = formData.get("time")
+    const date = formData.get("date")
+    const iso = `${date}T${time}`
+
+    const newTimeStamp = DateTime.fromISO(iso, { zone }).valueOf()
+
+    setter(newTimeStamp)
   }
 
   return (
@@ -28,13 +46,33 @@ export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
       <div className="w-4 flex justify-center">
         <IoTimeOutline />
       </div>
-      <input
-        type="datetime-local"
-        className="border text-sm text-zinc-500 border-dashed outline-none focus:bg-zinc-100 rounded-md px-1 my-1"
-        value={date}
-        onChange={handleOnChange}
-      />
-      <div className="flex flex-auto gap-2 text-xs items-center justify-start">
+      <form ref={form} onChange={handleOnChange}>
+        <input
+          name="date"
+          type="date"
+          className="border text-sm text-zinc-500 border-dashed outline-none focus:bg-zinc-100 rounded-md px-1 my-1"
+          value={getDate(zone).date}
+        />
+        <input
+          name="time"
+          value={getDate(zone).time}
+          type="time"
+          className="border text-sm text-zinc-500 border-dashed outline-none focus:bg-zinc-100 rounded-md px-1 my-1"></input>
+        <select
+          className="text-sm outline-none"
+          onChange={(e) => setZone(e.target.value)}>
+          <option value="local">Local</option>
+          <option value="utc">UTC/GMT</option>
+          <option value="est">EST</option>
+          <option value="cst">CST</option>
+          <option value="mst">MST</option>
+          <option value="pst">PST</option>
+          <option value="utc+08">WST</option>
+        </select>
+      </form>
+      <p>{getDate(zone).date}</p>
+      <p>{getDate(zone).time}</p>
+      {/* <div className="flex flex-auto gap-2 text-xs items-center justify-start">
         <button
           className="border hover:bg-zinc-100 rounded-md px-2 py-[3px]"
           onClick={() => setter(timestamp + 24 * 60 * 60 * 1000)}>
@@ -50,7 +88,7 @@ export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
           onClick={() => setter((new Date().getTime() / 10_000) * 10_000)}>
           Now
         </button>
-      </div>
+      </div> */}
       <button
         className="text-rose-500 hover:text-rose-300 text-xs"
         onClick={() => setter(-1)}>
@@ -63,7 +101,9 @@ export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
 export const TagsWithProps = ({ tags }: { tags: string[] }) => {
   return (
     <div className="flex">
-      <div className="w-4 flex items-center justify-center text-zinc-500 text-xs">#</div>
+      <div className="w-4 flex items-center justify-center text-zinc-500 text-xs">
+        #
+      </div>
       <div className="pl-2 min-h-10 flex pb-1 flex-wrap oveflow-hidden items-center gap-1">
         {tags.map((tag, i) => (
           <span

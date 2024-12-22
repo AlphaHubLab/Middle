@@ -1,4 +1,3 @@
-import moment from "moment"
 import { IoTimeOutline } from "react-icons/io5"
 import { PiLinkThin } from "react-icons/pi"
 
@@ -13,13 +12,17 @@ const ONE_DAY = 24 * 60 * 60 * 1000
 const remainingTime = (taskCore: ITaskCore) => {
   const { dueDate } = taskCore.params
 
+  if (dueDate === -1) return null
+
   const current = new Date().getTime()
   const remain = dueDate - current
 
+  if (remain > ONE_DAY) return null
+
   if (Math.abs(remain) < HOUR) {
-    return { value: Math.floor(remain / MINUTE), appendix: "m" }
+    return { value: Math.floor(remain / MINUTE), appendix: "min" }
   } else {
-    return { value: Math.ceil(remain / HOUR), appendix: "h" }
+    return { value: Math.ceil(remain / HOUR), appendix: "hr" }
   }
 }
 
@@ -36,25 +39,20 @@ export default function Status({
 }) {
   const { date, link, tag } = getLabels(taskCore)
 
-  const NEXT_24 = new Date().getTime() + ONE_DAY
-
   const remaining = remainingTime(taskCore)
 
   return (
     <div className="flex gap-2 items-center">
-      {!isEditor &&
-        taskCore.params.dueDate !== -1 &&
-        taskCore.params.dueDate < NEXT_24 && (
-          <span
-            className={`text-xs 
+      {!isEditor && remaining && (
+        <span
+          className={`text-xs 
                       ${remaining.value < 0 && "text-rose-500"}
-                      ${remaining.value >= 0 && remaining.appendix === "m" && "text-orange-500"}
-                      ${remaining.value > 0 && remaining.appendix === "h" && "text-zinc-400"}        
+                      ${remaining.value >= 0 && remaining.appendix === "min" && "text-orange-500"}
+                      ${remaining.value > 0 && remaining.appendix === "hr" && "text-zinc-400"}        
       `}>
-            {/* {remaining.value + remaining.appendix}{" "} */}
-            {moment(taskCore.params.dueDate).fromNow()}
-          </span>
-        )}
+          {remaining.value + remaining.appendix}{" "}
+        </span>
+      )}
       <span className="text-zinc-400 min-w-4">{date && <IoTimeOutline />}</span>
       <span className="text-zinc-400 min-w-4">{link && <PiLinkThin />}</span>
       <span className="text-zinc-400 min-w-4">{tag && "#"}</span>

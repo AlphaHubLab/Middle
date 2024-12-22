@@ -1,4 +1,4 @@
-import moment from "moment"
+import { DateTime } from "luxon"
 import { useEffect, useState } from "react"
 import { CopyToClipboard } from "react-copy-to-clipboard"
 import { FiCopy } from "react-icons/fi"
@@ -104,9 +104,9 @@ export const RenderElementReadOnlyWithCopy = (
 }
 
 const DateReadOnly = ({ timestamp }: { timestamp: number }) => {
-  const m = moment(timestamp)
-  const time = m.format("LT")
-  const date = m.format("ll")
+  const dt = DateTime.fromMillis(timestamp).setZone("local")
+  const date = dt.toFormat("LLL dd, yyyy")
+  const time = dt.toFormat("T")
 
   return (
     <p>
