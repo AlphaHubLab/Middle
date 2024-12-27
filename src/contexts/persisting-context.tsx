@@ -7,17 +7,19 @@ import { useStorage } from "@plasmohq/storage/hook"
 import type { IHistory, IStore, ITask } from "~lib/types"
 import { mockTask } from "~mock/mock-tasks"
 
-interface PersistContext {
+interface IPersistContext {
   tasks: ITask[]
   history: IHistory[]
+  storageLoading: boolean
+  historyLoading: boolean
   handlePersist: (store: IStore) => void
   handleDone: (id: string) => void
   handleUndone: (id: string) => void
-  storageLoading: boolean
-  historyLoading: boolean
+  setTasks: (arg: ITask[] | ((prev: ITask[]) => void)) => Promise<void>
+  setHistory: (arg: IHistory[] | ((prev: IHistory[]) => void)) => Promise<void>
 }
 
-const Persisting = createContext({} as PersistContext)
+const Persisting = createContext({} as IPersistContext)
 
 export default function PersistProvider({ children, isDev = false }) {
   const [tasks, setTasks, { isLoading: storageLoading, remove: removeTasks }] =
@@ -116,12 +118,14 @@ export default function PersistProvider({ children, isDev = false }) {
 
   const context = {
     tasks,
-    handlePersist,
+    history,
+    historyLoading,
     storageLoading,
     handleDone,
     handleUndone,
-    historyLoading,
-    history
+    handlePersist,
+    setTasks,
+    setHistory
   }
 
   return <Persisting.Provider value={context}>{children}</Persisting.Provider>

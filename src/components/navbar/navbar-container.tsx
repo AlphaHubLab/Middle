@@ -4,7 +4,7 @@ import { CiSearch } from "react-icons/ci"
 
 import { RenderAllElementsReadOnlyWithCopy } from "~components/editor/render-element-readonly"
 import Status from "~components/editor/status"
-import { TaskToolbar } from "~components/task-manager/tasklist"
+import { TaskToolbar } from "~components/task-manager/task-group"
 // import {
 //   TaskGroup,
 //   TaskItemWithSearchedWrapper,

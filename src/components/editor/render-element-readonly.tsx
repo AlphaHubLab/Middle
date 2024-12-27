@@ -3,12 +3,8 @@ import { useEffect, useState } from "react"
 import { CopyToClipboard } from "react-copy-to-clipboard"
 import { FiCopy } from "react-icons/fi"
 
-import type { ITaskCore, NodeType } from "~lib/types"
-
-interface IRenderElementReadOnlyProps {
-  value: string
-  type: NodeType
-}
+import { useSettingContext } from "~contexts/setting-context"
+import type { INode, ITaskCore } from "~lib/types"
 
 export const RenderAllElementsReadOnlyWithCopy = ({
   taskCore
@@ -34,10 +30,7 @@ export const RenderAllElementsReadOnlyWithCopy = ({
   )
 }
 
-export const RenderElementReadOnly = ({
-  type,
-  value
-}: IRenderElementReadOnlyProps) => {
+export const RenderElementReadOnly = ({ type, value }: INode) => {
   if (type === "h") {
     return <HeaderReadOnly value={value} />
   }
@@ -77,9 +70,7 @@ const ParagraphReadOnly = ({ value }: { value: string }) => {
   )
 }
 
-export const RenderElementReadOnlyWithCopy = (
-  props: IRenderElementReadOnlyProps
-) => {
+export const RenderElementReadOnlyWithCopy = (props: INode) => {
   const [copy, setCopy] = useState(false)
 
   useEffect(() => {
@@ -104,13 +95,15 @@ export const RenderElementReadOnlyWithCopy = (
 }
 
 const DateReadOnly = ({ timestamp }: { timestamp: number }) => {
-  const dt = DateTime.fromMillis(timestamp).setZone("local")
+  const { setting } = useSettingContext()
+  if (!timestamp) return false
+  const dt = DateTime.fromMillis(timestamp).setZone(setting.preferredTimeZone)
   const date = dt.toFormat("LLL dd, yyyy")
   const time = dt.toFormat("T")
 
   return (
     <p>
-      {date} {time}
+      {date} | {time}
     </p>
   )
 }

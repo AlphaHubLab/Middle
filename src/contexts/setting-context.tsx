@@ -14,7 +14,10 @@ interface ISettingContext {
 const SettingContext = createContext({} as ISettingContext)
 
 export default function SettingProvider({ isDev, children }) {
+
   const defaultSetting = {
+    editorTimeZone:'utc',
+    preferredTimeZone:'local',
     identities: isDev ? mockIdentities : []
   }
 
@@ -43,8 +46,6 @@ export default function SettingProvider({ isDev, children }) {
   //       setSetting({ identities: mockIdentities })
   //     }
   //   }, [setting])
-
-  useEffect(() => console.log(setting), [setting])
 
   return (
     <SettingContext.Provider value={context}>

@@ -1,6 +1,7 @@
 import TodoMainSlash from "~components/editor/todo-main"
 import NavbarContainer from "~components/navbar/navbar-container"
-import TaskList from "~components/task-manager/upcomming-list"
+// import TaskList from "~components/task-manager/upcomming-list"
+import Inbox from "~components/task-manager/inbox"
 import { useAppState } from "~contexts/app-context"
 import DraftProvider from "~contexts/draft-context"
 import PersistProvider from "~contexts/persisting-context"
@@ -37,7 +38,7 @@ export default function Main({ isDev = false }) {
                 <div className="flex w-full justify-center">
                   <div
                     className={`${!editMode ? "top-[296px]" : "top-[calc(100%-126px)]"} transform duration-200 bg-red-100/20 absolute overflow-y-hidden max-w-[650px] mx-auto top-[230px] h-[calc(100%-330px)] w-full`}>
-                    <TaskList show={showTaskList} setHide={setEditMode} />
+                    <Inbox show={showTaskList} setHide={setEditMode} />
                   </div>
                   <div className="gradientback"></div>
                 </div>

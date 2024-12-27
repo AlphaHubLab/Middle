@@ -3,6 +3,7 @@ import { useRef, useState } from "react"
 import { IoTimeOutline } from "react-icons/io5"
 
 import * as C from "~components/ui/collapsible"
+import { useSettingContext } from "~contexts/setting-context"
 import type { IIdentity } from "~lib/types"
 
 interface IDateProps {
@@ -15,30 +16,29 @@ interface IIdentityProps {
   removeIdentity: (id: number) => void
 }
 
-export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
-  const [zone, setZone] = useState("local")
+const getDate = (zone: string, timestamp: number) => {
+  const date = DateTime.fromMillis(timestamp).setZone(zone)
 
-  const getDate = (zone) => {
-    const date = DateTime.fromMillis(timestamp).setZone(zone)
-
-    return {
-      iso: date.toFormat("yyyy-MM-dd'T'T"),
-      date: date.toFormat("yyyy-MM-dd"),
-      time: date.toFormat("T")
-    }
+  return {
+    iso: date.toFormat("yyyy-MM-dd'T'T"),
+    date: date.toFormat("yyyy-MM-dd"),
+    time: date.toFormat("T")
   }
+}
+
+export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
+  const { setting } = useSettingContext()
+
+  const [zone, setZone] = useState(setting.editorTimeZone)
 
   const form = useRef<HTMLFormElement>(null)
 
   const handleOnChange = () => {
     const formData = new FormData(form.current)
-    const time = formData.get("time")
-    const date = formData.get("date")
-    const iso = `${date}T${time}`
+    const iso = `${formData.get("date")}T${formData.get("time")}`
+    const newTimestamp = DateTime.fromISO(iso, { zone }).valueOf()
 
-    const newTimeStamp = DateTime.fromISO(iso, { zone }).valueOf()
-
-    setter(newTimeStamp)
+    setter(newTimestamp)
   }
 
   return (
@@ -51,15 +51,16 @@ export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
           name="date"
           type="date"
           className="border text-sm text-zinc-500 border-dashed outline-none focus:bg-zinc-100 rounded-md px-1 my-1"
-          value={getDate(zone).date}
+          value={getDate(zone, timestamp).date}
         />
         <input
           name="time"
-          value={getDate(zone).time}
+          value={getDate(zone, timestamp).time}
           type="time"
           className="border text-sm text-zinc-500 border-dashed outline-none focus:bg-zinc-100 rounded-md px-1 my-1"></input>
         <select
           className="text-sm outline-none"
+          value={zone}
           onChange={(e) => setZone(e.target.value)}>
           <option value="local">Local</option>
           <option value="utc">UTC/GMT</option>
@@ -70,9 +71,7 @@ export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
           <option value="utc+08">WST</option>
         </select>
       </form>
-      <p>{getDate(zone).date}</p>
-      <p>{getDate(zone).time}</p>
-      {/* <div className="flex flex-auto gap-2 text-xs items-center justify-start">
+      <div className="flex flex-auto gap-2 text-xs items-center justify-start">
         <button
           className="border hover:bg-zinc-100 rounded-md px-2 py-[3px]"
           onClick={() => setter(timestamp + 24 * 60 * 60 * 1000)}>
@@ -88,7 +87,7 @@ export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
           onClick={() => setter((new Date().getTime() / 10_000) * 10_000)}>
           Now
         </button>
-      </div> */}
+      </div>
       <button
         className="text-rose-500 hover:text-rose-300 text-xs"
         onClick={() => setter(-1)}>
@@ -122,23 +121,6 @@ export const IdentityWithProps = ({
   identities,
   removeIdentity
 }: IIdentityProps) => {
-  // Maybe managing by id
-  //
-  // const { setting } = useSettingContext()
-  // const { identities } = setting
-
-  // const selectedIdentities = (() => {
-  //   const _identities = []
-
-  //   identities.forEach((identity) => {
-  //     if (ids.includes(identity.id)) {
-  //       _identities.push(identity)
-  //     }
-  //   })
-
-  //   return _identities
-  // })()
-
   return (
     <div>
       {identities.map((identity, i) => (
