@@ -5,7 +5,7 @@ import "../style.css"
 
 import Main from "~components/pages/main"
 import { WidgetContainer } from "~components/widgets/widgets"
-import { AppStateProvider } from "~contexts/app-context"
+import FetchProvider from "~contexts/fetch-provider"
 
 // const SG = Space_Grotesk({
 //   weight: ["300", "400", "500", "600", "700"],
@@ -18,9 +18,9 @@ export default function Page() {
       <a href="/options.html">Options</a>
       <div className="h-screen">
         <div className="w-full h-full flex">
-          <AppStateProvider>
-            <Main isDev={false} />
-          </AppStateProvider>
+          <FetchProvider>
+            <Main />
+          </FetchProvider>
           <div className="w-[288px] bg-[#272727]">
             <WidgetContainer />
           </div>

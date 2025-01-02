@@ -1,4 +1,4 @@
-import { createContext, use, useContext, useEffect } from "react"
+import { createContext, useContext, useEffect } from "react"
 
 import { Storage } from "@plasmohq/storage"
 import { useStorage } from "@plasmohq/storage/hook"

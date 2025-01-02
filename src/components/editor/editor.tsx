@@ -4,6 +4,7 @@ import type { ChangeEvent, KeyboardEvent } from "react"
 import ButtonFetch from "~components/ui/button-fetch"
 import { useAppState } from "~contexts/app-context"
 import { useDraftContext } from "~contexts/draft-context"
+import { usePersistContext } from "~contexts/persisting-context"
 import { useSettingContext } from "~contexts/setting-context"
 import * as helpers from "~lib/task-helpers"
 import type {
@@ -22,8 +23,9 @@ type HTMLInputs = HTMLInputElement | HTMLTextAreaElement
 
 const tagRegExp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z_]+\w*/g)
 
-export default function Editor({ disabled, handlePersist }) {
+export default function Editor({ disabled }) {
   const { openEditMode, initialStore, editorType } = useAppState()
+  const { handlePersist } = usePersistContext()
   const { setDrafts } = useDraftContext()
   const { setting } = useSettingContext()
 

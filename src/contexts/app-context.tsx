@@ -18,7 +18,7 @@ interface AppStateContext {
 
 const AppState = createContext({} as AppStateContext)
 
-export const AppStateProvider = ({ children }) => {
+export default function AppStateProvider ({ children }) {
   const [editMode, setEditMode] = useState(false)
   const [initialStore, setInitialStore] = useState<IStore>(createInitialStore())
   const [view, setView] = useState<ITask | null>(null)

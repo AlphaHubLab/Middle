@@ -2,35 +2,30 @@ import { DateTime } from "luxon"
 import { useEffect, useMemo, useState } from "react"
 
 import { RenderAllElementsReadOnlyWithCopy } from "~components/editor/render-element-readonly"
-import Status from "~components/editor/status"
-import {
-  Checkbox,
-  CollapsibleForTasks,
-  Content,
-  Toggle,
-  Toolbar
-} from "~components/ui/collapsible"
+import { LabelStatus, TimeStatus } from "~components/editor/status"
+import * as C from "~components/ui/collapsible"
 import { usePersistContext } from "~contexts/persisting-context"
 import { useSettingContext } from "~contexts/setting-context"
+import { fetchconfig } from "~fetch.config"
 import { getUpcommingPreview } from "~lib/task-helpers"
 import type { IHistory } from "~lib/types"
 
-import { UpcommingItemWrapper } from "./list-upcomming"
+import InboxItemWrapper from "./inbox-item-wrapper"
 import { TaskGroup } from "./task-group"
+
+const ONE_DAY = 24 * 60 * 60 * 1000
 
 const createHistoryList = (
   history: IHistory[],
   dayLimit = 7,
   timeZone: string
 ) => {
-  const ONE_DAY = 24 * 60 * 60 * 1000
-
   const sortedWithLabels: Record<string, IHistory[]> = {}
 
   const today = DateTime.now().setZone(timeZone).startOf("day").millisecond
 
-  const sorted = history.reverse()
-
+  // const sorted = history.reverse()
+  const sorted = [...history].sort((a, b) => b.dateDone - a.dateDone)
   for (let i = 0; i < sorted.length; i++) {
     // Exit early if there is a day Limit and dateDone is out of the range
     if (dayLimit !== 0 && sorted[i].dateDone < today - dayLimit * ONE_DAY) {
@@ -67,9 +62,9 @@ export default function HistoryList() {
       <div>
         {Object.keys(historyList).map((groupName) => (
           <div key={`history-${groupName}`}>
-            <TaskGroup label={groupName} value={groupName} labelType="normal">
-              {historyList[groupName].map((item, j) => (
-                <div key={`history-item-${groupName}-${j}`}>
+            <TaskGroup label={groupName} value={groupName} labelType="neutral">
+              {historyList[groupName].map((item) => (
+                <div key={`${item.id}`}>
                   <HistoryItem item={item} />
                 </div>
               ))}
@@ -95,25 +90,33 @@ const HistoryItem = ({ item }) => {
 
   const [timerStyle, setTimerStyle] = useState({
     width: "0%",
-    transitionDuration: "1.5s"
+    transitionDuration: fetchconfig.timers.undone + "s"
   })
 
   const handleUncheck = (e) => {
     if (e.target.checked) {
-      setTimerStyle({ width: "0%", transitionDuration: "0.3s" })
+      setTimerStyle({
+        width: "0%",
+        transitionDuration: fetchconfig.timers.cancel + "s"
+      })
     } else {
-      setTimerStyle({ width: "100%", transitionDuration: "1.5s" })
+      setTimerStyle({
+        width: "100%",
+        transitionDuration: fetchconfig.timers.undone + "s"
+      })
     }
   }
 
   useEffect(() => {
     if (hidingStyle.maxHeight !== "0px") return
-    const timer = setTimeout(() => handleUndone(item.id), 300)
-
+    const timer = setTimeout(
+      () => handleUndone(item.id),
+      fetchconfig.timers.undone * 100
+    )
     return () => timer && clearTimeout(timer)
   }, [hidingStyle])
 
-  const hideFormList = () => {
+  const slide = () => {
     timerStyle.width === "100%" &&
       setHidingStyle({
         transform: "translateX(200%)",
@@ -122,35 +125,32 @@ const HistoryItem = ({ item }) => {
   }
 
   return (
-    <div style={hidingStyle} className="transition-all duration-300 py-1">
-      <UpcommingItemWrapper>
-        <CollapsibleForTasks show={show} setShow={setShow}>
-          <Checkbox>
+    <div style={hidingStyle} className="transition-all py-1">
+      <InboxItemWrapper>
+        <C.CollapsibleForTasks show={show} setShow={setShow}>
+          <C.Checkbox>
             <div
               className={`flex w-8 h-full justify-center items-center bg-zinc-100 ${show && "border-b-[1px]"}`}>
-              <input
-                defaultChecked
-                type="checkbox"
-                onChange={handleUncheck}
-              />
+              <input defaultChecked type="checkbox" onChange={handleUncheck} />
             </div>
-          </Checkbox>
-          <Toggle>
+          </C.Checkbox>
+          <C.Toggle>
             <div
               className={`h-10 relative bg-zinc-100 hover:cursor-pointer select-none ${show && "border-b-[1px]"}`}>
               <div
-                onTransitionEnd={hideFormList}
+                onTransitionEnd={slide}
                 style={timerStyle}
                 className="absolute z-0 h-full left-0 top-0 transition-[width] ease-in bg-blue-200 "></div>
               <div className="relative z-1 flex gap-2 items-center h-full px-2">
                 <h2 className="font-bold text-sm flex-auto px-2">
                   {getUpcommingPreview(item.nodes).value}
                 </h2>
-                <Status taskCore={item} isLoading={false} hasLoading={false} />
+                <TimeStatus item={item} itemType="history" />
+                <LabelStatus taskCore={item} />
               </div>
             </div>
-          </Toggle>
-          <Content>
+          </C.Toggle>
+          <C.Content>
             <div className="flex">
               <div className="w-8"></div>
               <div className="overflow-y-auto styled-scrollbar h-content max-h-[176px] w-full">
@@ -159,14 +159,14 @@ const HistoryItem = ({ item }) => {
                 </div>
               </div>
             </div>
-          </Content>
-          <Toolbar>
+          </C.Content>
+          <C.Toolbar>
             <div className="bg-zinc-100 w-full border-t-[1px] h-[24px] flex items-center">
               {/* <TaskToolbar item={item} type={type} /> */}
             </div>
-          </Toolbar>
-        </CollapsibleForTasks>
-      </UpcommingItemWrapper>
+          </C.Toolbar>
+        </C.CollapsibleForTasks>
+      </InboxItemWrapper>
     </div>
   )
 }

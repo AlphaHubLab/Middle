@@ -12,7 +12,7 @@ import {
   IdentityWithProps,
   TagsWithProps
 } from "./render-params"
-import Status from "./status"
+import { DraftStatus, LabelStatus } from "./status"
 
 interface IRenderElementProps {
   type: string
@@ -72,12 +72,8 @@ const HeaderWithProps = (props: IHeaderProps) => {
           onKeyDown={props.onKeyDown}
           onFocus={props.onFocus}
         />
-        <Status
-          taskCore={store}
-          isLoading={isLoading}
-          hasLoading={editorType !== "task"}
-          isEditor={true}
-        />
+        <LabelStatus taskCore={store} isEditor={true} />
+        <DraftStatus isLoading={isLoading} />
       </div>
 
       {store.params.dueDate === -1 ? (

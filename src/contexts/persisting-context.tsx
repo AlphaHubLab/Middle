@@ -19,7 +19,7 @@ interface IPersistContext {
   setHistory: (arg: IHistory[] | ((prev: IHistory[]) => void)) => Promise<void>
 }
 
-const Persisting = createContext({} as IPersistContext)
+const Persisting = createContext<IPersistContext>(undefined)
 
 export default function PersistProvider({ children, isDev = false }) {
   const [tasks, setTasks, { isLoading: storageLoading, remove: removeTasks }] =
@@ -104,13 +104,28 @@ export default function PersistProvider({ children, isDev = false }) {
       found.nodes = store.nodes
       found.params = store.params
     } else {
+      const dateAdded = new Date().getTime()
+      // if (store.params.identities.length > 1) {
+      //   store.params.identities.forEach((identity) => {
+
+      //     const params = {... store.params}
+      //     _tasks.push({
+      //       id: store.id,
+      //       nodes: store.nodes,
+      //       params: store.params,
+      //       done: false,
+      //       dateAdded
+      //     })
+      //   })
+      // } else {
       _tasks.push({
         id: store.id,
         nodes: store.nodes,
         params: store.params,
         done: false,
-        dateAdded: new Date().getTime()
+        dateAdded
       })
+      // }
     }
 
     setTasks(_tasks)
