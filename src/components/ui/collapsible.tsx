@@ -75,6 +75,7 @@ export const CollapsibleForTasks = ({ children, show, setShow }) => {
   for (let i = 0; i < children.length; i++) {
     current[children[i].type.name] = children[i]
   }
+
   const parts = { current }
   ///
 
@@ -86,11 +87,8 @@ export const CollapsibleForTasks = ({ children, show, setShow }) => {
 
   return (
     <div>
-      {/* <div className="z-0 absolute left-0 top-0 w-full h-full z-0">
-        {parts.current["Timer"]}
-      </div> */}
       <div className="h-full flex">
-        <div>{parts.current["Checkbox"] || ""}</div>
+        <div>{parts.current["Action"] || ""}</div>
         <div
           onClick={() => (!show ? setShow(true) : setAnimState(0))}
           className="w-full">
@@ -221,9 +219,8 @@ export const withCollapsibleAndToolbar = (Wrapper: ElementType) => {
 
 export const Toolbar = ({ children }) => <>{children}</>
 export const Toggle = ({ children }) => <>{children}</>
-export const Checkbox = ({ children }) => <>{children}</>
+export const Action = ({ children }) => <>{children}</>
 export const Content = ({ children }) => <>{children}</>
-export const Timer = ({ children }) => <>{children}</>
 
 // export const CollapsibleFromParent = ({ children, show, setShow }) => {
 //   // const [show, setShow] = useState(false)

@@ -1,6 +1,6 @@
 import isUrl from "is-url"
 import { useEffect, useRef } from "react"
-import { PiLinkThin } from "react-icons/pi"
+import { PiLink } from "react-icons/pi"
 
 import { useAppState } from "~contexts/app-context"
 import useDraft from "~hooks/useDraft"
@@ -60,7 +60,7 @@ const HeaderWithProps = (props: IHeaderProps) => {
 
   return (
     <div>
-      <div className="flex ml-4 w-[calc(100%-16px)] gap-2">
+      <div className="flex w-full pl-4 gap-2">
         <input
           placeholder="LFG..."
           type="text"
@@ -107,7 +107,7 @@ const LinkInputWithProps = (props: ILinkProps) => {
   return (
     <div className="flex items-center">
       <div className="w-4 text-blue-500">
-        <PiLinkThin />
+        <PiLink />
       </div>
       <input
         placeholder="add link..."
@@ -140,19 +140,24 @@ const ParagraphInputWithProps = (props: ITextAreaProps) => {
   }
 
   return (
-    <textarea
-      placeholder={
-        props.index === 1 && isTaskEmpty(props.store, "loose")
-          ? "Let's aim..."
-          : ""
-      }
-      ref={_addToRef}
-      className="hover:bg-zinc-50 appearance-none ml-4 w-calc[100%-16px] text-zinc-500 text-sm px-2 py-[2px] overflow-y-hidden leading-tight resize-none focus:bg-zinc-100 focus:outline-none rounded-md"
-      value={props.value}
-      onChange={props.onChange}
-      onKeyDown={props.onKeyDown}
-      onFocus={props.onFocus}
-      onPaste={props.onPaste}
-    />
+    <div className="flex items-center w-full">
+      <div className="w-4 text-zinc-300 text-xs flex items-center justify-center">
+        .
+      </div>
+      <textarea
+        placeholder={
+          props.index === 1 && isTaskEmpty(props.store, "loose")
+            ? "Type anything or press '/' for commands..."
+            : ""
+        }
+        ref={_addToRef}
+        className="w-full hover:bg-zinc-50 appearance-none w-calc[100%-16px] text-zinc-500 text-sm px-2 py-[2px] overflow-y-hidden leading-tight resize-none focus:bg-zinc-100 focus:outline-none rounded-md"
+        value={props.value}
+        onChange={props.onChange}
+        onKeyDown={props.onKeyDown}
+        onFocus={props.onFocus}
+        onPaste={props.onPaste}
+      />
+    </div>
   )
 }

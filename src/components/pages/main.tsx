@@ -27,7 +27,7 @@ export default function Main() {
         </div>
         <div className="flex w-full justify-center">
           <div
-            className={`${!editMode ? "top-[296px]" : "top-[calc(100%-126px)]"} transform duration-200 bg-red-100/20 absolute overflow-y-hidden max-w-[650px] mx-auto top-[230px] h-[calc(100%-330px)] w-full`}>
+            className={`${!editMode ? "top-[296px]" : "top-[calc(100%-126px)]"} transform duration-200 bg-red-100/20 absolute overflow-y-hidden max-w-[690px] mx-auto top-[230px] h-[calc(100%-330px)] w-full`}>
             <Inbox show={showTaskList} setHide={setEditMode} />
           </div>
           <div className="gradientback"></div>

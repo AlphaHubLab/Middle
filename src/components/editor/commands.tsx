@@ -66,13 +66,13 @@ export const Command = ({ extensions, setter, command }) => {
             <div
               onMouseMove={() => setSelected(i)}
               key={`extension_${i}`}
-              className={`text-xs flex justify-between text-sm h-10 p-2 py-3 rounded-md ${selected === i ? "bg-zinc-200/50 active" : "bg-transparent"}`}
+              className={`flex justify-between text-sm h-10 p-2 py-3 rounded-md ${selected === i ? "bg-zinc-200/50 active" : "bg-transparent"}`}
               onClick={() => setter(ex)}>
-              <div className="flex gap-2 flex-auto">
+              <div className="text-sm flex gap-2 flex-auto items-center">
                 <ex.icon />
-                <span className="font-bold">{ex.title} </span>
+                <span className="text-xs font-bold">{ex.title}</span>
               </div>
-              <div className="text-zinc-400">{ex.description} </div>
+              <div className="text-xs text-zinc-400">{ex.description} </div>
             </div>
           ))}
         </div>

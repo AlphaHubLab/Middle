@@ -1,13 +1,22 @@
-import { Children, type ReactNode } from "react"
+import { Children, type ReactElement, type ReactNode } from "react"
+
+const isListEmpty = (children: ReactElement[]) => {
+  for (let i = 0; i < children.length; i++) {
+    if (children[i].props.children) return false
+  }
+  return true
+}
 
 export const TaskGroupWrapper = ({ children }: { children: ReactNode }) => {
   const messages = [
     "To do or not to do - That is the question!",
-    "Just nothing..."
+    "Just nothing to fetch...",
+    "Seems... Good!"
   ]
 
-  const ch = Children.toArray(children)
-  if (ch.length === 0) {
+  const ch = Children.toArray(children) as ReactElement[]
+
+  if (isListEmpty(ch)) {
     return (
       <div className="w-full flex justify-center text-sm text-zinc-400">
         {messages[Math.floor(Math.random() * messages.length)]}
@@ -15,7 +24,7 @@ export const TaskGroupWrapper = ({ children }: { children: ReactNode }) => {
     )
   }
 
-  return <div className="transition-all duration-200">{ch}</div>
+  return <div className="transition-all duration-200 pb-16">{ch}</div>
 }
 
 /**

@@ -11,7 +11,7 @@ import { getUpcommingPreview } from "~lib/task-helpers"
 import type { IHistory } from "~lib/types"
 
 import InboxItemWrapper from "./inbox-item-wrapper"
-import { TaskGroup } from "./task-group"
+import { TaskGroup, TaskGroupWrapper } from "./task-group"
 
 const ONE_DAY = 24 * 60 * 60 * 1000
 
@@ -59,7 +59,7 @@ export default function HistoryList() {
 
   if (historyList) {
     return (
-      <div>
+      <TaskGroupWrapper>
         {Object.keys(historyList).map((groupName) => (
           <div key={`history-${groupName}`}>
             <TaskGroup label={groupName} value={groupName} labelType="neutral">
@@ -71,7 +71,7 @@ export default function HistoryList() {
             </TaskGroup>
           </div>
         ))}
-      </div>
+      </TaskGroupWrapper>
     )
   }
 
@@ -128,12 +128,12 @@ const HistoryItem = ({ item }) => {
     <div style={hidingStyle} className="transition-all py-1">
       <InboxItemWrapper>
         <C.CollapsibleForTasks show={show} setShow={setShow}>
-          <C.Checkbox>
+          <C.Action>
             <div
               className={`flex w-8 h-full justify-center items-center bg-zinc-100 ${show && "border-b-[1px]"}`}>
               <input defaultChecked type="checkbox" onChange={handleUncheck} />
             </div>
-          </C.Checkbox>
+          </C.Action>
           <C.Toggle>
             <div
               className={`h-10 relative bg-zinc-100 hover:cursor-pointer select-none ${show && "border-b-[1px]"}`}>

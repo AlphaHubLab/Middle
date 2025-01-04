@@ -1,6 +1,6 @@
 import { DateTime } from "luxon"
 import { useRef, useState } from "react"
-import { IoTimeOutline } from "react-icons/io5"
+import { PiHashStraight, PiTimer } from "react-icons/pi"
 
 import * as C from "~components/ui/collapsible"
 import { useSettingContext } from "~contexts/setting-context"
@@ -44,7 +44,7 @@ export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
   return (
     <div className="flex items-center h-10 gap-2">
       <div className="w-4 flex justify-center">
-        <IoTimeOutline />
+        <PiTimer />
       </div>
       <form ref={form} onChange={handleOnChange}>
         <input
@@ -101,13 +101,13 @@ export const TagsWithProps = ({ tags }: { tags: string[] }) => {
   return (
     <div className="flex">
       <div className="w-4 flex items-center justify-center text-zinc-500 text-xs">
-        #
+        <PiHashStraight />
       </div>
       <div className="pl-2 min-h-10 flex pb-1 flex-wrap oveflow-hidden items-center gap-1">
         {tags.map((tag, i) => (
           <span
             role="status"
-            className="before:content-[x] text-zinc-400 bg-zinc-100 rounded-md text-xs px-2 py-1"
+            className="before:content-[x] text-zinc-400 bg-zinc-100 rounded-md text-xs px-1 py-1"
             key={`tags-${i}`}>
             {tag}
           </span>

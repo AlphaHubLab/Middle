@@ -1,5 +1,4 @@
-import { AiOutlineEdit } from "react-icons/ai"
-import { IoSquareOutline } from "react-icons/io5"
+import { PiPencilSimpleLine } from "react-icons/pi"
 
 import { useAppState } from "~contexts/app-context"
 import { useDraftContext } from "~contexts/draft-context"
@@ -31,7 +30,7 @@ export const TaskToolbar = ({
       <button
         className="hover:text-zinc-500 text-sm px-2 flex gap-2"
         onClick={() => openEditMode(item, type)}>
-        <AiOutlineEdit />
+        <PiPencilSimpleLine />
         Edit
       </button>
       {type === "draft" && (

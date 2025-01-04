@@ -141,7 +141,10 @@ export const getLabels = (taskCore: ITaskCore) => {
 export const createInitialStore = () =>
   ({
     id: uuid4(),
-    nodes: [{ type: "h", value: "" }],
+    nodes: [
+      { type: "h", value: "" },
+      { type: "p", value: "" }
+    ],
     range: 0,
     focusedNode: 0,
     params: { dueDate: -1, tags: [], identities: [] }

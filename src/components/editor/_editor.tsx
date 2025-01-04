@@ -23,8 +23,95 @@ type HTMLInputs = HTMLInputElement | HTMLTextAreaElement
 
 const tagRegExp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z_]+\w*/g)
 
+const addNode = (store: IStore, type: NodeType, value = "") => {
+  // 'h' can not be added twice
+  if (type === "h") {
+    if (helpers.hasTitle(store)) return
+
+    return {
+      ...store,
+      nodes: [{ type, value }, ...store.nodes],
+      focusedNode: 0,
+      range: 0
+    }
+  }
+  return {
+    ...store,
+    range: -1,
+    focusedNode: store.focusedNode - 1,
+    nodes: store.nodes.toSpliced(store.focusedNode + 1, 0, {
+      type,
+      value: ""
+    })
+  }
+}
+
+const splitNode = (store: IStore, e: ChangeEvent<HTMLInputs>) => {
+  const node = store.nodes[store.focusedNode]
+
+  const p1 = node.value.slice(0, e.target.selectionStart)
+  const p2 = node.value.slice(e.target.selectionStart)
+
+  const t1 = helpers.getNodeType(node, p1)
+  const t2 = helpers.getNodeType({ value: node.value, type: null }, p2)
+
+  const nodes = [
+    { type: t1, value: p1 },
+    { type: t2, value: p2 }
+  ]
+
+  return replaceNodes(store, nodes)
+}
+
+const mergeNode = (store: IStore) => {
+  if (store.focusedNode === 0) return
+
+  const p1 = store.nodes[store.focusedNode - 1].value
+  const p2 = store.nodes[store.focusedNode].value
+  const mergedValue = p1 + p2
+
+  const type = helpers.getNodeType(
+    store.nodes[store.focusedNode - 1],
+    mergedValue
+  )
+
+  const mergedNode = { type, value: mergedValue }
+
+  return {
+    ...store,
+    nodes: store.nodes.toSpliced(store.focusedNode - 1, 2, mergedNode),
+    range: p1.length,
+    focusedNode: store.focusedNode - 1
+  }
+}
+
+const replaceNodes = (store: IStore, nodes: INode[], range = null) => {
+  return {
+    ...store,
+    nodes: store.nodes.toSpliced(store.focusedNode, 1, ...nodes),
+    range: range ? range : 0,
+    focusedNode: store.focusedNode + nodes.length - 1
+  }
+}
+
+const addTags = (store: IStore) => {
+  const _tags = []
+
+  store.nodes.forEach((t) => {
+    if (t.type !== "a") {
+      const nodeTags = t.value.match(tagRegExp)
+      if (nodeTags && nodeTags.length > 0) _tags.push(...nodeTags)
+    }
+  })
+
+  const newTags = Array.from(new Set(_tags.map((t) => t.toLowerCase())))
+
+  const params = { ...store.params, tags: newTags }
+  return { ...store, params }
+}
+
 export default function Editor({ disabled }) {
-  const { openEditMode, initialStore, editorType, setEditMode } = useAppState()
+  const { openEditMode, initialStore, editorType } = useAppState()
   const { handlePersist } = usePersistContext()
   const { setDrafts } = useDraftContext()
   const { setting } = useSettingContext()
@@ -70,26 +157,14 @@ export default function Editor({ disabled }) {
     nodes.current[store.focusedNode].setSelectionRange(store.range, store.range)
   }, [store.range, store.nodes])
 
-  // preventing blur between rerenders
   useEffect(() => {
-    if (disabled) return // prevent focus on disabled
+    if (disabled) return
     nodes?.current[store.focusedNode].focus()
   })
 
-  // focus on title if task is empty
-  // otherwise focus on the stored focusedNodde
   useEffect(() => {
-    if (disabled) return
-
-    if (helpers.isTaskEmpty(store, "loose")) {
-      nodes?.current[0].focus()
-    } else {
-      nodes?.current[store.focusedNode].focus()
-    }
-  }, [disabled])
-
-  useEffect(() => {
-    addTags()
+    const newStore = addTags(store)
+    setStore(newStore)
     setIsCommandActive(false)
   }, [store.focusedNode])
 
@@ -148,47 +223,6 @@ export default function Editor({ disabled }) {
   }
 
   /** Node functions */
-  const addNode = (type: NodeType, value = "") => {
-    // 'h' can not be added twice
-    if (type === "h") {
-      if (helpers.hasTitle(store)) return
-
-      const newStore = {
-        ...store,
-        nodes: [{ type, value }, ...store.nodes],
-        focusedNode: 0,
-        range: 0
-      }
-
-      updateHistory(store)
-      setStore(newStore)
-    } else {
-      const newStore = {
-        ...store,
-        range: -1,
-        focusedNode: store.focusedNode - 1,
-        nodes: store.nodes.toSpliced(store.focusedNode + 1, 0, {
-          type,
-          value: ""
-        })
-      }
-
-      updateHistory(store)
-      setStore(newStore)
-    }
-  }
-
-  const replaceNodes = (nodes: INode[], range = null) => {
-    const newStore = {
-      ...store,
-      nodes: store.nodes.toSpliced(store.focusedNode, 1, ...nodes),
-      range: range ? range : 0,
-      focusedNode: store.focusedNode + nodes.length - 1
-    }
-
-    updateHistory(store)
-    setStore(newStore)
-  }
 
   const updateNode = (e: ChangeEvent<HTMLInputs>) => {
     if (isCommandActive) updateCommand(e)
@@ -203,68 +237,35 @@ export default function Editor({ disabled }) {
     setStore(newStore)
   }
 
-  const splitNode = (e: ChangeEvent<HTMLInputs>) => {
-    const node = store.nodes[store.focusedNode]
+  // Task params
 
-    const p1 = node.value.slice(0, e.target.selectionStart).trim()
-    const p2 = node.value.slice(e.target.selectionStart).trim()
+  const addIdentity = (identity: IIdentity) => {
+    const identities = [...store.params.identities]
 
-    const t1 = helpers.getNodeType(node, p1)
-    const t2 = helpers.getNodeType({ value: node.value, type: null }, p2)
+    // Prevent to add duplicate
+    if (identities.find((existed) => existed.id === identity.id)) return
 
-    const nodes = [
-      { type: t1, value: p1 },
-      { type: t2, value: p2 }
-    ]
+    identities.push(identity)
 
-    replaceNodes(nodes)
-  }
-
-  const mergeNode = () => {
-    if (store.focusedNode === 0) return
-
-    const p1 = store.nodes[store.focusedNode - 1].value
-    const p2 = store.nodes[store.focusedNode].value
-    const mergedValue = p1 + p2
-
-    const type = helpers.getNodeType(
-      store.nodes[store.focusedNode - 1],
-      mergedValue
-    )
-
-    const mergedNode = { type, value: mergedValue }
+    const params = { ...store.params, identities }
 
     const newStore = {
       ...store,
-      nodes: store.nodes.toSpliced(store.focusedNode - 1, 2, mergedNode),
-      range: p1.length,
-      focusedNode: store.focusedNode - 1
+      nodes: store.nodes.toSpliced(store.focusedNode, 1, {
+        type: store.nodes[store.focusedNode].type as NodeType,
+        value: nodeSnapshot.current
+      }),
+      range: nodeSnapshot.current.length,
+      focusedNode: store.focusedNode,
+      params
     }
 
     updateHistory(store)
     setStore(newStore)
   }
 
-  // Task params
-  const addTags = () => {
-    const _tags = []
-
-    store.nodes.forEach((t) => {
-      if (t.type !== "a") {
-        const nodeTags = t.value.match(tagRegExp)
-        if (nodeTags && nodeTags.length > 0) _tags.push(...nodeTags)
-      }
-    })
-
-    const newTags = Array.from(new Set(_tags.map((t) => t.toLowerCase())))
-
-    const params = { ...store.params, tags: newTags }
-    setStore({ ...store, params })
-  }
-
   const modifyDate = (dueDate: number) => {
     const params = { ...store.params, dueDate }
-
     const newStore = {
       ...store,
       params
@@ -292,31 +293,6 @@ export default function Editor({ disabled }) {
     setStore(newStore)
   }
 
-  const addIdentity = (identity: IIdentity) => {
-    // Prevent to add duplicate
-    if (store.params.identities.find((idn) => idn.id === identity.id)) return
-
-    const identities = [...store.params.identities]
-
-    identities.push(identity)
-
-    const params = { ...store.params, identities }
-
-    const newStore = {
-      ...store,
-      nodes: store.nodes.toSpliced(store.focusedNode, 1, {
-        type: store.nodes[store.focusedNode].type as NodeType,
-        value: nodeSnapshot.current
-      }),
-      range: nodeSnapshot.current.length,
-      focusedNode: store.focusedNode,
-      params
-    }
-
-    updateHistory(store)
-    setStore(newStore)
-  }
-
   const removeIdentity = (id: number) => {
     let identities = [...store.params.identities]
     identities = identities.filter((identity) => identity.id !== id)
@@ -328,49 +304,57 @@ export default function Editor({ disabled }) {
     updateHistory(store)
     setStore(newStore)
   }
+
   /** Setter */
   const setter = (_extension: any) => {
     setIsCommandActive(false)
 
     switch (_extension.action) {
-      case "replaceNode":
+      case "replaceNode": {
         // Replace current node if it is empty and not a title
         if (
           store.nodes[store.focusedNode].value.trim() === `/${command}` &&
           store.nodes[store.focusedNode].type !== "h"
         ) {
-          replaceNodes([{ type: _extension.value, value: "" }])
+          replaceNodes(store, [{ type: _extension.value, value: "" }])
           break
         }
 
         // Add a new node if current node has text or is title
         const newNode = { type: _extension.value, value: "" }
-
         const currentNode = {
           type: store.nodes[store.focusedNode].type,
           value: nodeSnapshot.current
         }
 
-        replaceNodes([currentNode, newNode])
+        const newStore = replaceNodes(store, [currentNode, newNode])
+        updateHistory(store)
+        setStore(newStore)
         break
+      }
 
-      case "addDate":
+      case "addDate": {
         const now = new Date().getTime()
         const dueDate = Math.floor(now / 10_000) * 10_000 + _extension.value
         addDate(dueDate)
         break
+      }
 
-      case "addNode":
-        addNode(_extension.value)
+      case "addNode": {
+        const newStore = addNode(store, _extension.value)
+        updateHistory(store)
+        setStore(newStore)
         break
+      }
 
       case "persist":
         persistTask()
         break
 
-      case "addIdentity":
+      case "addIdentity": {
         addIdentity(_extension.value)
         break
+      }
     }
   }
 
@@ -386,17 +370,7 @@ export default function Editor({ disabled }) {
   }
 
   const persistTask = () => {
-    // should re-evaluate tags?
-    addTags()
-
-    // const newStore = {
-    //   ...store,
-    //   nodes: store.nodes.toSpliced(store.focusedNode, 1, {
-    //     type: store.nodes[store.focusedNode].type as NodeType,
-    //     value: nodeSnapshot.current
-    //   })
-    // }
-
+    // should re evaluate tags?
     handlePersist(store)
     deleteDraft()
   }
@@ -410,8 +384,17 @@ export default function Editor({ disabled }) {
   const handlePaste = (e: ClipboardEvent) => {
     e.stopPropagation()
     e.preventDefault()
+
     const nodes = helpers.splitTextByUrls(e, store)
-    replaceNodes(nodes, nodes[nodes.length - 1].value.length)
+
+    const newStore = replaceNodes(
+      store,
+      nodes,
+      nodes[nodes.length - 1].value.length
+    )
+
+    updateHistory(store)
+    setStore(newStore)
   }
 
   const handleOnKeyDown = (
@@ -419,11 +402,6 @@ export default function Editor({ disabled }) {
   ) => {
     const prevChar = e.target.value.charAt(e.target.selectionStart - 1).trim()
 
-    // cmd | ctrl + Enter to save task
-    if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
-      return persistTask()
-    }
-    
     // Undo: cmd | ctrl + z
     if ((e.metaKey || e.ctrlKey) && (e.key === "z" || e.key === "Z")) {
       e.preventDefault()
@@ -456,7 +434,12 @@ export default function Editor({ disabled }) {
       if (e.target.selectionStart === 0) {
         if (e.target.selectionEnd === e.target.selectionStart) {
           e.preventDefault()
-          return mergeNode()
+
+          const newStore = mergeNode(store)
+
+          updateHistory(store)
+          setStore(newStore)
+          return
         }
       }
     }
@@ -464,12 +447,18 @@ export default function Editor({ disabled }) {
     if (!isCommandActive) {
       if (e.key === "Enter") {
         e.preventDefault()
-        return splitNode(e)
+
+        const newStore = splitNode(store, e)
+
+        updateHistory(store)
+        setStore(newStore)
+        return
       }
 
       // Tags
       else if (e.key === " " || e.key === "Space") {
-        addTags()
+        const newStore = addTags(store)
+        setStore(newStore)
       }
 
       // Cycle next node
@@ -531,10 +520,11 @@ export default function Editor({ disabled }) {
     <div className="w-full">
       <div
         role="toolbar"
-        className={`${!disabled ? "visible opacity-100" : "invisible opacity-0"} text-xs items-center flex gap-2 pl-4 sticky top-0 bg-white h-12 transition-all duration-200`}>
+        className={`${!disabled ? "visible opacity-100" : "invisible opacity-0"}
+                    text-sm items-center flex gap-2 pl-4 sticky top-0 bg-white h-12 transition-all duration-200`}>
         <>
           <ButtonFetch
-            variant="green"
+            variant="primary"
             disabled={disabled}
             onClick={persistTask}>
             {editorType === "new" || editorType === "draft"
@@ -542,7 +532,7 @@ export default function Editor({ disabled }) {
               : "Save Changes"}
           </ButtonFetch>
           <ButtonFetch
-            variant="red"
+            variant="primary"
             // className="border p-1 rounded-md border-zinc-500 text-zinc-500 hover:text-rose-300"
             disabled={disabled || helpers.isTaskEmpty(store, "loose")}
             onClick={deleteDraft}>
@@ -551,16 +541,10 @@ export default function Editor({ disabled }) {
               : "Discard Changes"}
           </ButtonFetch>
           <ButtonFetch
-            variant="blue"
+            variant="primary"
             // className="border p-1 rounded-md border-zinc-500 text-zinc-500 hover:text-rose-300"
             onClick={newTask}>
             + new
-          </ButtonFetch>
-          <ButtonFetch
-            variant="primary"
-            // className="border p-1 rounded-md border-zinc-500 text-zinc-500 hover:text-rose-300"
-            onClick={() => setEditMode(false)}>
-            Close
           </ButtonFetch>
         </>
       </div>
@@ -591,6 +575,11 @@ export default function Editor({ disabled }) {
             )}
           </div>
         ))}
+        {helpers.isTaskEmpty(store) && (
+          <p className="text-zinc-400 text-sm pl-6">
+            Type anything or press '/' for commands...
+          </p>
+        )}
       </div>
     </div>
   )

@@ -1,17 +1,14 @@
-import { clearTimeout } from "timers"
 import { useEffect, useState } from "react"
+import { PiTrash } from "react-icons/pi"
 
 import { RenderAllElementsReadOnlyWithCopy } from "~components/editor/render-element-readonly"
-// import Status from "~components/editor/status"
 import { LabelStatus, TimeStatus } from "~components/editor/status"
 import * as C from "~components/ui/collapsible"
 import { useDraftContext } from "~contexts/draft-context"
-// import { usePersistContext } from "~contexts/persisting-context"
-import { fetchconfig } from "~fetch.config"
 import { getUpcommingPreview } from "~lib/task-helpers"
 
 import InboxItemWrapper from "./inbox-item-wrapper"
-import { TaskGroup, TaskGroupWrapper } from "./task-group"
+import { TaskGroupWrapper } from "./task-group"
 import { TaskToolbar } from "./task-toolbar"
 
 export const DraftList = () => {
@@ -19,13 +16,11 @@ export const DraftList = () => {
 
   return (
     <TaskGroupWrapper>
-      <TaskGroup label={"Drafts"} value="draft" labelType="neutral">
-        {drafts.map((t) => (
-          <div key={`${t.id}`}>
-            <DraftItem type="draft" item={t} />
-          </div>
-        ))}
-      </TaskGroup>
+      {drafts.map((t) => (
+        <div key={`${t.id}`}>
+          <DraftItem type="draft" item={t} />
+        </div>
+      ))}
     </TaskGroupWrapper>
   )
 }
@@ -34,94 +29,62 @@ const DraftItem = ({ type, item }) => {
   const { setDrafts } = useDraftContext()
 
   const [show, setShow] = useState(false)
-  const [down, setDown] = useState(false)
-  const [showOverlay, setShowOverlay] = useState(false)
+  const [showWarning, setShowWarning] = useState(false)
 
   const [hidingStyle, setHidingStyle] = useState({
     transform: "none",
     maxHeight: "1000px"
   })
 
-  const [timerStyle, setTimerStyle] = useState({
-    width: "0%",
-    transitionDuration: fetchconfig.timers.delete + "s"
-  })
-
-  useEffect(() => {
-    // let timer = null
-
-    if (down) {
-      setTimerStyle({
-        width: "100%",
-        transitionDuration: fetchconfig.timers.delete + "s"
-      })
-    } else {
-      //   timer = setTimeout(() => setShowOverlay(false), 300)
-
-      setTimerStyle({
-        width: "0%",
-        transitionDuration: fetchconfig.timers.cancel + "s"
-      })
-    }
-  }, [down])
-
   useEffect(() => {
     if (hidingStyle.maxHeight !== "0px") return
 
     const timer = setTimeout(
       () => setDrafts((prev) => prev.filter((d) => d.id !== item.id)),
-      fetchconfig.timers.delete * 100
+      150
     )
 
     return () => timer && clearTimeout(timer)
   }, [hidingStyle])
 
-  const slideOrCanel = () => {
-    if (timerStyle.width === "100%") {
-      setHidingStyle({
-        transform: "translateX(200%)",
-        maxHeight: "0px"
-      })
-    } else {
-      setShowOverlay(false)
-    }
+  const slide = () => {
+    setHidingStyle({
+      transform: "translateX(200%)",
+      maxHeight: "0px"
+    })
   }
 
   return (
     <div style={hidingStyle} className="transition-all py-1">
       <InboxItemWrapper>
         <C.CollapsibleForTasks show={show} setShow={setShow}>
-          <C.Checkbox>
+          <C.Action>
             <div
-              className={`flex w-8 h-full justify-center items-center bg-zinc-100 ${show && "border-b-[1px]"}`}>
-              <div
-                // onClick={() => setShowOverlay(!showOverlay)}
-                onPointerDown={() => {
-                  setDown(true)
-                  setShowOverlay(!showOverlay)
-                }}
-                onPointerUp={() => {
-                  setDown(false)
-                  //   setShowOverlay(false)
-                }}
-                onPointerLeave={() => setDown(false)}
-                role="button">
-                D
-              </div>
+              className={`flex h-full justify-center items-center bg-zinc-100 ${show && "border-b-[1px]"} ${showWarning ? "transition-[width] duration-200 w-32" : "w-8"}`}>
+              {!showWarning && (
+                <button className="w-8" onClick={() => setShowWarning(true)}>
+                  <PiTrash />
+                </button>
+              )}
+              {showWarning && (
+                <div className="text-xs flex font-bold items-center justify-start gap-4 px-2 h-full w-full text-rose-400 border-r-2 overflow-x-hidden">
+                  <button
+                    className="w-16 text-start text-blue-500"
+                    onClick={() => setShowWarning(false)}>
+                    KEEP
+                  </button>
+                  <button
+                    onClick={slide}
+                    className="w-16 text-end text-rose-500">
+                    DELETE
+                  </button>
+                </div>
+              )}
             </div>
-          </C.Checkbox>
+          </C.Action>
           <C.Toggle>
             <div
               className={`h-10 relative bg-zinc-100 hover:cursor-pointer select-none ${show && "border-b-[1px]"}`}>
-              <div
-                onTransitionEnd={slideOrCanel}
-                style={timerStyle}
-                className="absolute z-0 h-full left-0 top-0 transition-[width] ease-in bg-rose-500"></div>
-              {showOverlay && (
-                <div className="absolute z-10 text-xs flex font-bold items-center justify-end px-2 h-full w-full left-0 top-0 text-rose-400 bg-white/50">
-                  Hold to Delete
-                </div>
-              )}
               <div className="relative z-1 flex gap-2 items-center h-full px-2">
                 <h2 className="font-bold text-sm flex-auto px-2">
                   {getUpcommingPreview(item.nodes).value}

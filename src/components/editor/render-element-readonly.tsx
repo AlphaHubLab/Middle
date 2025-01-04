@@ -64,7 +64,7 @@ const LinkReadOnly = ({ value }: { value: string }) => (
 
 const ParagraphReadOnly = ({ value }: { value: string }) => {
   return (
-    <p className="h-[20px] py-[2px] text-zinc-500 text-sm w-full px-2 overflow-y-hidden leading-tight rounded-md">
+    <p className="min-h-[20px] py-[2px] text-zinc-500 text-sm w-full px-2 overflow-y-hidden leading-tight rounded-md">
       {value}
     </p>
   )

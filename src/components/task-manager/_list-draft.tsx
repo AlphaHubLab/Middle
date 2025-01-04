@@ -1,56 +1,41 @@
+import { clearTimeout } from "timers"
 import { useEffect, useState } from "react"
 
 import { RenderAllElementsReadOnlyWithCopy } from "~components/editor/render-element-readonly"
+// import Status from "~components/editor/status"
 import { LabelStatus, TimeStatus } from "~components/editor/status"
 import * as C from "~components/ui/collapsible"
-import { usePersistContext } from "~contexts/persisting-context"
-import { useVisibleTasks } from "~contexts/visible-tasks-context"
+import { useDraftContext } from "~contexts/draft-context"
+// import { usePersistContext } from "~contexts/persisting-context"
 import { fetchconfig } from "~fetch.config"
 import { getUpcommingPreview } from "~lib/task-helpers"
-import type { ITask } from "~lib/types"
 
 import InboxItemWrapper from "./inbox-item-wrapper"
 import { TaskGroup, TaskGroupWrapper } from "./task-group"
 import { TaskToolbar } from "./task-toolbar"
 
-// An Object to manage groups
-const UPCOMMING_GROUP: {
-  label: string
-  value: string
-  labelType: "neutral" | "orange" | "red"
-}[] = [
-  { label: "Overdue", value: "overdue", labelType: "red" },
-  { label: "So Close!", value: "urgent", labelType: "orange" },
-  { label: "Next 24 Hours!", value: "next24", labelType: "neutral" },
-  { label: "Tomorrow", value: "next48", labelType: "neutral" },
-  { label: "Wen do?", value: "unschaduled", labelType: "neutral" },
-  { label: "Other", value: "other", labelType: "neutral" }
-]
-
-export const UpcommingList = () => {
-  const visibleTasks = useVisibleTasks()
+export const DraftList = () => {
+  const { drafts } = useDraftContext()
 
   return (
     <TaskGroupWrapper>
-      {UPCOMMING_GROUP.map((group) => (
-        <div key={`taskgroup-${group.label}`}>
-          <TaskGroup {...group}>
-            {visibleTasks[group.value].map((t: ITask) => (
-              <div key={`${t.id}`}>
-                <UpcommingItem type="task" item={t} />
-              </div>
-            ))}
-          </TaskGroup>
-        </div>
-      ))}
+      <TaskGroup label={"Drafts"} value="draft" labelType="neutral">
+        {drafts.map((t) => (
+          <div key={`${t.id}`}>
+            <DraftItem type="draft" item={t} />
+          </div>
+        ))}
+      </TaskGroup>
     </TaskGroupWrapper>
   )
 }
 
-const UpcommingItem = ({ type, item }) => {
-  const { handleDone } = usePersistContext()
+const DraftItem = ({ type, item }) => {
+  const { setDrafts } = useDraftContext()
 
   const [show, setShow] = useState(false)
+  const [down, setDown] = useState(false)
+  const [showOverlay, setShowOverlay] = useState(false)
 
   const [hidingStyle, setHidingStyle] = useState({
     transform: "none",
@@ -59,39 +44,47 @@ const UpcommingItem = ({ type, item }) => {
 
   const [timerStyle, setTimerStyle] = useState({
     width: "0%",
-    transitionDuration: fetchconfig.timers.done + "s"
+    transitionDuration: fetchconfig.timers.delete + "s"
   })
 
-  const handleCheck = (e) => {
-    if (!e.target.checked) {
+  useEffect(() => {
+    // let timer = null
+
+    if (down) {
+      setTimerStyle({
+        width: "100%",
+        transitionDuration: fetchconfig.timers.delete + "s"
+      })
+    } else {
+      //   timer = setTimeout(() => setShowOverlay(false), 300)
+
       setTimerStyle({
         width: "0%",
         transitionDuration: fetchconfig.timers.cancel + "s"
       })
-    } else {
-      setTimerStyle({
-        width: "100%",
-        transitionDuration: fetchconfig.timers.done + "s"
-      })
     }
-  }
+  }, [down])
 
   useEffect(() => {
     if (hidingStyle.maxHeight !== "0px") return
+
     const timer = setTimeout(
-      () => handleDone(item.id),
-      fetchconfig.timers.done * 100
+      () => setDrafts((prev) => prev.filter((d) => d.id !== item.id)),
+      fetchconfig.timers.delete * 100
     )
 
     return () => timer && clearTimeout(timer)
   }, [hidingStyle])
 
-  const slide = () => {
-    timerStyle.width === "100%" &&
+  const slideOrCanel = () => {
+    if (timerStyle.width === "100%") {
       setHidingStyle({
         transform: "translateX(200%)",
         maxHeight: "0px"
       })
+    } else {
+      setShowOverlay(false)
+    }
   }
 
   return (
@@ -101,16 +94,34 @@ const UpcommingItem = ({ type, item }) => {
           <C.Action>
             <div
               className={`flex w-8 h-full justify-center items-center bg-zinc-100 ${show && "border-b-[1px]"}`}>
-              <input type="checkbox" onChange={handleCheck} />
+              <div
+                // onClick={() => setShowOverlay(!showOverlay)}
+                onPointerDown={() => {
+                  setDown(true)
+                  setShowOverlay(!showOverlay)
+                }}
+                onPointerUp={() => {
+                  setDown(false)
+                  //   setShowOverlay(false)
+                }}
+                onPointerLeave={() => setDown(false)}
+                role="button">
+                D
+              </div>
             </div>
           </C.Action>
           <C.Toggle>
             <div
               className={`h-10 relative bg-zinc-100 hover:cursor-pointer select-none ${show && "border-b-[1px]"}`}>
               <div
-                onTransitionEnd={slide}
+                onTransitionEnd={slideOrCanel}
                 style={timerStyle}
-                className="absolute z-0 h-full left-0 top-0 transition-[width] ease-in bg-emerald-200 "></div>
+                className="absolute z-0 h-full left-0 top-0 transition-[width] ease-in bg-rose-500"></div>
+              {showOverlay && (
+                <div className="absolute z-10 text-xs flex font-bold items-center justify-end px-2 h-full w-full left-0 top-0 text-rose-400 bg-white/50">
+                  Hold to Delete
+                </div>
+              )}
               <div className="relative z-1 flex gap-2 items-center h-full px-2">
                 <h2 className="font-bold text-sm flex-auto px-2">
                   {getUpcommingPreview(item.nodes).value}

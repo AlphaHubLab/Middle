@@ -27,7 +27,7 @@ export default function Inbox({ show, setHide }) {
         </div>
       )}
       {show && (
-        <div dir="ltr" role="tablist" className="w-full flex gap-2 px-11 py-1">
+        <div dir="ltr" role="tablist" className="w-full flex gap-2 px-11 py-6">
           {tabs.map((tab) => (
             <button
               onClick={() => setActiveTab(tab)}
