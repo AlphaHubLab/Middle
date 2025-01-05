@@ -120,14 +120,7 @@ export default function IdentitySection() {
                 className="flex w-full items-center"
                 key={`loaded-identity-${identity.id}`}>
                 <div className="flex w-full">
-                  <div
-                    style={{ color: identity.color }}
-                    className="w-4 text-xs flex items-center h-6">
-                    <p>ID</p>
-                  </div>
-                  <div className="w-full">
-                    <IdentityPreview identity={identity} />
-                  </div>
+                  <IdentityPreview identity={identity} />
                   <div className="flex gap-2 h-6 items-center text-xs pl-2">
                     <button
                       className="text-blue-500 hover:text-blue-300"
@@ -245,7 +238,7 @@ const IdentityEditor = ({ initialIdentity, onClose }) => {
               </button>
 
               {showColorPicker && (
-                <div className="absolute top-10 right-0">
+                <div className="absolute top-10 right-0 z-100">
                   <HexColorPicker
                     color={identity.color}
                     onChange={(c) =>
@@ -324,26 +317,35 @@ const IdentityEditor = ({ initialIdentity, onClose }) => {
   )
 }
 
-const IdentityPreview = ({ identity }) => {
+export const IdentityPreview = ({ identity }: { identity: IIdentity }) => {
   return (
-    <C.Collapsible>
-      <C.Toggle>
-        <div className="select-none font-bold py-[2px] cursor-pointer px-2 hover:bg-zinc-100 rounded-md ">
-          <p>{identity.label}</p>
-        </div>
-      </C.Toggle>
-      <C.Content>
-        <div className="pl-2">
-          {identity.items.map((item) => (
-            <div
-              style={{ borderColor: identity.color }}
-              className="flex px-2 gap-2 border-l">
-              <p>{item.key}:</p>
-              <p>{item.value}</p>
+    <div className="w-full flex">
+      <div
+        style={{ color: identity.color }}
+        className="w-4 text-xs flex items-center h-6">
+        <p>ID</p>
+      </div>
+      <div className="w-full">
+        <C.Collapsible>
+          <C.Toggle>
+            <header className="select-none text-zinc-700 text-sm font-bold py-[2px] cursor-pointer px-2 hover:bg-zinc-100 rounded-md ">
+              <p>{identity.label}</p>
+            </header>
+          </C.Toggle>
+          <C.Content>
+            <div className="pl-2 pb-3">
+              {identity.items.map((item) => (
+                <div
+                  style={{ borderColor: identity.color }}
+                  className="flex px-2 gap-2 border-l text-sm text-zinc-500">
+                  <p className="font-bold">{item.key}:</p>
+                  <p>{item.value}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </C.Content>
-    </C.Collapsible>
+          </C.Content>
+        </C.Collapsible>
+      </div>
+    </div>
   )
 }

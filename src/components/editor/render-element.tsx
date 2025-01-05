@@ -60,20 +60,24 @@ const HeaderWithProps = (props: IHeaderProps) => {
 
   return (
     <div>
-      <div className="flex w-full pl-4 gap-2">
+      <div className="flex flex-col-reverse sm:flex-row w-full pl-4 gap-2 py-2">
         <input
           placeholder="LFG..."
           type="text"
           ref={props.addToRef}
-          className="hover:bg-zinc-50 text-4xl w-full p-2 font-bold appearance-none leading-tight focus:bg-zinc-100 focus:outline-none rounded-lg"
+          className="hover:bg-zinc-50 text-2xl sm:text-4xl w-full p-2 font-bold appearance-none leading-tight focus:bg-zinc-100 focus:outline-none rounded-lg"
           value={props.value}
           onPaste={props.onPaste}
           onChange={props.onChange}
           onKeyDown={props.onKeyDown}
           onFocus={props.onFocus}
         />
-        <LabelStatus taskCore={store} isEditor={true} />
-        <DraftStatus isLoading={isLoading} />
+        <div className="flex items-center">
+          <div className="flex-auto pl-2 sm:pl-0 sm:flex-0">
+            <LabelStatus taskCore={store} isEditor={true} />
+          </div>
+          <DraftStatus isLoading={isLoading} />
+        </div>
       </div>
 
       {store.params.dueDate === -1 ? (

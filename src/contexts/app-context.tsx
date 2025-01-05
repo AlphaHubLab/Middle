@@ -1,50 +1,57 @@
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useState, type Dispatch } from "react"
 
 import { convertToStore, createInitialStore } from "~lib/task-helpers"
-import type { IStore, ITask, ITaskCore } from "~lib/types"
+import type { IStore, ITaskCore } from "~lib/types"
 
 type IEditorType = "new" | "draft" | "task"
 
 interface AppStateContext {
   openEditMode: (taskCore: ITaskCore, editorType: IEditorType) => void
-  openViewMode: (task: ITask) => void
-  setEditMode: any
+  setEditMode: Dispatch<boolean>
+  newEditor: () => void
   editMode: boolean
-  viewMode: boolean
-  view: any
   initialStore: IStore
   editorType: IEditorType
 }
 
 const AppState = createContext({} as AppStateContext)
 
-export default function AppStateProvider ({ children }) {
+export default function AppStateProvider({ children }) {
   const [editMode, setEditMode] = useState(false)
   const [initialStore, setInitialStore] = useState<IStore>(createInitialStore())
-  const [view, setView] = useState<ITask | null>(null)
-  const [viewMode, setViewMode] = useState(false)
   const [editorType, setEditorType] = useState<IEditorType>("new")
 
-  const openViewMode = (task: ITask) => {
-    setView(task)
-    setEditMode(false)
-    setViewMode(true)
+  // const [editor, setEditor] = useState({
+  //   enabled: false,
+  //   initialStore: createInitialStore(),
+  //   type: "new"
+  // })
+
+  // const newEditor = () => {
+  //   setEditor({
+  //     enabled: true,
+  //     initialStore: createInitialStore(),
+  //     type: "new"
+  //   })
+  // }
+
+  const newEditor = () => {
+    setInitialStore(createInitialStore())
+    setEditorType(editorType)
+    setEditMode(true)
   }
 
   const openEditMode = (taskCore: ITaskCore, editorType: IEditorType) => {
+    setInitialStore(convertToStore(taskCore))
     setEditorType(editorType)
     setEditMode(true)
-    setViewMode(false)
-    setInitialStore(convertToStore(taskCore))
   }
 
   const context = {
     openEditMode,
-    openViewMode,
     setEditMode,
+    newEditor,
     editMode,
-    viewMode,
-    view,
     initialStore,
     editorType
   }

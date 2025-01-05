@@ -62,7 +62,10 @@ const DraftItem = ({ type, item }) => {
             <div
               className={`flex h-full justify-center items-center bg-zinc-100 ${show && "border-b-[1px]"} ${showWarning ? "transition-[width] duration-200 w-32" : "w-8"}`}>
               {!showWarning && (
-                <button className="w-8" onClick={() => setShowWarning(true)}>
+                <button
+                  aria-label="Delete"
+                  className="w-8 flex items-center justify-center text-rose-500 hover:text-rose-400"
+                  onClick={() => setShowWarning(true)}>
                   <PiTrash />
                 </button>
               )}
@@ -71,19 +74,19 @@ const DraftItem = ({ type, item }) => {
                   <button
                     className="w-16 text-start text-blue-500"
                     onClick={() => setShowWarning(false)}>
-                    KEEP
+                    Keep
                   </button>
                   <button
                     onClick={slide}
                     className="w-16 text-end text-rose-500">
-                    DELETE
+                    Delete
                   </button>
                 </div>
               )}
             </div>
           </C.Action>
           <C.Toggle>
-            <div
+            <header
               className={`h-10 relative bg-zinc-100 hover:cursor-pointer select-none ${show && "border-b-[1px]"}`}>
               <div className="relative z-1 flex gap-2 items-center h-full px-2">
                 <h2 className="font-bold text-sm flex-auto px-2">
@@ -92,7 +95,7 @@ const DraftItem = ({ type, item }) => {
                 <TimeStatus item={item} itemType="task" />
                 <LabelStatus taskCore={item} />
               </div>
-            </div>
+            </header>
           </C.Toggle>
           <C.Content>
             <div className="flex">

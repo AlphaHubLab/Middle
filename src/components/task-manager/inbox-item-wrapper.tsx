@@ -1,4 +1,10 @@
-export default function InboxItemWrapper({ children }) {
+import type { ReactNode } from "react"
+
+export default function InboxItemWrapper({
+  children
+}: {
+  children: ReactNode
+}) {
   return (
     <div
       className={`border-[1px] hover:shadow-md rounded-md flex flex-col justify-center overflow-hidden`}>

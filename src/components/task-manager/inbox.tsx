@@ -17,7 +17,7 @@ export default function Inbox({ show, setHide }) {
   return (
     <div
       dir="rtl"
-      className="absolute w-full h-full px-4 bg-white/80 transition-all duration-200">
+      className="absolute w-full h-full px-1 sm:px-4 transition-all duration-200 border border-zinc-500 bg-white rounded-xl">
       {/* non-scrollables */}
       {!show && (
         <div
@@ -27,7 +27,11 @@ export default function Inbox({ show, setHide }) {
         </div>
       )}
       {show && (
-        <div dir="ltr" role="tablist" className="w-full flex gap-2 px-11 py-6">
+        <div
+          dir="ltr"
+          role="tablist"
+          aria-orientation="horizontal"
+          className="w-full flex gap-2 px-5 sm:px-11 py-6">
           {tabs.map((tab) => (
             <button
               onClick={() => setActiveTab(tab)}
@@ -40,10 +44,10 @@ export default function Inbox({ show, setHide }) {
       )}
       {/* non-scrollables */}
       <div
-        className={`relative styled-scrollbar ${show ? "overflow-y-auto" : "overflow-y-hidden"} h-full px-4`}>
+        className={`relative styled-scrollbar ${show ? "overflow-y-auto" : "overflow-y-hidden"} h-full px-1 sm:px-4`}>
         {/* <a href="#other">OTHER</a> */}
 
-        <div dir="ltr" className="relative px-4 mb-4">
+        <div dir="ltr" className="relative px-1 sm:px-4 mb-4">
           {!show && (
             <div className="absolute bg-white/50 h-full top-0 left-0 w-full"></div>
           )}

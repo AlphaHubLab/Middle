@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import type { ChangeEvent, KeyboardEvent } from "react"
+import { PiFloppyDisk, PiTrash } from "react-icons/pi"
 
-import ButtonFetch from "~components/ui/button-fetch"
+// import ButtonFetch from "~components/ui/button-fetch"
 import { useAppState } from "~contexts/app-context"
 import { useDraftContext } from "~contexts/draft-context"
 import { usePersistContext } from "~contexts/persisting-context"
@@ -24,7 +25,8 @@ type HTMLInputs = HTMLInputElement | HTMLTextAreaElement
 const tagRegExp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z_]+\w*/g)
 
 export default function Editor({ disabled }) {
-  const { openEditMode, initialStore, editorType, setEditMode } = useAppState()
+  const { initialStore, editorType, setEditMode, newEditor } = useAppState()
+
   const { handlePersist } = usePersistContext()
   const { setDrafts } = useDraftContext()
   const { setting } = useSettingContext()
@@ -66,17 +68,16 @@ export default function Editor({ disabled }) {
 
   useEffect(() => {
     if (store.range === -1) return
-
     nodes.current[store.focusedNode].setSelectionRange(store.range, store.range)
   }, [store.range, store.nodes])
 
-  // preventing blur between rerenders
+  // Preventing inputs to be blured between rerenders
   useEffect(() => {
-    if (disabled) return // prevent focus on disabled
+    if (disabled) return // Preventing focus() on disabled state
     nodes?.current[store.focusedNode].focus()
   })
 
-  // focus on title if task is empty
+  // focus on Title if task is empty
   // otherwise focus on the stored focusedNodde
   useEffect(() => {
     if (disabled) return
@@ -95,29 +96,37 @@ export default function Editor({ disabled }) {
 
   const undo = () => {
     if (undos.current.length === 0) return
+
     const last = undos.current[undos.current.length - 1]
+
     redos.current.push(store)
     undos.current.pop()
+
     setStore(last)
   }
 
   const redo = () => {
     if (redos.current.length === 0) return
+
     const last = redos.current[redos.current.length - 1]
+
     undos.current.push(store)
     redos.current.pop()
+
     setStore(last)
   }
 
   const updateHistory = (store: IStore) => {
     if (undos.current.length > 15) undos.current.shift()
     if (redos.current.length > 0) redos.current = []
+
     undos.current.push(store)
   }
 
   const initCommand = (e: ChangeEvent<HTMLInputs>) => {
     setIsCommandActive(true)
     setCommand("")
+
     cmdStartPos.current = e.target.selectionStart
     nodeSnapshot.current = store.nodes[store.focusedNode].value
   }
@@ -127,11 +136,13 @@ export default function Editor({ disabled }) {
       cmdStartPos.current + 1,
       e.target.value.length - nodeSnapshot.current.length + cmdStartPos.current
     )
+
     setCommand(_command)
   }
 
   const prevNode = (e: KeyboardEvent) => {
     e.preventDefault()
+
     if (store.focusedNode === 0) return
 
     setStore({
@@ -143,7 +154,9 @@ export default function Editor({ disabled }) {
 
   const nextNode = (e: KeyboardEvent) => {
     e.preventDefault()
+
     if (store.focusedNode === store.nodes.length - 1) return
+
     setStore({ ...store, focusedNode: store.focusedNode + 1 })
   }
 
@@ -198,8 +211,11 @@ export default function Editor({ disabled }) {
     // const nodes = [...store.nodes]
 
     const nodes = structuredClone(store.nodes)
+
     nodes[store.focusedNode].value = e.target.value
+
     const newStore = { ...store, nodes, range: -1 }
+
     setStore(newStore)
   }
 
@@ -225,6 +241,7 @@ export default function Editor({ disabled }) {
 
     const p1 = store.nodes[store.focusedNode - 1].value
     const p2 = store.nodes[store.focusedNode].value
+
     const mergedValue = p1 + p2
 
     const type = helpers.getNodeType(
@@ -259,6 +276,7 @@ export default function Editor({ disabled }) {
     const newTags = Array.from(new Set(_tags.map((t) => t.toLowerCase())))
 
     const params = { ...store.params, tags: newTags }
+
     setStore({ ...store, params })
   }
 
@@ -294,7 +312,21 @@ export default function Editor({ disabled }) {
 
   const addIdentity = (identity: IIdentity) => {
     // Prevent to add duplicate
-    if (store.params.identities.find((idn) => idn.id === identity.id)) return
+    if (store.params.identities.find((idn) => idn.id === identity.id)) {
+      const newStore = {
+        ...store,
+        nodes: store.nodes.toSpliced(store.focusedNode, 1, {
+          type: store.nodes[store.focusedNode].type as NodeType,
+          value: nodeSnapshot.current
+        }),
+        range: nodeSnapshot.current.length,
+        focusedNode: store.focusedNode
+      }
+
+      updateHistory(store)
+      setStore(newStore)
+      return
+    }
 
     const identities = [...store.params.identities]
 
@@ -375,7 +407,7 @@ export default function Editor({ disabled }) {
   }
 
   const newTask = () => {
-    openEditMode(helpers.createInitialStore(), "new")
+    newEditor()
     setCommand("")
     setIsCommandActive(false)
   }
@@ -423,7 +455,7 @@ export default function Editor({ disabled }) {
     if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
       return persistTask()
     }
-    
+
     // Undo: cmd | ctrl + z
     if ((e.metaKey || e.ctrlKey) && (e.key === "z" || e.key === "Z")) {
       e.preventDefault()
@@ -452,7 +484,7 @@ export default function Editor({ disabled }) {
         return setIsCommandActive(false)
       }
 
-      // If Caret pos = 0 => Delete the node or Merge with previous one
+      // If Caret pos === 0 => Delete the node or Merge with previous one
       if (e.target.selectionStart === 0) {
         if (e.target.selectionEnd === e.target.selectionStart) {
           e.preventDefault()
@@ -511,14 +543,14 @@ export default function Editor({ disabled }) {
         return setIsCommandActive(false)
       }
 
-      // When move caret before initializer slash
+      // When caret moves before initializer slash
       else if (e.key === "ArrowLeft") {
         if (e.target.selectionStart === cmdStartPos.current + 1) {
           setIsCommandActive(false)
         }
       }
 
-      // When move caret after command word boundary
+      // When caret moves after command word boundary
       else if (e.key === "ArrowRight") {
         if (e.target.selectionStart > cmdStartPos.current + command.length) {
           setIsCommandActive(false)
@@ -529,40 +561,55 @@ export default function Editor({ disabled }) {
 
   return (
     <div className="w-full">
-      <div
-        role="toolbar"
-        className={`${!disabled ? "visible opacity-100" : "invisible opacity-0"} text-xs items-center flex gap-2 pl-4 sticky top-0 bg-white h-12 transition-all duration-200`}>
-        <>
-          <ButtonFetch
-            variant="green"
-            disabled={disabled}
-            onClick={persistTask}>
-            {editorType === "new" || editorType === "draft"
-              ? "Store"
-              : "Save Changes"}
-          </ButtonFetch>
-          <ButtonFetch
-            variant="red"
-            // className="border p-1 rounded-md border-zinc-500 text-zinc-500 hover:text-rose-300"
+      <div className="">
+        <div
+          role="toolbar"
+          className={`${!disabled ? "visible opacity-100" : "invisible opacity-0"} items-center flex gap-2 pl-4 sticky top-0 rounded-lg h-10 transition-all duration-200`}>
+          {/* <ButtonFetch variant="green" disabled={disabled} onClick={persistTask}> */}
+          <button
+            className="disabled:bg-zinc-300 bg-violet-500 text-white hover:bg-violet-400 duration-200 rounded-md px-1 py-1 flex items-center justify-center"
             disabled={disabled || helpers.isTaskEmpty(store, "loose")}
-            onClick={deleteDraft}>
-            {editorType === "new" || editorType === "draft"
-              ? "Discard"
-              : "Discard Changes"}
-          </ButtonFetch>
-          <ButtonFetch
-            variant="blue"
-            // className="border p-1 rounded-md border-zinc-500 text-zinc-500 hover:text-rose-300"
+            onClick={persistTask}>
+            <span className="flex gap-2 items-center">
+              <span className="text-lg sm:text-sm">
+                <PiFloppyDisk />
+              </span>
+              <span className="hidden sm:block text-xs">
+                {editorType === "new" || editorType === "draft"
+                  ? "Store"
+                  : "Save Changes"}
+              </span>
+            </span>
+          </button>
+          <button
+            className="disabled:text-zinc-300 text-rose-500 hover:text-rose-400 border duration-200 rounded-md px-1 py-1 text-xs flex items-center justify-center"
+            // variant="red"
+            disabled={disabled || helpers.isTaskEmpty(store, "loose")}
+            onClick={editorType === "new" ? deleteDraft : newTask}>
+            <span className="flex gap-2 items-center">
+              <span className="text-lg sm:text-sm">
+                <PiTrash />
+              </span>
+              <span className="hidden sm:block text-xs">
+                {editorType === "new" || editorType === "draft"
+                  ? "Delete Draft"
+                  : "Cancel"}
+              </span>
+            </span>
+          </button>
+          <button
+            className="border rounded-md px-1 py-1 text-xs flex items-center justify-center"
+            //  variant="blue"
             onClick={newTask}>
-            + new
-          </ButtonFetch>
-          <ButtonFetch
-            variant="primary"
-            // className="border p-1 rounded-md border-zinc-500 text-zinc-500 hover:text-rose-300"
+            +new
+          </button>
+          <button
+            className="border rounded-md px-1 py-1 text-xs flex items-center justify-center"
+            //  variant="primary"
             onClick={() => setEditMode(false)}>
-            Close
-          </ButtonFetch>
-        </>
+            Not Now
+          </button>
+        </div>
       </div>
 
       <div>

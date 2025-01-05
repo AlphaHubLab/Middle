@@ -11,7 +11,7 @@ export const TaskToolbar = ({
   item: ITaskCore
   type: "task" | "draft"
 }) => {
-  const { openEditMode, openViewMode } = useAppState()
+  const { openEditMode } = useAppState()
   const { setDrafts } = useDraftContext()
 
   const removeDraft = (id: string) => {
@@ -20,13 +20,6 @@ export const TaskToolbar = ({
 
   return (
     <>
-      {/* {type === "task" && (
-        <button
-          className="hover:text-zinc-500 text-sm px-2"
-          onClick={() => openViewMode(item as ITask)}>
-          <IoSquareOutline />
-        </button>
-      )} */}
       <button
         className="hover:text-zinc-500 text-sm px-2 flex gap-2"
         onClick={() => openEditMode(item, type)}>

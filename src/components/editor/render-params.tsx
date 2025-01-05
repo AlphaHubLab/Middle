@@ -1,8 +1,8 @@
 import { DateTime } from "luxon"
 import { useRef, useState } from "react"
-import { PiHashStraight, PiTimer } from "react-icons/pi"
+import { PiHashStraight, PiTimer, PiTrash } from "react-icons/pi"
 
-import * as C from "~components/ui/collapsible"
+import { IdentityPreview } from "~components/options/identity-setting"
 import { useSettingContext } from "~contexts/setting-context"
 import type { IIdentity } from "~lib/types"
 
@@ -46,7 +46,7 @@ export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
       <div className="w-4 flex justify-center">
         <PiTimer />
       </div>
-      <form ref={form} onChange={handleOnChange}>
+      <form ref={form} onChange={handleOnChange} className="flex gap-2">
         <input
           name="date"
           type="date"
@@ -71,27 +71,28 @@ export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
           <option value="utc+08">WST</option>
         </select>
       </form>
-      <div className="flex flex-auto gap-2 text-xs items-center justify-start">
+      <div className="flex flex-auto gap-1 text-xs items-center justify-start">
         <button
-          className="border hover:bg-zinc-100 rounded-md px-2 py-[3px]"
+          className="border hover:bg-zinc-100 rounded-md px-1 py-[3px]"
           onClick={() => setter(timestamp + 24 * 60 * 60 * 1000)}>
           +24H
         </button>
         <button
-          className="border hover:bg-zinc-100 rounded-md px-2 py-[3px]"
+          className="border hover:bg-zinc-100 rounded-md px-1 py-[3px]"
           onClick={() => setter(timestamp + 7 * 24 * 60 * 60 * 1000)}>
           +7D
         </button>
         <button
-          className="border hover:bg-zinc-100 rounded-md px-2 py-[3px]"
+          className="border hover:bg-zinc-100 rounded-md px-1 py-[3px]"
           onClick={() => setter((new Date().getTime() / 10_000) * 10_000)}>
           Now
         </button>
       </div>
       <button
-        className="text-rose-500 hover:text-rose-300 text-xs"
+        aria-label="Remove"
+        className="text-rose-500 hover:text-rose-300 text-sm pl-1"
         onClick={() => setter(-1)}>
-        Remove
+        <PiTrash />
       </button>
     </div>
   )
@@ -122,41 +123,22 @@ export const IdentityWithProps = ({
   removeIdentity
 }: IIdentityProps) => {
   return (
-    <div>
+    <div className="py-4">
+      <div className="pb-1 pl-6">
+        <h3 className="text-xs border-b-[1px] text-zinc-400">
+          This Task should be done using:
+        </h3>
+      </div>
       {identities.map((identity, i) => (
         <div key={`added-identity-${i}`} className="flex items-center">
-          <div
-            style={{ color: identity.color }}
-            className="w-4 text-xs h-full flex items-center justify-center">
-            <p>ID</p>
-          </div>
-          <div className="w-full flex text-sm text-zinc-700 py-1">
-            <div className="w-full">
-              <C.Collapsible>
-                <C.Toggle>
-                  <div className="font-bold py-[2px] cursor-pointer px-2 hover:bg-zinc-100 rounded-md ">
-                    <p>{identity.label}</p>
-                  </div>
-                </C.Toggle>
-                <C.Content>
-                  <div className="pl-2">
-                    {identity.items.map((item) => (
-                      <div
-                        style={{ borderColor: identity.color }}
-                        className="flex px-2 gap-2 border-l">
-                        <p>{item.key}:</p>
-                        <p>{item.value}</p>
-                      </div>
-                    ))}
-                  </div>
-                </C.Content>
-              </C.Collapsible>
-            </div>
+          <div className="flex w-full">
+            <IdentityPreview identity={identity} />
             <div className="flex items-start pt-1 pl-2">
               <button
+                aria-label="Remove"
                 onClick={() => removeIdentity(identity.id)}
-                className="text-xs text-rose-500 hover:text-rose-300">
-                Remove
+                className="text-sm text-rose-500 hover:text-rose-300">
+                <PiTrash />
               </button>
             </div>
           </div>

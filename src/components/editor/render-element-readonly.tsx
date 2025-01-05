@@ -43,6 +43,9 @@ export const RenderElementReadOnly = ({ type, value }: INode) => {
 }
 
 const HeaderReadOnly = ({ value }: { value: string }) => {
+  // Don't render an empty title in readonly mode
+  if (value.length === 0) return false
+
   return (
     <h1 className="w-full h-[36px] p-2 flex items-center font-bold leading-tight rounded-md">
       {value}
@@ -51,7 +54,7 @@ const HeaderReadOnly = ({ value }: { value: string }) => {
 }
 
 const LinkReadOnly = ({ value }: { value: string }) => (
-  <div className="py-[2px] px-2 h-[20px]">
+  <div className="py-[2px] px-2 min-h-[20px]">
     <a
       target="_blank"
       rel="noopener noreferrer"
@@ -80,7 +83,7 @@ export const RenderElementReadOnlyWithCopy = (props: INode) => {
   }, [copy])
 
   return (
-    <div className="flex group hover:bg-zinc-200/50 items-center rounded-md">
+    <div className="flex group hover:bg-zinc-200/30 items-center rounded-md">
       <div className="flex-auto">
         <RenderElementReadOnly {...props} />
       </div>
@@ -96,14 +99,16 @@ export const RenderElementReadOnlyWithCopy = (props: INode) => {
 
 const DateReadOnly = ({ timestamp }: { timestamp: number }) => {
   const { setting } = useSettingContext()
+
   if (!timestamp) return false
+
   const dt = DateTime.fromMillis(timestamp).setZone(setting.preferredTimeZone)
   const date = dt.toFormat("LLL dd, yyyy")
   const time = dt.toFormat("T")
 
   return (
-    <p>
+    <span>
       {date} | {time}
-    </p>
+    </span>
   )
 }

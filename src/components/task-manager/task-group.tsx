@@ -24,7 +24,7 @@ export const TaskGroupWrapper = ({ children }: { children: ReactNode }) => {
     )
   }
 
-  return <div className="transition-all duration-200 pb-16">{ch}</div>
+  return <div className="transition-all duration-200 pb-32">{ch}</div>
 }
 
 /**
