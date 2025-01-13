@@ -4,31 +4,32 @@ import { useEffect, useMemo, useState } from "react"
 import { RenderAllElementsReadOnlyWithCopy } from "~components/editor/render-element-readonly"
 import { LabelStatus, TimeStatus } from "~components/editor/status"
 import * as C from "~components/ui/collapsible"
-import { usePersistContext } from "~contexts/persisting-context"
-import { useSettingContext } from "~contexts/setting-context"
+import { usePersist } from "~contexts/persist-context"
+import { useSetting } from "~contexts/setting-context"
 import { fetchconfig } from "~fetch.config"
+import { TIME } from "~lib/constants"
 import { getUpcommingPreview } from "~lib/task-helpers"
-import type { IHistory } from "~lib/types"
+import type { ITask } from "~lib/types"
 
 import InboxItemWrapper from "./inbox-item-wrapper"
 import { TaskGroup, TaskGroupWrapper } from "./task-group"
 
-const ONE_DAY = 24 * 60 * 60 * 1000
-
 const createHistoryList = (
-  history: IHistory[],
+  history: ITask[],
   dayLimit = 7,
   timeZone: string
 ) => {
-  const sortedWithLabels: Record<string, IHistory[]> = {}
+  const sortedWithLabels: Record<string, ITask[]> = {}
 
   const today = DateTime.now().setZone(timeZone).startOf("day").millisecond
 
-  // const sorted = history.reverse()
   const sorted = [...history].sort((a, b) => b.dateDone - a.dateDone)
   for (let i = 0; i < sorted.length; i++) {
     // Exit early if there is a day Limit and dateDone is out of the range
-    if (dayLimit !== 0 && sorted[i].dateDone < today - dayLimit * ONE_DAY) {
+    if (
+      dayLimit !== 0 &&
+      sorted[i].dateDone < today - dayLimit * TIME.ONE_DAY
+    ) {
       return sortedWithLabels
     }
 
@@ -49,8 +50,8 @@ const createHistoryList = (
 export default function HistoryList() {
   const [dayLimit, setDayLimit] = useState(7)
 
-  const { history } = usePersistContext()
-  const { setting } = useSettingContext()
+  const { history } = usePersist()
+  const { setting } = useSetting()
 
   const historyList = useMemo(
     () => createHistoryList(history, dayLimit, setting.preferredTimeZone),
@@ -61,15 +62,15 @@ export default function HistoryList() {
     return (
       <TaskGroupWrapper>
         {Object.keys(historyList).map((groupName) => (
-          <div key={`history-${groupName}`}>
-            <TaskGroup label={groupName} value={groupName} labelType="neutral">
-              {historyList[groupName].map((item) => (
-                <div key={`${item.id}`}>
-                  <HistoryItem item={item} />
-                </div>
-              ))}
-            </TaskGroup>
-          </div>
+          <TaskGroup
+            key={`history-${groupName}`}
+            label={groupName}
+            value={groupName}
+            labelType="neutral">
+            {historyList[groupName].map((item) => (
+              <HistoryItem key={`${item.id}`} item={item} />
+            ))}
+          </TaskGroup>
         ))}
       </TaskGroupWrapper>
     )
@@ -79,7 +80,7 @@ export default function HistoryList() {
 }
 
 const HistoryItem = ({ item }) => {
-  const { handleUndone } = usePersistContext()
+  const { handleUndone } = usePersist()
 
   const [show, setShow] = useState(false)
 

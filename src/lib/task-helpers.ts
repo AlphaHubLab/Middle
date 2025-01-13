@@ -166,6 +166,15 @@ export const getAvailableExtensions = (
     : extensions
 }
 
+// export const convertToTask = (store): ITask => {
+//   return    {   id: store.id,
+//   nodes: store.nodes,
+//   params: store.params,
+//   done: false,
+//   dateAdded, 
+//   dateDone: -1
+// }
+// }
 export const convertToStore = ({ id, nodes, params }: ITaskCore): IStore => {
   return {
     id: id,
@@ -197,12 +206,12 @@ export const getFirstNonEmptyNode = (nodes: INode[]) => {
  */
 export const getUpcommingPreview = (nodes: INode[], limit = 25): INode => {
   if (nodes[0].value.length > 0) {
-    return { type: "h", value: strShortening(nodes[0].value, limit) }
+    return { type: "h", value: strShortener(nodes[0].value, limit) }
   }
 
   const nonEmptyNode = getFirstNonEmptyNode(nodes)
   if (nonEmptyNode) {
-    return { type: "p", value: strShortening(nonEmptyNode.value, limit) }
+    return { type: "p", value: strShortener(nonEmptyNode.value, limit) }
   }
 
   return { type: "p", value: "[empty]" }
@@ -218,7 +227,7 @@ export const getDetailedPreview = (nodes: INode[], limit = 25): INode[] => {
 
   // Handle the title
   if (nodes[0].value.length > 0) {
-    preview.push({ type: "h", value: strShortening(nodes[0].value, limit) })
+    preview.push({ type: "h", value: strShortener(nodes[0].value, limit) })
   } else {
     preview.push({ type: "h", value: "[no title]" })
   }
@@ -227,7 +236,7 @@ export const getDetailedPreview = (nodes: INode[], limit = 25): INode[] => {
   const nonEmptyNode = getFirstNonEmptyNode(nodes)
 
   if (nonEmptyNode) {
-    preview.push({ type: "p", value: strShortening(nonEmptyNode.value, limit) })
+    preview.push({ type: "p", value: strShortener(nonEmptyNode.value, limit) })
   } else {
     preview.push({ type: "p", value: "[empty]" })
   }
@@ -235,6 +244,6 @@ export const getDetailedPreview = (nodes: INode[], limit = 25): INode[] => {
   return preview
 }
 
-const strShortening = (str: string, limit: number) => {
-  return str.length > limit ? str.slice(0, limit) + "..." : str
+const strShortener = (str: string, limit: number) => {
+  return str.length > limit ? str.slice(0, limit).trim() + "..." : str
 }

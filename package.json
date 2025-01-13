@@ -1,8 +1,8 @@
 {
-  "name": "middle",
-  "displayName": "Middle",
-  "version": "0.1.1",
-  "description": "Middle",
+  "name": "fetch",
+  "displayName": "Fetch",
+  "version": "0.1.2",
+  "description": "Fetch",
   "author": "Alphahub",
   "scripts": {
     "start": "next start",
@@ -14,6 +14,7 @@
     "build:next": "next build"
   },
   "dependencies": {
+    "@plasmohq/messaging": "^0.6.2",
     "@rainbow-me/rainbowkit": "^2.2.1",
     "@tanstack/react-query": "^5.62.8",
     "cmdk": "^1.0.0",
@@ -67,7 +68,8 @@
     ],
     "permissions": [
       "tabs",
-      "storage"
+      "storage",
+      "activeTab"
     ]
   }
 }

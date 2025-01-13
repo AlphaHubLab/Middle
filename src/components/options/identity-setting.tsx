@@ -7,7 +7,7 @@ import * as C from "~components/ui/collapsible"
 import Input from "~components/ui/input"
 import Label from "~components/ui/label"
 import { Note, P, Section } from "~components/ui/text"
-import { useSettingContext } from "~contexts/setting-context"
+import { useSetting } from "~contexts/setting-context"
 import type { IIdentity } from "~lib/types"
 
 const createNewIdentity = (identities: IIdentity[]) => {
@@ -42,7 +42,7 @@ const createNewIdentity = (identities: IIdentity[]) => {
 }
 
 export default function IdentitySection() {
-  const { setting } = useSettingContext()
+  const { setting } = useSetting()
 
   const { identities } = setting
 
@@ -148,7 +148,7 @@ const IdentityEditor = ({ initialIdentity, onClose }) => {
   const [showColorPicker, setShowColorPicker] = useState(false)
   const [duplicate, setDuplicate] = useState(false)
 
-  const { setting, setSetting } = useSettingContext()
+  const { setting, setSetting } = useSetting()
 
   useEffect(() => setIdentity(initialIdentity), [initialIdentity])
 

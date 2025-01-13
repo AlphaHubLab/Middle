@@ -1,9 +1,9 @@
 import Label from "~components/ui/label"
 import { P, Section } from "~components/ui/text"
-import { useSettingContext } from "~contexts/setting-context"
+import { useSetting } from "~contexts/setting-context"
 
 export default function GeneralSetting() {
-  const { setting, setSetting } = useSettingContext()
+  const { setting, setSetting } = useSetting()
 
   const setGeneralSetting = (e) => {
     setSetting({ ...setting, [e.target.name]: e.target.value })

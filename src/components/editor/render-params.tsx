@@ -3,7 +3,8 @@ import { useRef, useState } from "react"
 import { PiHashStraight, PiTimer, PiTrash } from "react-icons/pi"
 
 import { IdentityPreview } from "~components/options/identity-setting"
-import { useSettingContext } from "~contexts/setting-context"
+import { useSetting } from "~contexts/setting-context"
+import { TIME } from "~lib/constants"
 import type { IIdentity } from "~lib/types"
 
 interface IDateProps {
@@ -27,7 +28,7 @@ const getDate = (zone: string, timestamp: number) => {
 }
 
 export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
-  const { setting } = useSettingContext()
+  const { setting } = useSetting()
 
   const [zone, setZone] = useState(setting.editorTimeZone)
 
@@ -46,7 +47,11 @@ export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
       <div className="w-4 flex justify-center">
         <PiTimer />
       </div>
-      <form ref={form} onChange={handleOnChange} className="flex gap-2">
+      <form
+        name="date-time"
+        ref={form}
+        onChange={handleOnChange}
+        className="flex gap-2">
         <input
           name="date"
           type="date"
@@ -74,12 +79,12 @@ export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
       <div className="flex flex-auto gap-1 text-xs items-center justify-start">
         <button
           className="border hover:bg-zinc-100 rounded-md px-1 py-[3px]"
-          onClick={() => setter(timestamp + 24 * 60 * 60 * 1000)}>
+          onClick={() => setter(timestamp + TIME.ONE_DAY)}>
           +24H
         </button>
         <button
           className="border hover:bg-zinc-100 rounded-md px-1 py-[3px]"
-          onClick={() => setter(timestamp + 7 * 24 * 60 * 60 * 1000)}>
+          onClick={() => setter(timestamp + 7 * TIME.ONE_DAY)}>
           +7D
         </button>
         <button

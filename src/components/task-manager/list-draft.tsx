@@ -4,7 +4,7 @@ import { PiTrash } from "react-icons/pi"
 import { RenderAllElementsReadOnlyWithCopy } from "~components/editor/render-element-readonly"
 import { LabelStatus, TimeStatus } from "~components/editor/status"
 import * as C from "~components/ui/collapsible"
-import { useDraftContext } from "~contexts/draft-context"
+import { useDraft } from "~contexts/draft-context"
 import { getUpcommingPreview } from "~lib/task-helpers"
 
 import InboxItemWrapper from "./inbox-item-wrapper"
@@ -12,21 +12,19 @@ import { TaskGroupWrapper } from "./task-group"
 import { TaskToolbar } from "./task-toolbar"
 
 export const DraftList = () => {
-  const { drafts } = useDraftContext()
+  const { drafts } = useDraft()
 
   return (
     <TaskGroupWrapper>
       {drafts.map((t) => (
-        <div key={`${t.id}`}>
-          <DraftItem type="draft" item={t} />
-        </div>
+        <DraftItem key={`${t.id}`} type="draft" item={t} />
       ))}
     </TaskGroupWrapper>
   )
 }
 
 const DraftItem = ({ type, item }) => {
-  const { setDrafts } = useDraftContext()
+  const { setDrafts } = useDraft()
 
   const [show, setShow] = useState(false)
   const [showWarning, setShowWarning] = useState(false)

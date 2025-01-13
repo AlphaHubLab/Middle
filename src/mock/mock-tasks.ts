@@ -27,6 +27,7 @@ export const mockTask: ITask[] = [
       id: `${i}`,
       done: false,
       dateAdded: new Date().getTime(),
+      dateDone: -1,
       params: {
         tags: [],
         identities: [],

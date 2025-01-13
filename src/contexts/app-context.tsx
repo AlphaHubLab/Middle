@@ -5,7 +5,7 @@ import type { IStore, ITaskCore } from "~lib/types"
 
 type IEditorType = "new" | "draft" | "task"
 
-interface AppStateContext {
+interface IAppContext {
   openEditMode: (taskCore: ITaskCore, editorType: IEditorType) => void
   setEditMode: Dispatch<boolean>
   newEditor: () => void
@@ -14,7 +14,7 @@ interface AppStateContext {
   editorType: IEditorType
 }
 
-const AppState = createContext({} as AppStateContext)
+const App = createContext<IAppContext>(null)
 
 export default function AppStateProvider({ children }) {
   const [editMode, setEditMode] = useState(false)
@@ -56,7 +56,7 @@ export default function AppStateProvider({ children }) {
     editorType
   }
 
-  return <AppState.Provider value={context}>{children}</AppState.Provider>
+  return <App.Provider value={context}>{children}</App.Provider>
 }
 
-export const useAppState = () => useContext(AppState)
+export const useApp = () => useContext(App)

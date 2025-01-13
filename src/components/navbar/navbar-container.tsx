@@ -10,8 +10,9 @@ import { RenderAllElementsReadOnlyWithCopy } from "~components/editor/render-ele
 //   TaskItemWithSearchedWrapper,
 // } from "~components/tasks/tasklist"
 import * as C from "~components/ui/collapsible"
-import { useDraftContext } from "~contexts/draft-context"
-import { usePersistContext } from "~contexts/persisting-context"
+import { useDraft } from "~contexts/draft-context"
+import { usePersist } from "~contexts/persist-context"
+import { useSetting } from "~contexts/setting-context"
 import { fetchconfig } from "~fetch.config"
 import { getDetailedPreview } from "~lib/task-helpers"
 import type { ITask, ITaskCore } from "~lib/types"
@@ -26,7 +27,7 @@ export const SearchedItemWrapper = ({ children }) => {
 }
 
 const SearchedItem = ({ type, item }) => {
-  const { handleDone } = usePersistContext()
+  const { handleDone } = usePersist()
 
   const [show, setShow] = useState(false)
 
@@ -121,14 +122,22 @@ const SearchedItem = ({ type, item }) => {
 
 export default function NavbarContainer() {
   const [search, setSearch] = useState("")
-  // const [searchWord, setSearchWord] = useState("")
   const [showSearch, setShowSearch] = useState(false)
+  const { setting, setSetting } = useSetting()
+  // const [searchWord, setSearchWord] = useState("")
   // const [isPending, startTransition] = useTransition()
   return (
-    <nav className="relative w-full h-24 flex items-center justify-center gap-8 px-8">
+    <nav className="relative w-full h-12 bg-red-100 flex items-center justify-center gap-8 px-8">
       {/* <a className="invisible lg:visible absolute left-10 top-6 font-bold text-4xl" href="#">
         Fetch
       </a> */}
+      <button
+        onClick={() => {
+          setSetting((prev) => ({ ...prev, darkMode: !prev.darkMode }))
+        }}>
+        Toggle
+      </button>
+
       <div className="w-full max-w-[580px] mx-auto has-[:focus]:outline shadow-sm border rounded-lg h-6 flex gap-2 px-1 items-center justify-center h-fit">
         <CiSearch />
         <input
@@ -169,8 +178,8 @@ const SearchPanel = ({ search, onClose }) => {
   //   draftsResults: []
   // })
 
-  const { tasks, history } = usePersistContext()
-  const { drafts } = useDraftContext()
+  const { tasks, history } = usePersist()
+  const { drafts } = useDraft()
 
   useEffect(() => {
     style?.opacity === 0 && setStyle({ opacity: 1 })

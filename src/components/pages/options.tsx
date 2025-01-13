@@ -2,7 +2,7 @@ import DangerZoneSetting from "~components/options/danger-zone-setting"
 import GeneralSetting from "~components/options/general-setting"
 import IdentitySection from "~components/options/identity-setting"
 import DraftProvider from "~contexts/draft-context"
-import PersistProvider from "~contexts/persisting-context"
+import PersistProvider from "~contexts/persist-context"
 import SettingProvider from "~contexts/setting-context"
 
 export default function OptionMain({ isDev = false }) {

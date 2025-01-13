@@ -1,14 +1,9 @@
-import type { ReactNode } from "react"
-import { IoTimeOutline } from "react-icons/io5"
-import { PiLinkThin } from "react-icons/pi"
+import { PiHash, PiLink, PiTimer } from "react-icons/pi"
 
 import Loading from "~components/ui/loading/loading"
+import { TIME } from "~lib/constants"
 import { getLabels } from "~lib/task-helpers"
-import type { IHistory, ITask, ITaskCore } from "~lib/types"
-
-const MINUTE = 60 * 1000
-const HOUR = 60 * 60 * 1000
-const ONE_DAY = 24 * 60 * 60 * 1000
+import type { ITask, ITaskCore } from "~lib/types"
 
 const remainingTime = (task: ITask) => {
   const { dueDate } = task.params
@@ -23,16 +18,16 @@ const remainingTime = (task: ITask) => {
   // if (remain > ONE_DAY) return null
 
   const remainValue = Math.abs(remain)
-  if (remainValue < HOUR) {
-    return { value: Math.round(remain / MINUTE), appendix: "Min" }
-  } else if (remainValue < ONE_DAY) {
-    return { value: Math.round(remain / HOUR), appendix: "Hr" }
+  if (remainValue < TIME.HOUR) {
+    return { value: Math.round(remain / TIME.MINUTE), appendix: "Min" }
+  } else if (remainValue < TIME.ONE_DAY) {
+    return { value: Math.round(remain / TIME.HOUR), appendix: "Hr" }
   } else {
-    return { value: Math.round(remain / ONE_DAY), appendix: "Day" }
+    return { value: Math.round(remain / TIME.ONE_DAY), appendix: "Day" }
   }
 }
 
-const ellapsedTime = (history: IHistory) => {
+const ellapsedTime = (history: ITask) => {
   const { dateDone } = history
 
   // Subject to remove
@@ -44,12 +39,12 @@ const ellapsedTime = (history: IHistory) => {
   // Subject to remove
   // if (remain > ONE_DAY) return null
 
-  if (ellapsed < HOUR) {
-    return { value: Math.round(ellapsed / MINUTE), appendix: "Min" }
-  } else if (ellapsed < ONE_DAY) {
-    return { value: Math.round(ellapsed / HOUR), appendix: "Hr" }
+  if (ellapsed < TIME.HOUR) {
+    return { value: Math.round(ellapsed / TIME.MINUTE), appendix: "Min" }
+  } else if (ellapsed < TIME.ONE_DAY) {
+    return { value: Math.round(ellapsed / TIME.HOUR), appendix: "Hr" }
   } else {
-    return { value: Math.round(ellapsed / ONE_DAY), appendix: "Day" }
+    return { value: Math.round(ellapsed / TIME.ONE_DAY), appendix: "Day" }
   }
 }
 
@@ -62,17 +57,35 @@ export const LabelStatus = ({
 }) => {
   const { date, link, tag } = getLabels(taskCore)
 
+  if (!date && !link && !tag) return false
+
+  if (isEditor) {
+    return (
+      <div className="flex gap-2 items-center">
+        {date && (
+          <span className="text-zinc-400 min-w-4">
+            <PiTimer />
+          </span>
+        )}
+        {link && (
+          <span className="text-zinc-400 min-w-4">
+            <PiLink />
+          </span>
+        )}
+        {tag && (
+          <span className="text-zinc-400 min-w-4">
+            <PiHash />
+          </span>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="flex gap-2 items-center">
-      <span className={`text-zinc-400 ${!isEditor && "min-w-4"}`}>
-        {date && <IoTimeOutline />}
-      </span>
-      <span className={`text-zinc-400 ${!isEditor && "min-w-4"}`}>
-        {link && <PiLinkThin />}
-      </span>
-      <span className={`text-zinc-400 ${!isEditor && "min-w-4"}`}>
-        {tag && "#"}
-      </span>
+      <span className="text-zinc-400 min-w-4">{date && <PiTimer />}</span>
+      <span className="text-zinc-400 min-w-4">{link && <PiLink />}</span>
+      <span className="text-zinc-400 min-w-4">{tag && <PiHash />}</span>
     </div>
   )
 }
@@ -81,11 +94,11 @@ export const TimeStatus = ({
   item,
   itemType
 }: {
-  item: ITask | IHistory
+  item: ITask
   itemType: "task" | "history"
 }) => {
   if (itemType === "task") {
-    const time = remainingTime(item as ITask)
+    const time = remainingTime(item)
 
     if (!time) return false
 
@@ -103,7 +116,7 @@ export const TimeStatus = ({
   }
 
   if (itemType === "history") {
-    const time = ellapsedTime(item as IHistory)
+    const time = ellapsedTime(item)
 
     return (
       <span className="text-xs text-emerald-500">

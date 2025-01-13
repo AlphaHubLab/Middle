@@ -140,3 +140,39 @@
   scrollbar-color: #eaeaea #ffffff00;
   scrollbar-gutter: stable;
 }
+
+@keyframes drawer-down {
+  0% {
+    top: 200px;
+  }
+
+  40% {
+    top: calc(100% - 100px);
+  }
+
+  100% {
+    top: calc(100% - 126px);
+  }
+}
+
+@keyframes drawer-up {
+  0% {
+    top: calc(100% - 126px);
+  }
+
+  40% {
+    top: 180px;
+  }
+
+  100% {
+    top: 200px;
+  }
+}
+
+.drawer-down {
+  animation: drawer-down 0.3s forwards;
+}
+
+.drawer-up {
+  animation: drawer-up 0.3s forwards;
+}

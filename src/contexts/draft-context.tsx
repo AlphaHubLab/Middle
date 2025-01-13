@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect } from "react"
+import { createContext, useContext } from "react"
 
 import { Storage } from "@plasmohq/storage"
 import { useStorage } from "@plasmohq/storage/hook"
@@ -11,7 +11,7 @@ interface IDraftContext {
   storageLoading: boolean
 }
 
-const Drafting = createContext({} as IDraftContext)
+const Draft = createContext<IDraftContext>(null)
 
 export default function DraftProvider({ children }) {
   const [drafts, setDrafts, { isLoading: storageLoading }] = useStorage(
@@ -24,19 +24,9 @@ export default function DraftProvider({ children }) {
     (v: IDraft[]) => (!v ? [] : v)
   )
 
-  // console.log(() => remove())
-  // uncomment the following lines to reset storage and
-  // refresh the page with cmd + r ~ 7-8 times
-
-  // useEffect(() => {
-  //   if (drafts.length) {
-  //     remove()
-  //   }
-  // }, [drafts])
-
   const context = { drafts, setDrafts, storageLoading }
 
-  return <Drafting.Provider value={context}>{children}</Drafting.Provider>
+  return <Draft.Provider value={context}>{children}</Draft.Provider>
 }
 
-export const useDraftContext = () => useContext(Drafting)
+export const useDraft = () => useContext(Draft)

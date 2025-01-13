@@ -2,8 +2,7 @@ import isUrl from "is-url"
 import { useEffect, useRef } from "react"
 import { PiLink } from "react-icons/pi"
 
-import { useAppState } from "~contexts/app-context"
-import useDraft from "~hooks/useDraft"
+import { useApp } from "~contexts/app-context"
 import { isTaskEmpty } from "~lib/task-helpers"
 import type { IStore } from "~lib/types"
 
@@ -12,7 +11,7 @@ import {
   IdentityWithProps,
   TagsWithProps
 } from "./render-params"
-import { DraftStatus, LabelStatus } from "./status"
+import { LabelStatus } from "./status"
 
 interface IRenderElementProps {
   type: string
@@ -55,28 +54,31 @@ export const RenderElement = ({ type, ...props }: IRenderElementProps) => {
 
 const HeaderWithProps = (props: IHeaderProps) => {
   const { store } = props
-  const { editorType } = useAppState()
-  const { isLoading } = useDraft(store, editorType !== "task")
+  const { editMode } = useApp()
 
   return (
     <div>
-      <div className="flex flex-col-reverse sm:flex-row w-full pl-4 gap-2 py-2">
+      <div className="flex w-full pl-4 py-2">
         <input
-          placeholder="LFG..."
+          placeholder={editMode ? "LFG..." : "Click to start..."}
           type="text"
           ref={props.addToRef}
-          className="hover:bg-zinc-50 text-2xl sm:text-4xl w-full p-2 font-bold appearance-none leading-tight focus:bg-zinc-100 focus:outline-none rounded-lg"
+          className="
+          w-full p-2 appearance-none rounded-lg bg-inherit
+          font-bold text-xl leading-tight focus:text-2xl sm:focus:text-4xl sm:text-2xl 
+          text-fetch-black dark:text-fetch-lightgray
+          transition-all durration-100
+          focus:ring-1 focus:ring-fetch-black/50 dark:focus:ring-fetch-primary/50
+          dark:placeholder-fetch-darkgray
+          caret-fetch-primary outline-none"
           value={props.value}
           onPaste={props.onPaste}
           onChange={props.onChange}
           onKeyDown={props.onKeyDown}
           onFocus={props.onFocus}
         />
-        <div className="flex items-center">
-          <div className="flex-auto pl-2 sm:pl-0 sm:flex-0">
-            <LabelStatus taskCore={store} isEditor={true} />
-          </div>
-          <DraftStatus isLoading={isLoading} />
+        <div className="pl-2 sm:flex items-center hidden">
+          <LabelStatus taskCore={store} isEditor={true} />
         </div>
       </div>
 
@@ -116,7 +118,12 @@ const LinkInputWithProps = (props: ILinkProps) => {
       <input
         placeholder="add link..."
         ref={props.addToRef}
-        className={`hover:bg-zinc-50 text-sm w-full px-2 py-[2px] underline ${isUrl(props.value) ? "text-blue-500" : "text-zinc-400"} leading-tight focus:bg-zinc-100 focus:outline-none rounded-md`}
+        className={`${isUrl(props.value) ? "text-blue-500" : "text-zinc-500 dark:text-zinc-400"}
+        leading-tight text-sm outline-none underline 
+        w-full px-2 py-[2px] bg-inherit rounded-md resize-none overflow-y-hidden appearance-none
+        focus:bg-zinc-100 dark:focus:bg-fetch-darkgray/40 
+        hover:bg-zinc-50 dark:hover:bg-fetch-darkgray/30 
+        `}
         type="text"
         value={props.value}
         onChange={props.onChange}
@@ -155,7 +162,12 @@ const ParagraphInputWithProps = (props: ITextAreaProps) => {
             : ""
         }
         ref={_addToRef}
-        className="w-full hover:bg-zinc-50 appearance-none w-calc[100%-16px] text-zinc-500 text-sm px-2 py-[2px] overflow-y-hidden leading-tight resize-none focus:bg-zinc-100 focus:outline-none rounded-md"
+        className="
+        w-full px-2 py-[2px] bg-inherit rounded-md resize-none overflow-y-hidden appearance-none outline-none
+        focus:bg-zinc-100 dark:focus:bg-fetch-darkgray/40 
+        hover:bg-zinc-50 dark:hover:bg-fetch-darkgray/30 
+        text-zinc-500 dark:text-zinc-400 leading-tight text-sm
+        "
         value={props.value}
         onChange={props.onChange}
         onKeyDown={props.onKeyDown}

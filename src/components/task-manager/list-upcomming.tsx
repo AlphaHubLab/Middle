@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { RenderAllElementsReadOnlyWithCopy } from "~components/editor/render-element-readonly"
 import { LabelStatus, TimeStatus } from "~components/editor/status"
 import * as C from "~components/ui/collapsible"
-import { usePersistContext } from "~contexts/persisting-context"
+import { usePersist } from "~contexts/persist-context"
 import { useVisibleTasks } from "~contexts/visible-tasks-context"
 import { fetchconfig } from "~fetch.config"
 import { getUpcommingPreview } from "~lib/task-helpers"
@@ -33,22 +33,18 @@ export const UpcommingList = () => {
   return (
     <TaskGroupWrapper>
       {UPCOMMING_GROUP.map((group) => (
-        <div key={`taskgroup-${group.label}`}>
-          <TaskGroup {...group}>
-            {visibleTasks[group.value].map((t: ITask) => (
-              <div key={`${t.id}`}>
-                <UpcommingItem type="task" item={t} />
-              </div>
-            ))}
-          </TaskGroup>
-        </div>
+        <TaskGroup key={`taskgroup-${group.label}`} {...group}>
+          {visibleTasks[group.value].map((t: ITask) => (
+            <UpcommingItem key={`${t.id}`} type="task" item={t} />
+          ))}
+        </TaskGroup>
       ))}
     </TaskGroupWrapper>
   )
 }
 
 const UpcommingItem = ({ type, item }) => {
-  const { handleDone } = usePersistContext()
+  const { handleDone } = usePersist()
 
   const [show, setShow] = useState(false)
 
@@ -95,24 +91,24 @@ const UpcommingItem = ({ type, item }) => {
   }
 
   return (
-    <div style={hidingStyle} className="transition-all py-1">
+    <div style={hidingStyle} className="transition-all py-[2px] sm:py-1">
       <InboxItemWrapper>
         <C.CollapsibleForTasks show={show} setShow={setShow}>
           <C.Action>
             <div
-              className={`flex w-8 h-full justify-center items-center bg-zinc-100 ${show && "border-b-[1px]"}`}>
-              <input type="checkbox" onChange={handleCheck} />
+              className={`flex w-8 h-full justify-center items-center bg-fetch-secondary dark:bg-fetch-darkgray ${show && "border-b-[1px] dark:border-zinc-500"}`}>
+              <input tabIndex={-1} type="checkbox" onChange={handleCheck} />
             </div>
           </C.Action>
           <C.Toggle>
             <div
-              className={`h-10 relative bg-zinc-100 hover:cursor-pointer select-none ${show && "border-b-[1px]"}`}>
+              className={`h-9 sm:h-10 relative bg-fetch-secondary dark:bg-fetch-darkgray hover:cursor-pointer select-none ${show && "border-b-[1px] dark:border-zinc-500"}`}>
               <div
                 onTransitionEnd={slide}
                 style={timerStyle}
                 className="absolute z-0 h-full left-0 top-0 transition-[width] ease-in bg-emerald-200 "></div>
-              <div className="relative z-1 flex gap-2 items-center h-full px-2">
-                <h2 className="font-bold text-sm flex-auto px-2">
+              <div className="relative z-1 flex gap-2 items-center h-full">
+                <h2 className="text-fetch-black dark:text-fetch-lightgray font-semibold text-sm flex-auto px-2">
                   {getUpcommingPreview(item.nodes).value}
                 </h2>
                 <TimeStatus item={item} itemType="task" />
@@ -122,9 +118,9 @@ const UpcommingItem = ({ type, item }) => {
           </C.Toggle>
           <C.Content>
             <div className="flex">
-              <div className="w-8"></div>
-              <div className="overflow-y-auto styled-scrollbar h-content max-h-[176px] w-full">
-                <div className="flex gap-2 px-2 py-2 w-full">
+              <div className="basis-8"></div>
+              <div className="overflow-y-auto overflow-x-hidden styled-scrollbar h-content max-h-[176px] basis-full">
+                <div className="py-2 w-full">
                   <RenderAllElementsReadOnlyWithCopy taskCore={item} />
                 </div>
               </div>

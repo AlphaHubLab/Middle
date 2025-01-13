@@ -34,11 +34,12 @@ export interface IDraft extends ITaskCore {
 export interface ITask extends ITaskCore {
   done: boolean
   dateAdded: number
-}
-
-export interface IHistory extends ITask {
   dateDone: number
 }
+
+// export interface IHistory extends ITask {
+//   dateDone: number
+// }
 
 export interface IStore extends ITaskCore {
   range: number

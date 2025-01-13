@@ -1,10 +1,10 @@
 import { Section } from "~components/ui/text"
-import { useDraftContext } from "~contexts/draft-context"
-import { usePersistContext } from "~contexts/persisting-context"
+import { useDraft } from "~contexts/draft-context"
+import { usePersist } from "~contexts/persist-context"
 
 export default function DangerZoneSetting() {
-  const { setDrafts } = useDraftContext()
-  const { setTasks, setHistory } = usePersistContext()
+  const { setDrafts } = useDraft()
+  const { setTasks, setHistory } = usePersist()
 
   return (
     <Section title="Danger zone!">

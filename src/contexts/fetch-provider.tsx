@@ -1,6 +1,6 @@
 import AppStateProvider  from "./app-context"
 import DraftProvider from "./draft-context"
-import PersistProvider from "./persisting-context"
+import PersistProvider from "./persist-context"
 import SettingProvider from "./setting-context"
 import VisibleTasksProvider from "./visible-tasks-context"
 

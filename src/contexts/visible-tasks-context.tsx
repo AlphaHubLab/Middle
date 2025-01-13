@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react"
 import type { ReactNode } from "react"
 
+import { TIME } from "~lib/constants"
 import type { ITask } from "~lib/types"
 
-import { usePersistContext } from "./persisting-context"
+import { usePersist } from "./persist-context"
 
 interface IVisibleTasks {
   overdue: ITask[]
@@ -24,10 +25,6 @@ const emptyVisibleTasks = {
 }
 
 export const filterTasks = (tasks: ITask[]): IVisibleTasks => {
-  const ONE_HOUR = 60 * 60 * 1000
-  const ONE_DAY = 24 * 60 * 60 * 1000
-  const TWO_DAY = 48 * 60 * 60 * 1000
-
   const current = new Date().getTime()
 
   const unschaduled: ITask[] = []
@@ -44,11 +41,11 @@ export const filterTasks = (tasks: ITask[]): IVisibleTasks => {
       unschaduled.push(task)
     } else if (dueDate < current) {
       overdue.push(task)
-    } else if (dueDate - ONE_HOUR < current) {
+    } else if (dueDate - TIME.HOUR < current) {
       urgent.push(task)
-    } else if (dueDate - ONE_DAY < current) {
+    } else if (dueDate - TIME.ONE_DAY < current) {
       next24.push(task)
-    } else if (dueDate - TWO_DAY < current) {
+    } else if (dueDate - TIME.TWO_DAYS < current) {
       next48.push(task)
     } else {
       other.push(task)
@@ -72,7 +69,7 @@ export default function VisibleTasksProvider({
 }: {
   children: ReactNode
 }) {
-  const { tasks } = usePersistContext()
+  const { tasks } = usePersist()
 
   const [visibleTasks, setVisibleTasks] =
     useState<IVisibleTasks>(emptyVisibleTasks)
@@ -81,7 +78,7 @@ export default function VisibleTasksProvider({
     if (tasks.length === 0) return
 
     setVisibleTasks(filterTasks(tasks))
-    
+
     const interval = setInterval(
       () => setVisibleTasks(filterTasks(tasks)),
       60 * 1000

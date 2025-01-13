@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { CopyToClipboard } from "react-copy-to-clipboard"
 import { FiCopy } from "react-icons/fi"
 
-import { useSettingContext } from "~contexts/setting-context"
+import { useSetting } from "~contexts/setting-context"
 import type { INode, ITaskCore } from "~lib/types"
 
 export const RenderAllElementsReadOnlyWithCopy = ({
@@ -22,23 +22,22 @@ export const RenderAllElementsReadOnlyWithCopy = ({
       </p>
 
       {taskCore.nodes.map((n, i) => (
-        <div key={`node-readonly-${i}`}>
-          <RenderElementReadOnlyWithCopy {...n} />
-        </div>
+        <RenderElementReadOnlyWithCopy key={`node-readonly-${i}`} {...n} />
       ))}
     </div>
   )
 }
 
 export const RenderElementReadOnly = ({ type, value }: INode) => {
-  if (type === "h") {
-    return <HeaderReadOnly value={value} />
-  }
-  if (type === "p") {
-    return <ParagraphReadOnly value={value} />
-  }
-  if (type === "a") {
-    return <LinkReadOnly value={value} />
+  switch (type) {
+    case "h":
+      return <HeaderReadOnly value={value} />
+
+    case "p":
+      return <ParagraphReadOnly value={value} />
+
+    case "a":
+      return <LinkReadOnly value={value} />
   }
 }
 
@@ -47,7 +46,7 @@ const HeaderReadOnly = ({ value }: { value: string }) => {
   if (value.length === 0) return false
 
   return (
-    <h1 className="w-full h-[36px] p-2 flex items-center font-bold leading-tight rounded-md">
+    <h1 className="w-full px-2 py-4 flex items-center font-bold leading-tight rounded-md">
       {value}
     </h1>
   )
@@ -58,7 +57,7 @@ const LinkReadOnly = ({ value }: { value: string }) => (
     <a
       target="_blank"
       rel="noopener noreferrer"
-      className="text-sm w-full underline text-blue-500 hover:text-blue-300 leading-tight rounded-md"
+      className="text-sm w-full underline text-blue-500 hover:text-blue-300 leading-tight rounded-md break-all"
       href={value as string}>
       {value}
     </a>
@@ -88,7 +87,7 @@ export const RenderElementReadOnlyWithCopy = (props: INode) => {
         <RenderElementReadOnly {...props} />
       </div>
       <div
-        className={`text-sm  ${copy ? "opacity-0 transition-all duration-700" : "opacity-1"} invisible group-hover:visible text-zinc-500 hover:text-zinc-400 hover:cursor-pointer px-2`}>
+        className={`text-sm ${copy ? "opacity-0 transition-all duration-700" : "opacity-1"} invisible group-hover:visible text-zinc-500 hover:text-zinc-400 hover:cursor-pointer px-2`}>
         <CopyToClipboard text={props.value} onCopy={() => setCopy(true)}>
           {!copy ? <FiCopy /> : <p className="text-xs">Copied</p>}
         </CopyToClipboard>
@@ -98,7 +97,7 @@ export const RenderElementReadOnlyWithCopy = (props: INode) => {
 }
 
 const DateReadOnly = ({ timestamp }: { timestamp: number }) => {
-  const { setting } = useSettingContext()
+  const { setting } = useSetting()
 
   if (!timestamp) return false
 

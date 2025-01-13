@@ -1,8 +1,8 @@
 import { PiPencilSimpleLine } from "react-icons/pi"
 
-import { useAppState } from "~contexts/app-context"
-import { useDraftContext } from "~contexts/draft-context"
-import type { ITask, ITaskCore } from "~lib/types"
+import { useApp } from "~contexts/app-context"
+import { useDraft } from "~contexts/draft-context"
+import type { ITaskCore } from "~lib/types"
 
 export const TaskToolbar = ({
   type,
@@ -11,8 +11,8 @@ export const TaskToolbar = ({
   item: ITaskCore
   type: "task" | "draft"
 }) => {
-  const { openEditMode } = useAppState()
-  const { setDrafts } = useDraftContext()
+  const { openEditMode } = useApp()
+  const { setDrafts } = useDraft()
 
   const removeDraft = (id: string) => {
     setDrafts((prev) => prev.filter((draft) => draft.id !== id))

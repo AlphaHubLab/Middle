@@ -1,5 +1,12 @@
 import "../style.css"
 
+import Popup from "~components/pages/popup"
+import PersistProvider from "~contexts/persist-context"
+
 export default function IndexPopup() {
-  return <div className="w-[360px] h-[600px] bg-red-100">POPUP</div>
+  return (
+    <PersistProvider>
+      <Popup />
+    </PersistProvider>
+  )
 }

@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect } from "react"
 import { Storage } from "@plasmohq/storage"
 import { useStorage } from "@plasmohq/storage/hook"
 
+import { defaultSetting } from "~fetch.config"
 import { mockIdentities } from "~mock/mock-identities"
 
 interface ISettingContext {
@@ -11,13 +12,11 @@ interface ISettingContext {
   settingLoading: boolean
 }
 
-const SettingContext = createContext({} as ISettingContext)
+const SettingContext = createContext<ISettingContext>(null)
 
 export default function SettingProvider({ isDev, children }) {
-
-  const defaultSetting = {
-    editorTimeZone:'utc',
-    preferredTimeZone:'local',
+  const ds = {
+    ...defaultSetting,
     identities: isDev ? mockIdentities : []
   }
 
@@ -32,7 +31,7 @@ export default function SettingProvider({ isDev, children }) {
         area: "local"
       })
     },
-    (v) => (!v ? defaultSetting : v)
+    (v) => (!v ? ds : v)
   )
 
   const context = {
@@ -40,6 +39,12 @@ export default function SettingProvider({ isDev, children }) {
     setSetting,
     settingLoading
   }
+
+  useEffect(() => {
+    if (!setting) return
+    if (setting.darkMode) document.body.classList.add("dark")
+    if (!setting.darkMode) document.body.classList.remove("dark")
+  }, [setting.darkMode])
 
   //   useEffect(() => {
   //     if (isDev && setting.identities.length === 0) {
@@ -54,4 +59,4 @@ export default function SettingProvider({ isDev, children }) {
   )
 }
 
-export const useSettingContext = () => useContext(SettingContext)
+export const useSetting = () => useContext(SettingContext)

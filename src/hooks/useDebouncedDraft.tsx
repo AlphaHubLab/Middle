@@ -1,18 +1,18 @@
 import React from "react"
 import isEqual from "react-fast-compare"
 
-import { useDraftContext } from "~contexts/draft-context"
+import { useDraft } from "~contexts/draft-context"
 import { isTaskEmpty } from "~lib/task-helpers"
 import type { IStore } from "~lib/types"
 
-export default function useDraft(
+export default function useDebouncedDraft(
   store: IStore,
   enabled: boolean = true,
   delay: number = 1000
 ) {
   const [debounceLoading, setDebounceLoading] = React.useState(false)
 
-  const { drafts, setDrafts, storageLoading } = useDraftContext()
+  const { drafts, setDrafts, storageLoading } = useDraft()
 
   const nodes = React.useRef(store.nodes)
   const params = React.useRef(store.params)

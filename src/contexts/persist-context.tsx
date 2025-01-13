@@ -3,23 +3,22 @@ import { createContext, useContext, useEffect } from "react"
 import { Storage } from "@plasmohq/storage"
 import { useStorage } from "@plasmohq/storage/hook"
 
-// import { config } from "~fetch.config"
-import type { IHistory, IStore, ITask } from "~lib/types"
+import type { IStore, ITask } from "~lib/types"
 import { mockTask } from "~mock/mock-tasks"
 
 interface IPersistContext {
   tasks: ITask[]
-  history: IHistory[]
+  history: ITask[]
   storageLoading: boolean
   historyLoading: boolean
   handlePersist: (store: IStore) => void
   handleDone: (id: string) => void
   handleUndone: (id: string) => void
   setTasks: (arg: ITask[] | ((prev: ITask[]) => void)) => Promise<void>
-  setHistory: (arg: IHistory[] | ((prev: IHistory[]) => void)) => Promise<void>
+  setHistory: (arg: ITask[] | ((prev: ITask[]) => void)) => Promise<void>
 }
 
-const Persisting = createContext<IPersistContext>(undefined)
+const Persist = createContext<IPersistContext>(undefined)
 
 export default function PersistProvider({ children, isDev = false }) {
   const [tasks, setTasks, { isLoading: storageLoading, remove: removeTasks }] =
@@ -44,7 +43,7 @@ export default function PersistProvider({ children, isDev = false }) {
         area: "local"
       })
     },
-    (v: IHistory[]) => (!v ? [] : v)
+    (v: ITask[]) => (!v ? [] : v)
   )
 
   // uncomment the following lines to reset storage and
@@ -65,11 +64,8 @@ export default function PersistProvider({ children, isDev = false }) {
     const _tasks = [...tasks]
     const found = _tasks.find((t) => t.id === id)
 
-    const task: IHistory = {
-      id: found.id,
-      nodes: found.nodes,
-      params: found.params,
-      dateAdded: found.dateAdded,
+    const task: ITask = {
+      ...found,
       done: true,
       dateDone: new Date().getTime()
     }
@@ -86,8 +82,9 @@ export default function PersistProvider({ children, isDev = false }) {
       id: found.id,
       nodes: found.nodes,
       params: found.params,
+      done: false,
       dateAdded: found.dateAdded,
-      done: false
+      dateDone: -1
     }
 
     setTasks((prev) => [...prev, task])
@@ -97,6 +94,7 @@ export default function PersistProvider({ children, isDev = false }) {
   const handlePersist = (store: IStore) => {
     const _tasks = [...tasks]
     const found = _tasks.find((t) => t.id === store.id)
+
     // Do not need cloning since data will be serialized in storage
     // const clone = structuredClone(store)
 
@@ -123,7 +121,8 @@ export default function PersistProvider({ children, isDev = false }) {
         nodes: store.nodes,
         params: store.params,
         done: false,
-        dateAdded
+        dateAdded,
+        dateDone: -1
       })
       // }
     }
@@ -143,7 +142,7 @@ export default function PersistProvider({ children, isDev = false }) {
     setHistory
   }
 
-  return <Persisting.Provider value={context}>{children}</Persisting.Provider>
+  return <Persist.Provider value={context}>{children}</Persist.Provider>
 }
 
-export const usePersistContext = () => useContext(Persisting)
+export const usePersist = () => useContext(Persist)
