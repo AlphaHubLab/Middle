@@ -27,7 +27,7 @@ import { DraftStatus } from "./status"
 type HTMLInputs = HTMLInputElement | HTMLTextAreaElement
 
 const tagRegExp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z_]+\w*/g)
-const projectRegExp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z0-9_]+\w*/g)
+// const projectRegExp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z0-9_]+\w*/g)
 
 export default function Editor({ disabled }) {
   const { initialStore, editorType, setEditMode, newEditor } = useApp()
@@ -89,7 +89,7 @@ export default function Editor({ disabled }) {
   useEffect(() => {
     if (disabled) return // Preventing focus() on disabled state
     nodes?.current[store.focusedNode].focus()
-  }, [store.focusedNode])
+  }, [store.nodes, store.focusedNode])
 
   // focus on Title if task is empty
   // otherwise focus on the stored focusedNodde

@@ -179,7 +179,7 @@ export const DraftItem = ({ type, item }) => {
           </C.Action>
           <C.Toggle>
             <header
-              className={`h-[62px] relative bg-zinc-100 hover:cursor-pointer select-none ${show && "border-b-[1px]"}`}>
+              className={`h-[62px] relative bg-inherit dark:bg-white/10 hover:cursor-pointer select-none ${show && "border-b-[1px] dark:border-zinc-500"}`}>
               <div className="relative z-1 flex gap-2 items-center h-full px-2">
                 <div className="px-2 flex-auto">
                   <ItemView item={item} />
