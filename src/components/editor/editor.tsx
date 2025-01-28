@@ -696,7 +696,7 @@ export default function Editor({ disabled }) {
               </span>
             </button>
             <button
-              className="disabled:text-zinc-300 text-rose-500 hover:text-rose-400 hover:border-rose-400 border duration-200 rounded-md px-1 py-1 text-xs flex items-center justify-center"
+              className="disabled:text-zinc-300 disabled:border-zinc-300ƒ text-rose-500 hover:text-rose-400 hover:border-rose-400 border duration-200 rounded-md px-1 py-1 text-xs flex items-center justify-center"
               disabled={disabled || helpers.isTaskEmpty(store, "loose")}
               onClick={editorType === "new" ? deleteDraft : newTask}>
               <span className="flex gap-2 items-center">

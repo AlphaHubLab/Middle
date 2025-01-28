@@ -15,13 +15,21 @@ export const Modal = (props: IModalProps) => {
   return (
     <>
       {createPortal(
-        <div
-          className="fixed top-0 left-0 right-0 bottom-0 w-full h-full flex items-center justify-center bg-black/70 z-30 p-2"
-          onClick={props.onClose}>
-          <div className={`modal-show px-8 relative ${props.className && props.className}`}>
+        <div className="fixed top-0 left-0 right-0 bottom-0 w-full h-full flex items-center justify-center z-30 p-2">
+          <div
+            onClick={props.onClose}
+            className="fixed top-0 left-0 right-0 bottom-0 w-full h-full bg-black/70 z-0"></div>
+          <div
+            className={`modal-show px-8 relative ${props.className && props.className}`}>
             <header className="flex w-full items-center h-12 border-b">
-              {props.title && <h1 className="flex-auto font-bold">{props.title}</h1>}
-              {props.onClose && <div className="w-full flex justify-end pt-1 px-2">x</div>}
+              {props.title && (
+                <h1 className="flex-auto font-bold">{props.title}</h1>
+              )}
+              {props.onClose && (
+                <div className="cursor-pointer hover:text-zinc-500 w-full flex justify-end pt-1 px-2">
+                  x
+                </div>
+              )}
             </header>
             <div className="pt-4 pb-6">{props.children}</div>
           </div>
