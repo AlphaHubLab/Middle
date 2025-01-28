@@ -1,15 +1,20 @@
 import { DateTime } from "luxon"
 import { useRef, useState } from "react"
-import { PiHashStraight, PiTimer, PiTrash } from "react-icons/pi"
+import { PiHashStraight, PiRepeat, PiTimer, PiTrash } from "react-icons/pi"
 
 import { IdentityPreview } from "~components/options/identity-setting"
 import { useSetting } from "~contexts/setting-context"
 import { TIME } from "~lib/constants"
-import type { IIdentity } from "~lib/types"
+import type { IIdentity, IRepeatParams } from "~lib/types"
 
 interface IDateProps {
   timestamp: number
   setter: (timestamp: number) => void
+}
+
+interface IRepeatProps {
+  repeatParams: IRepeatParams
+  setter: (repeatParams: IRepeatParams) => void
 }
 
 interface IIdentityProps {
@@ -27,6 +32,9 @@ const getDate = (zone: string, timestamp: number) => {
   }
 }
 
+/**
+ * Render DueDate
+ */
 export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
   const { setting } = useSetting()
 
@@ -43,55 +51,66 @@ export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
   }
 
   return (
-    <div className="flex items-center h-10 gap-2">
+    <div className="flex items-center h-10 gap-1">
       <div className="w-4 flex justify-center">
         <PiTimer />
       </div>
-      <form
-        name="date-time"
-        ref={form}
-        onChange={handleOnChange}
-        className="flex gap-2">
-        <input
-          name="date"
-          type="date"
-          className="border text-sm text-zinc-500 border-dashed outline-none focus:bg-zinc-100 rounded-md px-1 my-1"
-          value={getDate(zone, timestamp).date}
-        />
-        <input
-          name="time"
-          value={getDate(zone, timestamp).time}
-          type="time"
-          className="border text-sm text-zinc-500 border-dashed outline-none focus:bg-zinc-100 rounded-md px-1 my-1"></input>
-        <select
-          className="text-sm outline-none"
-          value={zone}
-          onChange={(e) => setZone(e.target.value)}>
-          <option value="local">Local</option>
-          <option value="utc">UTC/GMT</option>
-          <option value="est">EST</option>
-          <option value="cst">CST</option>
-          <option value="mst">MST</option>
-          <option value="pst">PST</option>
-          <option value="utc+08">WST</option>
-        </select>
-      </form>
-      <div className="flex flex-auto gap-1 text-xs items-center justify-start">
-        <button
-          className="border hover:bg-zinc-100 rounded-md px-1 py-[3px]"
-          onClick={() => setter(timestamp + TIME.ONE_DAY)}>
-          +24H
-        </button>
-        <button
-          className="border hover:bg-zinc-100 rounded-md px-1 py-[3px]"
-          onClick={() => setter(timestamp + 7 * TIME.ONE_DAY)}>
-          +7D
-        </button>
-        <button
-          className="border hover:bg-zinc-100 rounded-md px-1 py-[3px]"
-          onClick={() => setter((new Date().getTime() / 10_000) * 10_000)}>
-          Now
-        </button>
+      <div className="flex gap-1 sm:flex-row w-full">
+        <form
+          name="date-time"
+          ref={form}
+          onChange={handleOnChange}
+          className="flex gap-1 items-center">
+          <input
+            name="date"
+            type="date"
+            className="border text-sm text-zinc-500 border-dashed outline-none focus:bg-zinc-100 rounded-md px-1 my-1"
+            value={getDate(zone, timestamp).date}
+            onChange={() => {}}
+          />
+          <input
+            name="time"
+            value={getDate(zone, timestamp).time}
+            type="time"
+            className="border text-sm text-zinc-500 border-dashed outline-none focus:bg-zinc-100 rounded-md px-1 my-1"
+            onChange={() => {}}
+          />
+          <select
+            className="text-xs outline-none border rounded-md h-6"
+            value={zone}
+            onChange={(e) => setZone(e.target.value)}>
+            <option value="local">Local</option>
+            <option value="utc">UTC/GMT</option>
+            <option value="est">EST</option>
+            <option value="cst">CST</option>
+            <option value="mst">MST</option>
+            <option value="pst">PST</option>
+            <option value="utc+08">WST</option>
+          </select>
+        </form>
+        <div
+          role="toolbar"
+          aria-orientation="horizontal"
+          className="hidden sm:flex flex-auto text-xs items-center justify-start">
+          <button
+            aria-label="add a day to the due date"
+            className="border-l border-y hover:bg-zinc-100 rounded-l-md px-1 py-[3px]"
+            onClick={() => setter(timestamp + TIME.ONE_DAY)}>
+            +24H
+          </button>
+          <button
+            aria-label="add a week to the due date"
+            className="border-y border-l hover:bg-zinc-100 px-1 py-[3px]"
+            onClick={() => setter(timestamp + 7 * TIME.ONE_DAY)}>
+            +7D
+          </button>
+          <button
+            aria-label="Set due date to now"
+            className="border hover:bg-zinc-100 rounded-r-md px-1 py-[3px]"
+            onClick={() => setter((new Date().getTime() / 10_000) * 10_000)}>
+            Now
+          </button>
+        </div>
       </div>
       <button
         aria-label="Remove"
@@ -103,6 +122,9 @@ export const DateWithProps = ({ timestamp, setter }: IDateProps) => {
   )
 }
 
+/**
+ * Render Tags
+ */
 export const TagsWithProps = ({ tags }: { tags: string[] }) => {
   return (
     <div className="flex">
@@ -123,6 +145,9 @@ export const TagsWithProps = ({ tags }: { tags: string[] }) => {
   )
 }
 
+/**
+ * Render Identities
+ */
 export const IdentityWithProps = ({
   identities,
   removeIdentity
@@ -134,8 +159,10 @@ export const IdentityWithProps = ({
           This Task should be done using:
         </h3>
       </div>
-      {identities.map((identity, i) => (
-        <div key={`added-identity-${i}`} className="flex items-center">
+      {identities.map((identity) => (
+        <div
+          key={`added-identity-${identity.id}`}
+          className="flex items-center">
           <div className="flex w-full">
             <IdentityPreview identity={identity} />
             <div className="flex items-start pt-1 pl-2">
@@ -149,6 +176,76 @@ export const IdentityWithProps = ({
           </div>
         </div>
       ))}
+    </div>
+  )
+}
+
+/**
+ * Render Repeater
+ */
+export const RepeatWithProps = ({ repeatParams, setter }: IRepeatProps) => {
+  return (
+    <div className="flex items-center min-h-10 gap-2 text-xs py-2 sm:py-0">
+      <div className="w-4 min-h-10 h-full flex justify-center items-center">
+        <PiRepeat />
+      </div>
+
+      <div className="w-full gap-2 flex flex-wrap items-center">
+        <div className="flex items-center gap-2">
+          <p className="shrink-0">Repeat this</p>
+          <select
+            className="text-sm outline-none border rounded-md h-6"
+            value={repeatParams.type}
+            onChange={(e) =>
+              setter({
+                ...repeatParams,
+                type: e.target.value as "until" | "from"
+              })
+            }>
+            <option value="until">Until due date</option>
+            <option value="from">From due date</option>
+          </select>
+        </div>
+        <div className="flex items-center gap-2">
+          {repeatParams.type === "from" && (
+            <>
+              <span>Every</span>
+              <select
+                className="text-sm outline-none border rounded-md py-[1px]"
+                value={repeatParams.step.toString()}
+                onChange={(e) =>
+                  setter({ ...repeatParams, step: Number(e.target.value) })
+                }>
+                <option value={(TIME.HOUR * 12).toString()}>12 Hrs</option>
+                <option value={TIME.ONE_DAY.toString()}>Day</option>
+                <option value={(TIME.ONE_DAY * 2).toString()}>2 Days</option>
+                <option value={(TIME.ONE_DAY * 3).toString()}>3 Days</option>
+                <option value={(TIME.ONE_DAY * 7).toString()}>Week</option>
+                <option value={(TIME.ONE_DAY * 14).toString()}>2 Weeks</option>
+                <option value={(TIME.ONE_DAY * 30).toString()}>Month</option>
+              </select>
+            </>
+          )}
+          <span>For</span>
+          <>
+            <input
+              type="number"
+              value={repeatParams.goal.toString()}
+              onChange={(e) =>
+                setter({ ...repeatParams, goal: Number(e.target.value) })
+              }
+              className="border text-sm text-zinc-500 border-dashed outline-none focus:bg-zinc-100 rounded-md px-1 my-1 w-8"
+            />
+            <span>Times</span>
+          </>
+        </div>
+      </div>
+      <button
+        aria-label="Remove"
+        className="text-rose-500 hover:text-rose-300 text-sm pl-1"
+        onClick={() => setter(null)}>
+        <PiTrash />
+      </button>
     </div>
   )
 }

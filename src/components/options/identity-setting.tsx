@@ -1,12 +1,13 @@
 import { init } from "next/dist/compiled/@vercel/og/satori"
 import { useEffect, useRef, useState } from "react"
 import { HexColorPicker } from "react-colorful"
+import { setSelection } from "slate"
 
 import ButtonFetch from "~components/ui/button-fetch"
 import * as C from "~components/ui/collapsible"
 import Input from "~components/ui/input"
 import Label from "~components/ui/label"
-import { Note, P, Section } from "~components/ui/text"
+import { Note, P, Section } from "~components/ui/typograrphy"
 import { useSetting } from "~contexts/setting-context"
 import type { IIdentity } from "~lib/types"
 
@@ -48,6 +49,7 @@ export default function IdentitySection() {
 
   const [open, setOpen] = useState(false)
   const [showIdEditor, setShowIdEditor] = useState(false)
+  const [editorMode, setEditorMode] = useState("new")
   const [initialIdentity, setInitialIdentity] = useState(
     createNewIdentity(identities)
   )
@@ -80,17 +82,21 @@ export default function IdentitySection() {
           <div className="w-full">
             <div
               style={{ height: !open ? "40px" : "440px" }}
-              className={`${!showIdEditor && "cursor-pointer hover:bg-zinc-200"} w-full overflow-hidden transition-all duration-500 p-2 bg-zinc-50 border-[1px] rounded-md`}>
+              className={`${!showIdEditor && "cursor-pointer hover:bg-slate-200"} w-full overflow-hidden transition-all duration-500 p-2 bg-slate-100 border-[1px] rounded-md`}>
               <div
                 className={`text-sm w-full flex items-center  ${open && "border-b-[1px]"}`}
-                onClick={() =>
-                  !showIdEditor && openEditor(createNewIdentity(identities))
-                }>
+                onClick={() => {
+                  if (showIdEditor === false) {
+                    openEditor(createNewIdentity(identities))
+                    setEditorMode("new")
+                  }
+                }}>
                 +Add Identity
               </div>
               {showIdEditor && (
                 <div className="h-[400px] overflow-y-auto overflow-x-hidden styled-scrollbar">
                   <IdentityEditor
+                    editorMode={editorMode}
                     initialIdentity={initialIdentity}
                     onClose={onClose}
                   />
@@ -115,26 +121,36 @@ export default function IdentitySection() {
         )}
         {identities.length > 0 && (
           <div className="mt-2">
-            {identities.map((identity) => (
-              <div
-                className="flex w-full items-center"
-                key={`loaded-identity-${identity.id}`}>
-                <div className="flex w-full">
-                  <IdentityPreview identity={identity} />
-                  <div className="flex gap-2 h-6 items-center text-xs pl-2">
-                    <button
-                      className="text-blue-500 hover:text-blue-300"
-                      onClick={() => openEditor(identity)}>
-                      Edit
-                    </button>
-                    <button
-                      className="text-rose-500 hover:text-rose-300"
-                      onClick={() => openEditor(identity)}>
-                      Remove
-                    </button>
-                  </div>
-                </div>
-              </div>
+            {identities.map((identity: IIdentity) => (
+              <IdentityPerviewWithToolbar
+                key={`loaded-identity-${identity.id}`}
+                identity={identity}
+                setEditorMode={setEditorMode}
+                openEditor={openEditor}
+              />
+              // <div
+              //   className="flex w-full items-center"
+              //   key={`loaded-identity-${identity.id}`}>
+              //   <div className="flex w-full">
+              //     <IdentityPreview identity={identity} />
+              //     <div className="flex gap-2 h-6 items-center text-xs pl-2">
+              //       <button
+              //         className="text-blue-500 hover:text-blue-300"
+              //         onClick={() => {
+              //           openEditor(structuredClone(identity))
+              //           setEditorMode("edit")
+              //         }}>
+              //         Edit
+              //       </button>
+              //       <button
+              //         className="text-rose-500 hover:text-rose-300"
+              //         // onClick={() => openEditor(identity)}
+              //       >
+              //         Remove
+              //       </button>
+              //     </div>
+              //   </div>
+              // </div>
             ))}
           </div>
         )}
@@ -143,12 +159,76 @@ export default function IdentitySection() {
   )
 }
 
-const IdentityEditor = ({ initialIdentity, onClose }) => {
+const IdentityPerviewWithToolbar = ({
+  identity,
+  openEditor,
+  setEditorMode
+}) => {
+  const { setSetting } = useSetting()
+
+  const [showWarning, setShowWarning] = useState(false)
+
+  const removeIdentity = (id: number) => {
+    setSetting((prev) => ({
+      ...prev,
+      identities: prev.identities.filter((identity) => identity.id !== id)
+    }))
+  }
+
+  return (
+    <div className="flex w-full items-center">
+      <div className="flex w-full">
+        <div className="flex-auto">
+          <IdentityPreview identity={identity} />
+        </div>
+        <div className="flex w-fit gap-2 h-6 items-center text-xs pl-2">
+          {!showWarning ? (
+            <>
+              <button
+                className="text-blue-500 hover:text-blue-300"
+                onClick={() => {
+                  openEditor(structuredClone(identity))
+                  setEditorMode("edit")
+                }}>
+                Edit
+              </button>
+              <button
+                className="text-rose-500 hover:text-rose-300"
+                onClick={() => setShowWarning(true)}>
+                Delete
+              </button>
+            </>
+          ) : (
+            <div className="flex bg-rose-100 rounded-md border-rose-500 px-2 gap-4">
+              <p className="shrink-0 text-rose-500">
+                Delete "{identity.label}"?
+              </p>
+              <button
+                className="text-rose-500 hover:text-rose-300"
+                onClick={() => removeIdentity(identity.id)}>
+                YES!
+              </button>
+              <button
+                className="text-blue-500 hover:text-blue-300"
+                onClick={() => setShowWarning(false)}>
+                No
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const IdentityEditor = ({ initialIdentity, onClose, editorMode }) => {
   const [identity, setIdentity] = useState<IIdentity>(initialIdentity)
   const [showColorPicker, setShowColorPicker] = useState(false)
   const [duplicate, setDuplicate] = useState(false)
 
   const { setting, setSetting } = useSetting()
+
+  useEffect(() => setDuplicate(false), [initialIdentity])
 
   useEffect(() => setIdentity(initialIdentity), [initialIdentity])
 
@@ -165,11 +245,13 @@ const IdentityEditor = ({ initialIdentity, onClose }) => {
   }
 
   const saveIdentity = () => {
-    let duplicate = (setting.identities as IIdentity[]).find(
-      (idn) => idn.label.toLowerCase() === identity.label.toLowerCase()
-    )
+    if (editorMode === "new") {
+      let duplicate = (setting.identities as IIdentity[]).find(
+        (idn) => idn.label.toLowerCase() === identity.label.toLowerCase()
+      )
 
-    if (duplicate) return setDuplicate(true)
+      if (duplicate) return setDuplicate(true)
+    }
 
     setSetting((prev: Record<string, any>) => {
       const identities = structuredClone(prev.identities)
@@ -189,16 +271,17 @@ const IdentityEditor = ({ initialIdentity, onClose }) => {
 
   return (
     <div className="w-full p-2">
-      <div className="flex">
-        <ButtonFetch
-          variant="primary"
-          className="text-sm"
+      <div className="flex text-sm gap-2">
+        <button
+          className="px-2 py-1 bg-fetch-primary hover:bg-violet-700 text-white rounded-md"
           onClick={saveIdentity}>
           Save
-        </ButtonFetch>
-        <ButtonFetch variant="primary" className="text-sm" onClick={onClose}>
+        </button>
+        <button
+          className="px-2 py-1 border hover:border-rose-500 text-rose-500 hover:text-rose-300 rounded-md"
+          onClick={onClose}>
           Discard
-        </ButtonFetch>
+        </button>
       </div>
 
       {/* label and color */}
@@ -207,7 +290,7 @@ const IdentityEditor = ({ initialIdentity, onClose }) => {
         {showColorPicker && (
           <div
             onClick={() => setShowColorPicker(false)}
-            className="w-full h-full top-0 left-0 fixed"></div>
+            className="w-full z-10 h-full top-0 left-0 fixed"></div>
         )}
         <h2 className="font-bold text-sm text-zinc-700 border-b-[1px]">
           Name & Color
@@ -233,12 +316,12 @@ const IdentityEditor = ({ initialIdentity, onClose }) => {
             <div className="w-full relative flex items-center gap-2 h-8 justify-around ">
               <button
                 onClick={() => setShowColorPicker(true)}
-                className="text-sm border w-full h-full hover:bg-zinc-100 cursor-pointer rounded-md ">
+                className="text-sm border w-full h-full bg-slate-200 hover:bg-slate-50 cursor-pointer rounded-md ">
                 Pick
               </button>
 
               {showColorPicker && (
-                <div className="absolute top-10 right-0 z-100">
+                <div className="absolute top-10 right-0 z-10">
                   <HexColorPicker
                     color={identity.color}
                     onChange={(c) =>
@@ -265,14 +348,14 @@ const IdentityEditor = ({ initialIdentity, onClose }) => {
       </div>
       <div>
         <div id="items" className="py-6">
-          <div className="sticky top-0 bg-zinc-50">
+          <div className="sticky top-0 bg-slate-100">
             <h2 className="font-bold text-sm text-zinc-700 ">Identity items</h2>
             <p className="text-xs text-zinc-500 mb-2 border-b-[1px]">
               Identity items (wallets, socials, etc...)
             </p>
             <div className="py-4 flex items-center w-full">
               <button
-                className="text-sm border rounded-md w-full py-1"
+                className="text-sm border rounded-md w-full py-1 bg-slate-200 hover:bg-slate-50"
                 onClick={() =>
                   setIdentity((prev) => ({
                     ...prev,
@@ -328,14 +411,15 @@ export const IdentityPreview = ({ identity }: { identity: IIdentity }) => {
       <div className="w-full">
         <C.Collapsible>
           <C.Toggle>
-            <header className="select-none text-zinc-700 text-sm font-bold py-[2px] cursor-pointer px-2 hover:bg-zinc-100 rounded-md ">
+            <header className="select-none text-zinc-700 text-sm font-bold py-[2px] cursor-pointer px-2 hover:bg-slate-100 rounded-md ">
               <p>{identity.label}</p>
             </header>
           </C.Toggle>
           <C.Content>
             <div className="pl-2 pb-3">
-              {identity.items.map((item) => (
+              {identity.items.map((item, i) => (
                 <div
+                  key={`${item}-${i}`}
                   style={{ borderColor: identity.color }}
                   className="flex px-2 gap-2 border-l text-sm text-zinc-500">
                   <p className="font-bold">{item.key}:</p>

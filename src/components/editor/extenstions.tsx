@@ -1,5 +1,5 @@
 import {
-  PiFloppyDiskBack,
+  // PiFloppyDiskBack,
   PiLink,
   PiTextH,
   PiTextT,
@@ -9,14 +9,6 @@ import {
 import type { IExtenstion, IIdentity } from "~lib/types"
 
 export const GENERAL_EXTENTIONS: IExtenstion[] = [
-  {
-    icon: PiTextH,
-    title: "Add Title",
-    value: "h",
-    action: "addNode",
-    description: "Add a main title",
-    keywords: ["header", "title"]
-  },
   {
     icon: PiTextT,
     title: "Text",
@@ -60,13 +52,39 @@ export const GENERAL_EXTENTIONS: IExtenstion[] = [
     keywords: ["7", "7d", "week", "date"]
   },
   {
-    icon: PiFloppyDiskBack,
-    title: "Store",
-    value: null,
-    action: "persist",
-    description: "Store",
-    keywords: ["save", "store", "ok", "done"]
+    icon: PiTimer,
+    title: "Repeater",
+    value: { type: "until", goal: 7, step: 24 * 60 * 60 * 1000 },
+    action: "addRepeat",
+    description: "Add a Repeater to your task",
+    keywords: ["repeat", "date"]
   }
+  // {
+  //   icon: PiTimer,
+  //   title: "Repeat 10 times",
+  //   value: { type: "until", goal: 10, step: 24 * 60 * 60 * 1000 },
+  //   action: "addRepeat",
+  //   description: "Repeat 10 times until due date",
+  //   keywords: ["repeat", "every day", "daily", "date"]
+  // },
+  // {
+  //   icon: PiTimer,
+  //   title: "Repeat Daily",
+  //   value: { type: "from", goal: 10, step: 24 * 60 * 60 * 1000 },
+  //   action: "addDate",
+  //   description: "Repeat",
+  //   keywords: ["repeat", "every day", "daily", "date"]
+  // }
+
+  // Todo
+  // {
+  //   icon: PiFloppyDiskBack,
+  //   title: "Store",
+  //   value: null,
+  //   action: "persist",
+  //   description: "Store",
+  //   keywords: ["save", "store", "ok", "done"]
+  // }
 ]
 
 /**

@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react"
+import { createContext, useContext, useEffect } from "react"
 
 import { Storage } from "@plasmohq/storage"
 import { useStorage } from "@plasmohq/storage/hook"
@@ -14,7 +14,11 @@ interface IDraftContext {
 const Draft = createContext<IDraftContext>(null)
 
 export default function DraftProvider({ children }) {
-  const [drafts, setDrafts, { isLoading: storageLoading }] = useStorage(
+  const [
+    drafts,
+    setDrafts,
+    { isLoading: storageLoading, remove: removeDrafts }
+  ] = useStorage(
     {
       key: "middle-drafts",
       instance: new Storage({
@@ -23,6 +27,12 @@ export default function DraftProvider({ children }) {
     },
     (v: IDraft[]) => (!v ? [] : v)
   )
+
+  // useEffect(() => {
+  //   if (drafts.length) {
+  //     removeDrafts()
+  //   }
+  // }, [drafts])
 
   const context = { drafts, setDrafts, storageLoading }
 

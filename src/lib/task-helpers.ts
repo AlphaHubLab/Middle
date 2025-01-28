@@ -1,10 +1,11 @@
 import uuid4 from "uuid4"
 
 import type {
-  IDraft,
   IExtenstion,
   INode,
+  IReference,
   IStore,
+  IStoreParams,
   ITaskCore,
   ITaskParams,
   NodeType
@@ -13,9 +14,9 @@ import type {
 const urlRegex =
   /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi
 
-const onlyUrlRegex = new RegExp(
+const onlyUrlRegex =
   /^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})$/gi
-)
+
 /**
  *
  * @param store
@@ -83,6 +84,7 @@ export const splitTextByUrls = (e: ClipboardEvent, store: IStore) => {
 
     for (let j = 0; j < splittedBySpace[i].length; j++) {
       const isUrl = urls.includes(splittedBySpace[i][j])
+
       if (isUrl === false) {
         str = str + " " + splittedBySpace[i][j]
         if (j === splittedBySpace[i].length - 1) {
@@ -126,19 +128,21 @@ export const getNodeType = (_node: INode, _newValue = null): NodeType => {
  *
  * @param store
  */
-export const getLabels = (taskCore: ITaskCore) => {
+export const getLabels = (taskCore: ITaskCore | IStore) => {
   const { nodes, params } = taskCore
   const labels = { date: false, link: false, tag: false }
+
   if (params.dueDate !== -1) labels.date = true
   if (nodes.find((n) => n.type === "a")) labels.link = true
   if (params.tags.length > 0) labels.tag = true
+
   return labels
 }
 
 /**
  * Create and return an Empty new task template with UUID
  */
-export const createInitialStore = () =>
+export const createEmptyStore = () =>
   ({
     id: uuid4(),
     nodes: [
@@ -147,7 +151,7 @@ export const createInitialStore = () =>
     ],
     range: 0,
     focusedNode: 0,
-    params: { dueDate: -1, tags: [], identities: [] }
+    params: getStoreDefaultParams()
   }) as IStore
 
 /**
@@ -166,28 +170,44 @@ export const getAvailableExtensions = (
     : extensions
 }
 
-// export const convertToTask = (store): ITask => {
-//   return    {   id: store.id,
-//   nodes: store.nodes,
-//   params: store.params,
-//   done: false,
-//   dateAdded, 
-//   dateDone: -1
-// }
-// }
-export const convertToStore = ({ id, nodes, params }: ITaskCore): IStore => {
+/**
+ * Convert persisted single task/draft to editable store
+ */
+export const convertToStore = ({
+  id,
+  nodes,
+  params
+}: {
+  id: string
+  nodes: INode[]
+  params: ITaskParams | IStoreParams
+}): IStore => {
   return {
     id: id,
     nodes: [...nodes],
-    params: { ...params },
+    params: {
+      ...params,
+      repeatParams: params.hasOwnProperty("repeatParams")
+        ? (params as IStoreParams).repeatParams // if edit
+        : null // if task edit
+    },
     focusedNode: nodes.length - 1,
     range: nodes[nodes.length - 1].value.length
   }
 }
 
+export const convertReferenceToStore = (reference: IReference): IStore => {
+  return {
+    id: reference.id,
+    nodes: reference.nodes,
+    params: reference.params,
+    focusedNode: 0,
+    range: 0
+  }
+}
+
 /**
  * Return the first node that has a value
- * @param nodes
  */
 export const getFirstNonEmptyNode = (nodes: INode[]) => {
   const len = nodes.length
@@ -204,9 +224,12 @@ export const getFirstNonEmptyNode = (nodes: INode[]) => {
  * @param nodes
  * @param limit The number of showable characters
  */
-export const getUpcommingPreview = (nodes: INode[], limit = 25): INode => {
+export const getUpcomingPreview = (nodes: INode[], limit = 25): INode => {
   if (nodes[0].value.length > 0) {
-    return { type: "h", value: strShortener(nodes[0].value, limit) }
+    return {
+      type: "h",
+      value: strShortener(nodes[0].value, limit)
+    }
   }
 
   const nonEmptyNode = getFirstNonEmptyNode(nodes)
@@ -247,3 +270,16 @@ export const getDetailedPreview = (nodes: INode[], limit = 25): INode[] => {
 const strShortener = (str: string, limit: number) => {
   return str.length > limit ? str.slice(0, limit).trim() + "..." : str
 }
+
+export const getTaskDefaultParams = (): ITaskParams => ({
+  dueDate: -1,
+  tags: [],
+  identities: []
+})
+
+export const getStoreDefaultParams = (): IStoreParams => ({
+  dueDate: -1,
+  tags: [],
+  identities: [],
+  repeatParams: null
+})

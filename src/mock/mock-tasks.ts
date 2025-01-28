@@ -1,4 +1,8 @@
+import uuid4 from "uuid4"
+
 import type { INode, ITask, ITaskParams } from "~lib/types"
+
+import { mockIdentities } from "./mock-identities"
 
 const mockNodes = [
   [
@@ -24,13 +28,19 @@ const mockNodes = [
 export const mockTask: ITask[] = [
   ...(() =>
     Array.from({ length: 20 }).map((_, i) => ({
-      id: `${i}`,
+      id: uuid4(),
       done: false,
       dateAdded: new Date().getTime(),
       dateDone: -1,
+      reference: "",
       params: {
         tags: [],
-        identities: [],
+        identities:
+          Math.random() > 0.5
+            ? []
+            : Math.random() > 0.5
+              ? [mockIdentities[0]]
+              : [mockIdentities[1]],
         dueDate:
           new Date().getTime() +
           Math.random() * 7 * Math.random() * 24 * 60 * 60 * 1000

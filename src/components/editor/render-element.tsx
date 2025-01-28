@@ -4,11 +4,12 @@ import { PiLink } from "react-icons/pi"
 
 import { useApp } from "~contexts/app-context"
 import { isTaskEmpty } from "~lib/task-helpers"
-import type { IStore } from "~lib/types"
+import type { IRepeatParams, IStore } from "~lib/types"
 
 import {
   DateWithProps,
   IdentityWithProps,
+  RepeatWithProps,
   TagsWithProps
 } from "./render-params"
 import { LabelStatus } from "./status"
@@ -23,7 +24,8 @@ interface IRenderElementProps {
   onChange: (e: any) => void
   onPaste: (e: any) => void
   store: IStore
-  addDate: (dueDate: number) => void
+  modifyDate: (dueDate: number) => void
+  modifyRepeat: (repeatParams: IRepeatParams) => void
   removeIdentity: (id: number) => void
 }
 
@@ -68,9 +70,9 @@ const HeaderWithProps = (props: IHeaderProps) => {
           font-bold text-xl leading-tight focus:text-2xl sm:focus:text-4xl sm:text-2xl 
           text-fetch-black dark:text-fetch-lightgray
           transition-all durration-100
-          focus:ring-1 focus:ring-fetch-black/50 dark:focus:ring-fetch-primary/50
+          outline-2 outline-violet-400
           dark:placeholder-fetch-darkgray
-          caret-fetch-primary outline-none"
+          caret-fetch-primary"
           value={props.value}
           onPaste={props.onPaste}
           onChange={props.onChange}
@@ -87,7 +89,15 @@ const HeaderWithProps = (props: IHeaderProps) => {
       ) : (
         <DateWithProps
           timestamp={store.params.dueDate}
-          setter={props.addDate}
+          setter={props.modifyDate}
+        />
+      )}
+      {!store.params.repeatParams ? (
+        <p className="h-0 pl-6 text-xs text-zinc-300"></p>
+      ) : (
+        <RepeatWithProps
+          repeatParams={store.params.repeatParams}
+          setter={props.modifyRepeat}
         />
       )}
 

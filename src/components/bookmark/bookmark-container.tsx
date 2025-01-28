@@ -3,8 +3,8 @@ import { useEffect, useState } from "react"
 import { Storage } from "@plasmohq/storage"
 import { useStorage } from "@plasmohq/storage/hook"
 
+import { FETCH_STALE_TIME } from "~fetch.config"
 import type { IBookmark, IBookmarks } from "~lib/types"
-import { FETCH_STALE_TIME } from "~middle.config"
 import { mockBookmark } from "~mock/mock-data"
 
 import Bookmark from "./bookmark"
@@ -68,7 +68,9 @@ export default function BookmarkContainer() {
         <div className="">
           {Object.keys(fetchedBookmarks.bookmarks)?.map((category, i) => (
             <div className="p-2" key={`category_${i}`}>
-              <h2 className="pb-1 text-xl font-bold border-b border-zinc-600 mb-4">{category}</h2>
+              <h2 className="pb-1 text-xl font-bold border-b border-zinc-600 mb-4">
+                {category}
+              </h2>
               <div className="flex gap-2 justify-start">
                 {fetchedBookmarks.bookmarks[category].map((b, i) => (
                   <div className={"grow-0 w-24 p-2"} key={`Bookmark_${i}`}>

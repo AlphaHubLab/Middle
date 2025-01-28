@@ -3,27 +3,39 @@ import { useEffect, useState } from "react"
 import { CopyToClipboard } from "react-copy-to-clipboard"
 import { FiCopy } from "react-icons/fi"
 
+import { IdentityPreview } from "~components/options/identity-setting"
+import { useReference } from "~contexts/reference-context"
 import { useSetting } from "~contexts/setting-context"
-import type { INode, ITaskCore } from "~lib/types"
+import type { IIdentity, INode, ITaskCore } from "~lib/types"
 
 export const RenderAllElementsReadOnlyWithCopy = ({
   taskCore
 }: {
   taskCore: ITaskCore
 }) => {
+  const { references } = useReference()
+
+  const nodes = taskCore.reference
+    ? references.find((r) => r.id === taskCore.reference).nodes
+    : taskCore.nodes
+
   return (
     <div className="w-full">
-      <p className="h-4 text-xs text-zinc-400 px-2">
+      <div className="h-4 text-xs text-zinc-400 px-2">
         {taskCore.params.dueDate !== -1 ? (
           <DateReadOnly timestamp={taskCore.params.dueDate} />
         ) : (
           "No Dute date"
         )}
-      </p>
-
-      {taskCore.nodes.map((n, i) => (
-        <RenderElementReadOnlyWithCopy key={`node-readonly-${i}`} {...n} />
-      ))}
+      </div>
+      {taskCore.params.identities.length > 0 && (
+        <IdentityReadonly identity={taskCore.params.identities[0]} />
+      )}
+      <div className="mt-2">
+        {nodes.map((n, i) => (
+          <RenderElementReadOnlyWithCopy key={`node-readonly-${i}`} {...n} />
+        ))}
+      </div>
     </div>
   )
 }
@@ -46,7 +58,7 @@ const HeaderReadOnly = ({ value }: { value: string }) => {
   if (value.length === 0) return false
 
   return (
-    <h1 className="w-full px-2 py-4 flex items-center font-bold leading-tight rounded-md">
+    <h1 className="w-full py-1 px-2 min-h-[20px] text-sm flex h-full items-center font-bold leading-tight rounded-md">
       {value}
     </h1>
   )
@@ -66,7 +78,7 @@ const LinkReadOnly = ({ value }: { value: string }) => (
 
 const ParagraphReadOnly = ({ value }: { value: string }) => {
   return (
-    <p className="min-h-[20px] py-[2px] text-zinc-500 text-sm w-full px-2 overflow-y-hidden leading-tight rounded-md">
+    <p className="min-h-[20px] py-[2px] text-zinc-500 text-sm w-full px-2 overflow-y-hidden leading-tight rounded-md break-all">
       {value}
     </p>
   )
@@ -109,5 +121,16 @@ const DateReadOnly = ({ timestamp }: { timestamp: number }) => {
     <span>
       {date} | {time}
     </span>
+  )
+}
+
+export const IdentityReadonly = ({ identity }: { identity: IIdentity }) => {
+  return (
+    <div className="px-2 pt-4">
+      <h3 className="text-xs text-zinc-400">Do task with:</h3>
+      <div className="flex items-center w-full">
+        <IdentityPreview identity={identity} />
+      </div>
+    </div>
   )
 }

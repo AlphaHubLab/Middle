@@ -13,7 +13,9 @@ import type {
   IExtenstion,
   IIdentity,
   INode,
+  IRepeatParams,
   IStore,
+  IStoreParams,
   NodeType
 } from "~lib/types"
 
@@ -30,7 +32,7 @@ const projectRegExp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z0-9_]+\w*/g)
 export default function Editor({ disabled }) {
   const { initialStore, editorType, setEditMode, newEditor } = useApp()
   const { handlePersist } = usePersist()
-  const { setDrafts } = useDraft()
+  const { drafts, setDrafts } = useDraft()
   const { setting } = useSetting()
 
   const [store, setStore] = useState(initialStore)
@@ -59,6 +61,14 @@ export default function Editor({ disabled }) {
   /** Effects */
   useEffect(() => setStore(initialStore), [initialStore])
 
+  // Clear Editor when working draft deleted using list
+  useEffect(() => {
+    if (!drafts.find((draft) => draft.id === store.id)) {
+      newEditor(false)
+    }
+  }, [drafts.length])
+
+  // Deactivate command onclick outsite
   useEffect(() => {
     const deactivate = () => {
       if (!nodes.current.some((el) => el === document.activeElement)) {
@@ -79,7 +89,7 @@ export default function Editor({ disabled }) {
   useEffect(() => {
     if (disabled) return // Preventing focus() on disabled state
     nodes?.current[store.focusedNode].focus()
-  })
+  }, [store.focusedNode])
 
   // focus on Title if task is empty
   // otherwise focus on the stored focusedNodde
@@ -93,6 +103,7 @@ export default function Editor({ disabled }) {
     }
   }, [disabled])
 
+  // Handle tags
   useEffect(() => {
     addTags()
     setIsCommandActive(false)
@@ -183,7 +194,7 @@ export default function Editor({ disabled }) {
       const newStore = {
         ...store,
         range: -1,
-        focusedNode: store.focusedNode - 1,
+        focusedNode: store.focusedNode + 1,
         nodes: store.nodes.toSpliced(store.focusedNode + 1, 0, {
           type,
           value: ""
@@ -266,7 +277,8 @@ export default function Editor({ disabled }) {
     setStore(newStore)
   }
 
-  // Task params
+  /** Task Params */
+  /** Tags */
   const addTags = () => {
     const _tags = []
 
@@ -284,18 +296,7 @@ export default function Editor({ disabled }) {
     setStore({ ...store, params })
   }
 
-  const modifyDate = (dueDate: number) => {
-    const params = { ...store.params, dueDate }
-
-    const newStore = {
-      ...store,
-      params
-    }
-
-    updateHistory(store)
-    setStore(newStore)
-  }
-
+  /** DueDate */
   const addDate = (dueDate: number) => {
     const params = { ...store.params, dueDate }
 
@@ -314,6 +315,19 @@ export default function Editor({ disabled }) {
     setStore(newStore)
   }
 
+  const modifyDate = (dueDate: number) => {
+    const params = { ...store.params, dueDate }
+
+    const newStore = {
+      ...store,
+      params
+    }
+
+    updateHistory(store)
+    setStore(newStore)
+  }
+
+  /** Identity */
   const addIdentity = (identity: IIdentity) => {
     // Prevent to add duplicate
     if (store.params.identities.find((idn) => idn.id === identity.id)) {
@@ -364,6 +378,90 @@ export default function Editor({ disabled }) {
     updateHistory(store)
     setStore(newStore)
   }
+
+  /** Repeater */
+  const addRepeat = (repeatParams: IRepeatParams) => {
+    let params: IStoreParams
+
+    if (store.params.dueDate === -1) {
+      // Add dueDate if not added before
+      params = { ...store.params, repeatParams, dueDate: new Date().getTime() }
+    } else {
+      params = { ...store.params, repeatParams }
+    }
+
+    const newStore = {
+      ...store,
+      nodes: store.nodes.toSpliced(store.focusedNode, 1, {
+        type: store.nodes[store.focusedNode].type as NodeType,
+        value: nodeSnapshot.current
+      }),
+      range: nodeSnapshot.current.length,
+      focusedNode: store.focusedNode,
+      params
+    }
+
+    updateHistory(store)
+    setStore(newStore)
+  }
+
+  const modifyRepeat = (repeatParams: IRepeatParams) => {
+    const params = { ...store.params, repeatParams }
+
+    const newStore = {
+      ...store,
+      params
+    }
+
+    updateHistory(store)
+    setStore(newStore)
+  }
+
+  /** Incrementor */
+  // const addIncrementor = (incrementor: IIncrementor) => {
+  //   const incrementors = [...store.params.incrementors]
+
+  //   incrementors.push(incrementor)
+
+  //   const params = { ...store.params, incrementors }
+
+  //   const newStore = {
+  //     ...store,
+  //     nodes: store.nodes.toSpliced(store.focusedNode, 1, {
+  //       type: store.nodes[store.focusedNode].type as NodeType,
+  //       value: nodeSnapshot.current
+  //     }),
+  //     range: nodeSnapshot.current.length,
+  //     focusedNode: store.focusedNode,
+  //     params
+  //   }
+
+  //   updateHistory(store)
+  //   setStore(newStore)
+  // }
+
+  // const modifyIncrementor = (index: number, incrementor: IIncrementor) => {
+  //   const incrementors = structuredClone(store.params.incrementors)
+  //   incrementors[index] = incrementor
+
+  //   const params = { ...store.params, incrementors }
+  //   const newStore = { ...store, params }
+
+  //   updateHistory(store)
+  //   setStore(newStore)
+  // }
+
+  // const removeIncrementor = (index: number) => {
+  //   const incrementors = structuredClone(store.params.incrementors)
+  //   incrementors.splice(index, 1)
+
+  //   const params = { ...store.params, incrementors }
+  //   const newStore = { ...store, params }
+
+  //   updateHistory(store)
+  //   setStore(newStore)
+  // }
+
   /** Setter */
   const setter = (_extension: any) => {
     setIsCommandActive(false)
@@ -400,12 +498,12 @@ export default function Editor({ disabled }) {
         addNode(_extension.value)
         break
 
-      case "persist":
-        persistTask()
-        break
-
       case "addIdentity":
         addIdentity(_extension.value)
+        break
+
+      case "addRepeat":
+        addRepeat(_extension.value)
         break
     }
   }
@@ -422,17 +520,7 @@ export default function Editor({ disabled }) {
   }
 
   const persistTask = () => {
-    // should re-evaluate tags?
     addTags()
-
-    // const newStore = {
-    //   ...store,
-    //   nodes: store.nodes.toSpliced(store.focusedNode, 1, {
-    //     type: store.nodes[store.focusedNode].type as NodeType,
-    //     value: nodeSnapshot.current
-    //   })
-    // }
-
     handlePersist(store)
     deleteDraft()
   }
@@ -563,18 +651,37 @@ export default function Editor({ disabled }) {
     }
   }
 
+  // const handleClickOnEmptyEditor = () => {
+  //   if (store.nodes.length === 1) {
+  //     addNode("p")
+  //     return
+  //   } else if (store.nodes.length === 2 && store.nodes[1].value.trim() === "") {
+  //     setStore({
+  //       ...store,
+  //       focusedNode: 1
+  //     })
+  //   } else {
+  //     setStore({
+  //       ...store,
+  //       focusedNode: store.nodes.length - 1
+  //     })
+  //   }
+  // }
+
   return (
-    <div className="w-full">
-      <div className="">
+    <div
+      className="w-full h-full"
+      // onClick={handleClickOnEmptyEditor}
+    >
+      <div>
         <div
-          className={`${!disabled ? "visible opacity-100" : "invisible opacity-0"} items-center flex gap-2 pl-4 sticky top-0 rounded-lg h-10 transition-all duration-200`}>
-          {/* <ButtonFetch variant="green" disabled={disabled} onClick={persistTask}> */}
+          className={`${!disabled ? "visible opacity-100" : "invisible opacity-0"} items-center flex gap-2 pl-4 sticky top-0 rounded-lg h-8 transition-all duration-200`}>
           <div
             className="flex gap-2 flex-auto"
             role="toolbar"
             aria-orientation="horizontal">
             <button
-              className="disabled:bg-zinc-300 bg-violet-500 text-white hover:bg-violet-400 duration-200 rounded-md px-1 py-1 flex items-center justify-center"
+              className="disabled:bg-zinc-300 bg-fetch-primary text-white hover:bg-violet-500 duration-200 rounded-md px-1 py-1 flex items-center justify-center"
               disabled={disabled || helpers.isTaskEmpty(store, "loose")}
               onClick={persistTask}>
               <span className="flex gap-2 items-center">
@@ -589,8 +696,7 @@ export default function Editor({ disabled }) {
               </span>
             </button>
             <button
-              className="disabled:text-zinc-300 text-rose-500 hover:text-rose-400 border duration-200 rounded-md px-1 py-1 text-xs flex items-center justify-center"
-              // variant="red"
+              className="disabled:text-zinc-300 text-rose-500 hover:text-rose-400 hover:border-rose-400 border duration-200 rounded-md px-1 py-1 text-xs flex items-center justify-center"
               disabled={disabled || helpers.isTaskEmpty(store, "loose")}
               onClick={editorType === "new" ? deleteDraft : newTask}>
               <span className="flex gap-2 items-center">
@@ -605,19 +711,20 @@ export default function Editor({ disabled }) {
               </span>
             </button>
             <button
-              className="border rounded-md px-1 py-1 text-xs flex items-center justify-center"
-              //  variant="blue"
+              className="border hover:bg-fetch-secondary duration-200 rounded-md px-1 py-1 text-xs flex items-center justify-center"
               onClick={newTask}>
               +new
             </button>
             <button
-              className="border rounded-md px-1 py-1 text-xs flex items-center justify-center"
-              //  variant="primary"
+              className="border rounded-md hover:bg-fetch-secondary duration-200 px-1 py-1 text-xs flex items-center justify-center"
               onClick={() => setEditMode(false)}>
               Not Now
             </button>
           </div>
-          <DraftStatus isLoading={isLoading} />
+          <DraftStatus
+            isLoading={isLoading}
+            isTaskEmpty={helpers.isTaskEmpty(store, "loose")}
+          />
         </div>
       </div>
 
@@ -626,7 +733,8 @@ export default function Editor({ disabled }) {
           <div className="flex flex-col" key={`textarea-${i}`}>
             <RenderElement
               {...n}
-              addDate={modifyDate}
+              modifyDate={modifyDate}
+              modifyRepeat={modifyRepeat}
               removeIdentity={removeIdentity}
               index={i}
               addToRef={addToRef}
@@ -639,7 +747,7 @@ export default function Editor({ disabled }) {
             {isCommandActive && store.focusedNode === i && (
               <div className="ml-4 h-[0px]">
                 <Command
-                  extensions={helpers.getAvailableExtensions(store, extensions)}
+                  extensions={extensions}
                   setter={setter}
                   command={command}
                 />

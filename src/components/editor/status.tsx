@@ -1,21 +1,17 @@
 import { PiHash, PiLink, PiTimer } from "react-icons/pi"
 
-import Loading from "~components/ui/loading/loading"
+import Loading from "~components/ui/loading"
 import { TIME } from "~lib/constants"
 import { getLabels } from "~lib/task-helpers"
-import type { ITask, ITaskCore } from "~lib/types"
+import type { IStore, ITask, ITaskCore } from "~lib/types"
 
 const remainingTime = (task: ITask) => {
   const { dueDate } = task.params
 
-  // Subject to remove
   if (dueDate === -1) return null
 
   const current = new Date().getTime()
   const remain = dueDate - current
-
-  // Subject to remove
-  // if (remain > ONE_DAY) return null
 
   const remainValue = Math.abs(remain)
   if (remainValue < TIME.HOUR) {
@@ -30,14 +26,8 @@ const remainingTime = (task: ITask) => {
 const ellapsedTime = (history: ITask) => {
   const { dateDone } = history
 
-  // Subject to remove
-  // if (dueDate === -1) return null
-
   const current = new Date().getTime()
   const ellapsed = current - dateDone
-
-  // Subject to remove
-  // if (remain > ONE_DAY) return null
 
   if (ellapsed < TIME.HOUR) {
     return { value: Math.round(ellapsed / TIME.MINUTE), appendix: "Min" }
@@ -52,7 +42,7 @@ export const LabelStatus = ({
   taskCore,
   isEditor = false
 }: {
-  taskCore: ITaskCore
+  taskCore: ITaskCore | IStore
   isEditor?: boolean
 }) => {
   const { date, link, tag } = getLabels(taskCore)
@@ -107,7 +97,9 @@ export const TimeStatus = ({
         className={`text-xs 
             ${time.value < 0 && "text-rose-500"}
             ${time.value >= 0 && time.appendix === "Min" && "text-orange-500"}
-            ${time.value > 0 && time.appendix === "Hr" && "text-zinc-400"}        
+            ${time.value > 0 && time.appendix === "Hr" && "text-emerald-500"}        
+            ${time.value > 0 && time.appendix === "Day" && "text-emerald-500"}     
+            
 `}>
         In {time.value + " " + time.appendix}
         {Math.abs(time.value) === 1 ? "" : "s"}
@@ -127,17 +119,29 @@ export const TimeStatus = ({
   }
 }
 
-export const DraftStatus = ({ isLoading }: { isLoading: boolean }) => {
+export const DraftStatus = ({
+  isLoading,
+  isTaskEmpty
+}: {
+  isLoading: boolean
+  isTaskEmpty: boolean
+}) => {
   return (
     <div className="flex items-center">
       <div className="text-xs w-24 rounded-md flex justify-center gap-2 items-center bg-zinc-100 text-zinc-400">
-        {isLoading ? (
-          <>
-            Drafting
-            <Loading r={10} color="#aaaaaa" />
-          </>
+        {isTaskEmpty ? (
+          <>...</>
         ) : (
-          "Drafted"
+          <>
+            {isLoading ? (
+              <>
+                Drafting
+                <Loading r={10} color="#aaaaaa" />
+              </>
+            ) : (
+              "Drafted"
+            )}
+          </>
         )}
       </div>
     </div>

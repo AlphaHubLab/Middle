@@ -9,9 +9,8 @@ module.exports = {
         fetch: {
           // black: "#27272a",
           black: "#000",
-          
-          primary: "#1d4ed8",
-          secondary: "#f5f3ff",
+          primary: "#380088",
+          secondary: "#e3e3ff",
           darkgray: "#4b5563",
           lightgray: "#f4f4f5"
         }

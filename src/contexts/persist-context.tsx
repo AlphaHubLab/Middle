@@ -1,10 +1,13 @@
 import { createContext, useContext, useEffect } from "react"
+import uuid4 from "uuid4"
 
 import { Storage } from "@plasmohq/storage"
 import { useStorage } from "@plasmohq/storage/hook"
 
 import type { IStore, ITask } from "~lib/types"
 import { mockTask } from "~mock/mock-tasks"
+
+import { useReference } from "./reference-context"
 
 interface IPersistContext {
   tasks: ITask[]
@@ -16,6 +19,31 @@ interface IPersistContext {
   handleUndone: (id: string) => void
   setTasks: (arg: ITask[] | ((prev: ITask[]) => void)) => Promise<void>
   setHistory: (arg: ITask[] | ((prev: ITask[]) => void)) => Promise<void>
+}
+
+const generateDates = (store: IStore, dateAdded: number) => {
+  if (!store.params.repeatParams) {
+    return [store.params.dueDate]
+  }
+
+  const gd = []
+
+  if (store.params.repeatParams.type === "until") {
+    const diff =
+      (store.params.dueDate - dateAdded) / store.params.repeatParams.goal
+
+    for (let i = 0; i < store.params.repeatParams.goal; i++) {
+      gd.push(store.params.dueDate - diff * i)
+    }
+  }
+
+  if (store.params.repeatParams.type === "from") {
+    for (let i = 0; i < store.params.repeatParams.goal; i++) {
+      gd.push(store.params.dueDate + store.params.repeatParams.step * i)
+    }
+  }
+
+  return gd.reverse()
 }
 
 const Persist = createContext<IPersistContext>(undefined)
@@ -46,14 +74,16 @@ export default function PersistProvider({ children, isDev = false }) {
     (v: ITask[]) => (!v ? [] : v)
   )
 
+  const { setReferences } = useReference()
+
   // uncomment the following lines to reset storage and
   // refresh the page with cmd + r ~ 7-8 times
 
   // useEffect(() => {
-  //   if (tasks.length) {
-  //     removeTasks()
-  //     removeHistory()
-  //   }
+  //   // if (tasks.length) {
+  //   removeTasks()
+  //   removeHistory()
+  //   // }
   // }, [tasks])
 
   useEffect(() => {
@@ -64,34 +94,34 @@ export default function PersistProvider({ children, isDev = false }) {
     const _tasks = [...tasks]
     const found = _tasks.find((t) => t.id === id)
 
-    const task: ITask = {
-      ...found,
-      done: true,
-      dateDone: new Date().getTime()
-    }
+    if (found) {
+      const task: ITask = {
+        ...found,
+        done: true,
+        dateDone: new Date().getTime()
+      }
 
-    setTasks(_tasks.filter((t) => t.id !== id))
-    setHistory((prev) => [...prev, task])
+      setTasks(_tasks.filter((t) => t.id !== id))
+      setHistory((prev) => [...prev, task])
+    }
   }
 
   const handleUndone = (id: string) => {
     const _history = [...history]
-    const found = _history.find((t) => t.id === id)
+    const found = _history.find((h) => h.id === id)
+    if (found) {
+      const task: ITask = {
+        ...found,
+        done: false,
+        dateDone: -1
+      }
 
-    const task: ITask = {
-      id: found.id,
-      nodes: found.nodes,
-      params: found.params,
-      done: false,
-      dateAdded: found.dateAdded,
-      dateDone: -1
+      setTasks((prev) => [...prev, task])
+      setHistory(_history.filter((h) => h.id !== id))
     }
-
-    setTasks((prev) => [...prev, task])
-    setHistory(_history.filter((h) => h.id !== id))
   }
 
-  const handlePersist = (store: IStore) => {
+  const handlePersist = (store: IStore, editAsReference?: boolean) => {
     const _tasks = [...tasks]
     const found = _tasks.find((t) => t.id === store.id)
 
@@ -99,32 +129,95 @@ export default function PersistProvider({ children, isDev = false }) {
     // const clone = structuredClone(store)
 
     if (found) {
+      // Convert store params to single task params
+      const params = {
+        dueDate: store.params.dueDate,
+        tags: store.params.tags,
+        identities: store.params.identities
+        // incrementors: store.params.incrementors
+      }
+
       found.nodes = store.nodes
-      found.params = store.params
+      found.params = params
     } else {
       const dateAdded = new Date().getTime()
-      // if (store.params.identities.length > 1) {
-      //   store.params.identities.forEach((identity) => {
 
-      //     const params = {... store.params}
-      //     _tasks.push({
-      //       id: store.id,
-      //       nodes: store.nodes,
-      //       params: store.params,
-      //       done: false,
-      //       dateAdded
-      //     })
-      //   })
-      // } else {
-      _tasks.push({
-        id: store.id,
-        nodes: store.nodes,
-        params: store.params,
-        done: false,
-        dateAdded,
-        dateDone: -1
-      })
-      // }
+      const repeatByDate = store.params.repeatParams
+        ? store.params.repeatParams.goal
+        : 0
+
+      // No need to generate repeated tasks for date and identities
+      if (repeatByDate === 0 && store.params.identities.length < 2) {
+        // Convert store params to single task params
+        const params = {
+          dueDate: store.params.dueDate,
+          tags: store.params.tags,
+          identities: store.params.identities
+          // incrementors: store.params.incrementors
+        }
+
+        _tasks.push({
+          id: store.id,
+          nodes: store.nodes,
+          params,
+          reference: "",
+          done: false,
+          dateAdded,
+          dateDone: -1
+        })
+      }
+      // Need for generate repeated tasks
+      else {
+        const generatedDates = generateDates(store, dateAdded)
+
+        generatedDates.forEach((dueDate) => {
+          // No need for generate by identities
+          if (store.params.identities.length < 2) {
+            // Convert store params to single task params with dueDate
+            const params = {
+              dueDate,
+              tags: store.params.tags,
+              identities: store.params.identities
+              // incrementors: store.params.incrementors
+            }
+
+            _tasks.push({
+              id: uuid4(),
+              nodes: [{ type: "h", value: "" }],
+              params,
+              reference: store.id,
+              done: false,
+              dateDone: -1,
+              dateAdded
+            })
+          }
+          // Generating by identities and date
+          else {
+            store.params.identities.forEach((identity) => {
+              // Convert store params to single task params with dueDate and identity
+              const params = {
+                dueDate,
+                tags: store.params.tags,
+                identities: [identity]
+                // incrementors: store.params.incrementors
+              }
+
+              _tasks.push({
+                id: uuid4(),
+                nodes: [{ type: "h", value: "" }],
+                params,
+                reference: store.id,
+                done: false,
+                dateDone: -1,
+                dateAdded
+              })
+            })
+          }
+        })
+
+        const r = { id: store.id, nodes: store.nodes, params: store.params }
+        setReferences((prev) => [...prev, r])
+      }
     }
 
     setTasks(_tasks)

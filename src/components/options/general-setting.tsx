@@ -1,5 +1,5 @@
 import Label from "~components/ui/label"
-import { P, Section } from "~components/ui/text"
+import { P, Section } from "~components/ui/typograrphy"
 import { useSetting } from "~contexts/setting-context"
 
 export default function GeneralSetting() {

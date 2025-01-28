@@ -1,10 +1,12 @@
 // import { Space_Grotesk } from "next/font/google"
 import { Profiler, useState } from "react"
 
+import Sidebar from "~components/sidebar/sidebar"
+
 import "../style.css"
 
 import Main from "~components/pages/main"
-import { WidgetContainer } from "~components/widgets/widgets"
+// import { WidgetContainer } from "~components/sidebar/sidebar"
 import FetchProvider from "~contexts/fetch-provider"
 
 // const SG = Space_Grotesk({
@@ -15,15 +17,12 @@ import FetchProvider from "~contexts/fetch-provider"
 export default function Page() {
   return (
     <div className={`h-screen overflow-hidden`}>
-      <a href="/options.html">Options</a>
       <div className="h-screen">
         <div className="w-full h-full flex">
           <FetchProvider>
             <Main />
           </FetchProvider>
-          <div className="w-[288px] bg-[#272727]">
-            <WidgetContainer />
-          </div>
+          <Sidebar />
         </div>
       </div>
     </div>

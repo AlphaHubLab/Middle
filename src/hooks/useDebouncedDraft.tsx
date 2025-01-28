@@ -44,6 +44,7 @@ export default function useDebouncedDraft(
         found.dateDrafted = dateDrafted
       } else {
         _drafts.push({
+          reference: "",
           id: store.id,
           nodes: store.nodes,
           params: store.params,

@@ -1,26 +1,43 @@
 import { useState } from "react"
+import {
+  PiArrowSquareDown,
+  PiBoxArrowDown,
+  PiClockCounterClockwise,
+  PiFunnel,
+  PiMagnifyingGlass,
+  PiNote,
+  PiNotePencil
+} from "react-icons/pi"
 
 import { usePersist } from "~contexts/persist-context"
 
-import Loading from "../ui/loading/loading"
+import Loading from "../ui/loading"
 import { Handle } from "../ui/svgs/handle"
-import { DraftList } from "./list-draft"
-import HistoryList from "./list-history"
-import { UpcommingList } from "./list-upcomming"
+import DraftList from "./lists/list-draft"
+import HistoryList from "./lists/list-history"
+import NoteList from "./lists/list-note"
+import SearchList from "./lists/list-search"
+import { UpcomingList } from "./lists/list-upcoming"
 
-const tabs = ["Upcomming", "Drafts", "Recents", "Notes"]
+const tabs = [
+  { title: "Upcoming", icon: PiBoxArrowDown },
+  { title: "Drafts", icon: PiNotePencil },
+  { title: "Recent", icon: PiClockCounterClockwise },
+  { title: "Notes", icon: PiNote },
+  { title: "Search", icon: PiMagnifyingGlass },
+  { title: "Filter", icon: PiFunnel }
+]
 
 export default function Inbox({ show, setHide }) {
   const { storageLoading } = usePersist()
-  const [activeTab, setActiveTab] = useState("Upcomming")
+  const [activeTab, setActiveTab] = useState("Upcoming")
 
   return (
     <div
       dir="rtl"
-      className="relative w-full h-full px-1 sm:px-4 transition-all duration-200 border border-zinc-500 bg-white dark:bg-fetch-black rounded-xl">
+      className="relative w-full h-full px-1 lg:px-4 transition-all duration-200 border bg-slate-50 border-fetch-primary dark:bg-fetch-black rounded-2xl">
       {/* non-scrollables */}
       {!show && (
-        // <div className="relative w-full ">
         <div className="relative cursor-pointer w-full h-12">
           <div
             onClick={() => setHide(false)}
@@ -28,42 +45,45 @@ export default function Inbox({ show, setHide }) {
             <Handle />
           </div>
         </div>
-        // </div>
       )}
       {show && (
         <div
           dir="ltr"
           role="tablist"
           aria-orientation="horizontal"
-          className="w-full flex gap-2 px-5 sm:px-11 py-6">
+          className="w-full flex gap-1 px-5 lg:px-11 py-6">
           {tabs.map((tab) => (
             <button
-              onClick={() => setActiveTab(tab)}
-              className={`text-xs border-b-2 py-1 ${activeTab === tab ? "text-zinc-700 border-pink-500" : "text-zinc-400 border-transparent"}`}
-              key={tab}>
-              {tab}
+              onClick={() => setActiveTab(tab.title)}
+              className={`font-semibold border flex gap-2 items-center rounded-lg py-1 px-2 ${activeTab === tab.title ? "text-slate-50 bg-fetch-primary" : "text-fetch-primary bg-inherit hover:bg-violet-100"}`}
+              key={tab.title}>
+              <span className="text-normal">{<tab.icon />}</span>
+              <span
+                className={`${activeTab === tab.title ? "flex" : "hidden"} lg:flex text-xs`}>
+                {tab.title}
+              </span>
             </button>
           ))}
         </div>
       )}
       {/* non-scrollables */}
+
       <div
-        className={`styled-scrollbar ${show ? "overflow-y-auto" : "overflow-y-hidden"} h-full px-1 sm:px-4`}>
+        className={`styled-scrollbar ${show ? "overflow-y-auto" : "overflow-y-hidden"} h-full px-1 lg:px-4 bg-inherit`}>
         {/* <a href="#other">OTHER</a> */}
 
-        <div dir="ltr" className="px-1 sm:px-4 mb-4">
-          {/* {!show && (
-            <div className="absolute bg-white/50 h-full top-0 left-0 w-full"></div>
-          )} */}
+        <div dir="ltr" className="px-1 lg:px-4 mb-4 bg-inherit">
           {storageLoading ? (
             <div className="h-full w-full flex items-center justify-center">
               <Loading r={20} color="#aaaaaa" />
             </div>
           ) : (
-            <div className="relative z-100">
-              {activeTab === "Upcomming" && <UpcommingList />}
+            <div className="relative z-100 bg-inherit">
+              {activeTab === "Upcoming" && <UpcomingList />}
               {activeTab === "Drafts" && <DraftList />}
-              {activeTab === "Recents" && <HistoryList />}
+              {activeTab === "Recent" && <HistoryList />}
+              {activeTab === "Notes" && <NoteList />}
+              {activeTab === "Search" && <SearchList />}
             </div>
           )}
         </div>

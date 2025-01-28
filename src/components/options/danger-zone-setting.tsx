@@ -1,4 +1,4 @@
-import { Section } from "~components/ui/text"
+import { Section } from "~components/ui/typograrphy"
 import { useDraft } from "~contexts/draft-context"
 import { usePersist } from "~contexts/persist-context"
 

@@ -1,6 +1,6 @@
 export const Section = ({ title, children }) => {
   return (
-    <section className="my-6 border-2 rounded-md p-4 pt-2">
+    <section className="my-6 border-2 border-fetch-primary rounded-2xl p-4 pt-2">
       <h1 className="font-bold text-medium text-zinc-700 border-b-[1px]">
         {title}
       </h1>
