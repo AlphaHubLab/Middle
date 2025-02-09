@@ -6,10 +6,17 @@ export interface IBookmark {
   icon: string
 }
 
-export type IBookmarks = Record<string, IBookmark[]>
-
+/**
+ * A type representing a node type.
+ * h: header, a: anchor, p: paragraph
+ */
 export type NodeType = "h" | "a" | "p"
 
+/**
+ * A type representing a node.
+ * @property {NodeType} type - The type of the node.
+ * @property {string} value - The string value of the node.
+ */
 export interface INode {
   type: NodeType
   value: string

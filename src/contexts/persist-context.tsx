@@ -1,6 +1,7 @@
-import { createContext, useContext, useEffect } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 import uuid4 from "uuid4"
 
+import { sendToBackground } from "@plasmohq/messaging"
 import { Storage } from "@plasmohq/storage"
 import { useStorage } from "@plasmohq/storage/hook"
 
@@ -94,50 +95,57 @@ export default function PersistProvider({ children, isDev = false }) {
     const _tasks = [...tasks]
     const found = _tasks.find((t) => t.id === id)
 
-    if (found) {
-      const task: ITask = {
-        ...found,
-        done: true,
-        dateDone: new Date().getTime()
-      }
+    if (!found) return
 
-      setTasks(_tasks.filter((t) => t.id !== id))
-      setHistory((prev) => [...prev, task])
+    const task: ITask = {
+      ...found,
+      done: true,
+      dateDone: new Date().getTime()
     }
+
+    setTasks(_tasks.filter((t) => t.id !== id))
+    setHistory((prev) => [...prev, task])
   }
 
   const handleUndone = (id: string) => {
     const _history = [...history]
     const found = _history.find((h) => h.id === id)
-    if (found) {
-      const task: ITask = {
-        ...found,
-        done: false,
-        dateDone: -1
-      }
 
-      setTasks((prev) => [...prev, task])
-      setHistory(_history.filter((h) => h.id !== id))
+    if (!found) return
+
+    const task: ITask = {
+      ...found,
+      done: false,
+      dateDone: -1
     }
+
+    setTasks((prev) => [...prev, task])
+    setHistory(_history.filter((h) => h.id !== id))
   }
 
   const handlePersist = (store: IStore, editAsReference?: boolean) => {
     const _tasks = [...tasks]
+
     const found = _tasks.find((t) => t.id === store.id)
 
-    // Do not need cloning since data will be serialized in storage
-    // const clone = structuredClone(store)
+    const _nodes = [...store.nodes]
 
+    // Delete last empty nodes for better user experience.
+    for (let i = _nodes.length - 1; i >= 0; i--) {
+      if (_nodes[i].value.trim().length > 0) break
+      _nodes.pop()
+    }
+
+    // Save changes to an existing task
     if (found) {
-      // Convert store params to single task params
+      // Convert IStoreParams to ITaskParams
       const params = {
         dueDate: store.params.dueDate,
         tags: store.params.tags,
         identities: store.params.identities
-        // incrementors: store.params.incrementors
       }
 
-      found.nodes = store.nodes
+      found.nodes = _nodes
       found.params = params
     } else {
       const dateAdded = new Date().getTime()
@@ -153,12 +161,11 @@ export default function PersistProvider({ children, isDev = false }) {
           dueDate: store.params.dueDate,
           tags: store.params.tags,
           identities: store.params.identities
-          // incrementors: store.params.incrementors
         }
 
         _tasks.push({
           id: store.id,
-          nodes: store.nodes,
+          nodes: _nodes,
           params,
           reference: "",
           done: false,
@@ -215,8 +222,13 @@ export default function PersistProvider({ children, isDev = false }) {
           }
         })
 
-        const r = { id: store.id, nodes: store.nodes, params: store.params }
-        setReferences((prev) => [...prev, r])
+        const reference = {
+          id: store.id,
+          nodes: store.nodes,
+          params: store.params
+        }
+
+        setReferences((prev) => [...prev, reference])
       }
     }
 

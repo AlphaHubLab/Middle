@@ -9,6 +9,7 @@ import { usePersist } from "~contexts/persist-context"
 import { useSetting } from "~contexts/setting-context"
 import useDebouncedDraft from "~hooks/useDebouncedDraft"
 import * as helpers from "~lib/task-helpers"
+import { getAvailableExtensions } from "~lib/task-helpers"
 import type {
   IExtenstion,
   IIdentity,
@@ -675,13 +676,13 @@ export default function Editor({ disabled }) {
     >
       <div>
         <div
-          className={`${!disabled ? "visible opacity-100" : "invisible opacity-0"} items-center flex gap-2 pl-4 sticky top-0 rounded-lg h-8 transition-all duration-200`}>
+          className={`${!disabled ? "visible opacity-100" : "invisible opacity-0"} items-center flex gap-2 pl-4 sticky top-0 rounded-lg py-2 transition-all duration-200`}>
           <div
             className="flex gap-2 flex-auto"
             role="toolbar"
             aria-orientation="horizontal">
             <button
-              className="disabled:bg-zinc-300 bg-fetch-primary text-white hover:bg-violet-500 duration-200 rounded-md px-1 py-1 flex items-center justify-center"
+              className="disabled:bg-zinc-300 bg-fetch-primary text-white hover:bg-violet-500 duration-200 rounded-md px-1 py-[2px] flex items-center justify-center"
               disabled={disabled || helpers.isTaskEmpty(store, "loose")}
               onClick={persistTask}>
               <span className="flex gap-2 items-center">
@@ -696,7 +697,7 @@ export default function Editor({ disabled }) {
               </span>
             </button>
             <button
-              className="disabled:text-zinc-300 disabled:border-zinc-300ƒ text-rose-500 hover:text-rose-400 hover:border-rose-400 border duration-200 rounded-md px-1 py-1 text-xs flex items-center justify-center"
+              className="disabled:text-zinc-300 disabled:border-zinc-300 text-rose-500 hover:text-rose-400 hover:border-rose-400 border duration-200 rounded-md px-1 py-[2px] text-xs flex items-center justify-center"
               disabled={disabled || helpers.isTaskEmpty(store, "loose")}
               onClick={editorType === "new" ? deleteDraft : newTask}>
               <span className="flex gap-2 items-center">
@@ -711,12 +712,12 @@ export default function Editor({ disabled }) {
               </span>
             </button>
             <button
-              className="border hover:bg-fetch-secondary duration-200 rounded-md px-1 py-1 text-xs flex items-center justify-center"
+              className="border hover:bg-fetch-secondary duration-200 rounded-md px-1 py-[2px] text-xs flex items-center justify-center"
               onClick={newTask}>
               +new
             </button>
             <button
-              className="border rounded-md hover:bg-fetch-secondary duration-200 px-1 py-1 text-xs flex items-center justify-center"
+              className="border rounded-md hover:bg-fetch-secondary duration-200 px-1 py-[2px] text-xs flex items-center justify-center"
               onClick={() => setEditMode(false)}>
               Not Now
             </button>
@@ -747,7 +748,7 @@ export default function Editor({ disabled }) {
             {isCommandActive && store.focusedNode === i && (
               <div className="ml-4 h-[0px]">
                 <Command
-                  extensions={extensions}
+                  extensions={getAvailableExtensions(store, extensions)}
                   setter={setter}
                   command={command}
                 />

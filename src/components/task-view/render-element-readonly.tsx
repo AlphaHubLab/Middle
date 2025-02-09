@@ -6,6 +6,7 @@ import { FiCopy } from "react-icons/fi"
 import { IdentityPreview } from "~components/options/identity-setting"
 import { useReference } from "~contexts/reference-context"
 import { useSetting } from "~contexts/setting-context"
+import { getPreviewNodes } from "~lib/task-helpers"
 import type { IIdentity, INode, ITaskCore } from "~lib/types"
 
 export const RenderAllElementsReadOnlyWithCopy = ({
@@ -15,9 +16,7 @@ export const RenderAllElementsReadOnlyWithCopy = ({
 }) => {
   const { references } = useReference()
 
-  const nodes = taskCore.reference
-    ? references.find((r) => r.id === taskCore.reference).nodes
-    : taskCore.nodes
+  const nodes = getPreviewNodes(taskCore, references)
 
   return (
     <div className="w-full">
@@ -54,9 +53,6 @@ export const RenderElementReadOnly = ({ type, value }: INode) => {
 }
 
 const HeaderReadOnly = ({ value }: { value: string }) => {
-  // Don't render an empty title in readonly mode
-  if (value.length === 0) return false
-
   return (
     <h1 className="w-full py-1 px-2 min-h-[20px] text-sm flex h-full items-center font-bold leading-tight rounded-md">
       {value}
@@ -85,6 +81,9 @@ const ParagraphReadOnly = ({ value }: { value: string }) => {
 }
 
 export const RenderElementReadOnlyWithCopy = (props: INode) => {
+  // Don't render an empty title in readonly mode
+  if (props.type === "h" && props.value.trim().length === 0) return false
+
   const [copy, setCopy] = useState(false)
 
   useEffect(() => {

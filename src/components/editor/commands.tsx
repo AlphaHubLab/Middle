@@ -54,9 +54,9 @@ export const Command = ({ extensions, setter, command }) => {
   return (
     <div
       ref={cmd}
-      className="relative top-0 bg-white/40 backdrop-blur-sm border rounded-xl p-1">
+      className="relative top-0 bg-white/40 backdrop-blur-sm border rounded-2xl p-1">
       {searched.length === 0 && (
-        <div className="flex text-zinc-500 bg-transparent h-10 items-center text-xs">
+        <div className="flex text-zinc-500 bg-transparent h-10 items-center text-xs px-2">
           No results
         </div>
       )}
@@ -66,7 +66,7 @@ export const Command = ({ extensions, setter, command }) => {
             <div
               onMouseMove={() => setSelected(i)}
               key={`extension_${i}`}
-              className={`flex justify-between text-sm h-10 p-2 py-3 rounded-md ${selected === i ? "bg-zinc-200/50 active" : "bg-transparent"}`}
+              className={`flex justify-between text-sm h-10 p-2 py-3 rounded-xl ${selected === i ? "bg-zinc-200/50 active" : "bg-transparent"}`}
               onClick={() => setter(ex)}>
               <div className="text-sm flex gap-2 flex-auto items-center">
                 <ex.icon />

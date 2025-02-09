@@ -19,7 +19,7 @@ export const TaskToolbar = ({
   type: "task" | "draft" | "history"
 }) => {
   const { openEditMode } = useApp()
-  const { setTasks } = usePersist()
+  const { tasks, setTasks } = usePersist()
 
   const [showRemoveModal, setShowRemoveModal] = useState(false)
 
@@ -41,6 +41,7 @@ export const TaskToolbar = ({
       {/* History items cannot be edited */}
       {type !== "history" && (
         <button
+          tabIndex={-1}
           className="text-zinc-500 hover:text-zinc-400 text-xs items-center px-2 flex gap-2"
           onClick={() => openEditMode(item, type)}>
           <PiPencilSimpleLine />
@@ -51,6 +52,7 @@ export const TaskToolbar = ({
       {/* Draft items have its own delete button*/}
       {type === "task" && (
         <button
+          tabIndex={-1}
           className="text-rose-500 text-xs hover:text-rose-400 px-2 flex gap-2 items-center"
           onClick={() => removeTasks(item)}>
           <PiTrash />
@@ -60,6 +62,7 @@ export const TaskToolbar = ({
       {/* Only history items can be recycled */}
       {type === "history" && (
         <button
+          tabIndex={-1}
           className="text-zinc-500 text-xs hover:text-zinc-400 px-2 flex gap-2 items-center"
           onClick={() => openEditMode(item, "new")}>
           <PiArrowCounterClockwise />
@@ -69,7 +72,6 @@ export const TaskToolbar = ({
       {showRemoveModal && (
         <Suspense>
           <LazyRemoveModal
-            title="Delete"
             className="w-full max-w-[600px] rounded-2xl bg-white"
             item={item}
             onClose={() => setShowRemoveModal(false)}

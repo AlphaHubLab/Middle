@@ -137,7 +137,7 @@
 
 .styled-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #e6ddf2 #cd8bf300;
+  scrollbar-color: #e2e2e2 #ffffff00;
   scrollbar-gutter: stable;
 }
 
@@ -229,7 +229,7 @@
   left: 0;
   width: 20px;
   height: 20px;
-  border: 2px solid #bfbfc0;
+  border: 1px solid #bfbfc0;
   border-radius: 50%;
 }
 .checkbox-wrapper-12 .cbx label {

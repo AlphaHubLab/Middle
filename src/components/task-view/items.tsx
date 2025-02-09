@@ -2,15 +2,19 @@ import { useEffect, useState } from "react"
 import type { ReactNode } from "react"
 import { PiTrash } from "react-icons/pi"
 
-import { RenderAllElementsReadOnlyWithCopy } from "~components/editor/render-element-readonly"
 import { LabelStatus, TimeStatus } from "~components/editor/status"
+import { RenderAllElementsReadOnlyWithCopy } from "~components/task-view/render-element-readonly"
 import Checkbox from "~components/ui/checkbox"
 import * as C from "~components/ui/collapsible"
 import { useDraft } from "~contexts/draft-context"
 import { usePersist } from "~contexts/persist-context"
 import { useReference } from "~contexts/reference-context"
 import { fetchconfig } from "~fetch.config"
-import { getUpcomingPreview } from "~lib/task-helpers"
+import {
+  getDetailedPreview,
+  getPreviewNodes,
+  getUpcomingPreview
+} from "~lib/task-helpers"
 import type { ITask } from "~lib/types"
 
 import { TaskToolbar } from "./task-actions/task-toolbar"
@@ -91,7 +95,7 @@ export const UpcomingItem = ({ type, item, variant }) => {
                           ? item.params.identities[0].color
                           : "inherit"
                     }}
-                    className="h-[20px] rounded-full w-[20px] mr-3"></div>
+                    className={`h-3 ${item.params.identities.length > 0 && "border"} rounded-full w-3 mr-3`}></div>
                 </div>
               </div>
             </div>
@@ -312,9 +316,9 @@ export const HistoryItem = ({ item }) => {
 
 const wrapperClass = {
   neutral:
-    "bg-slate-50 border-violet-900 shadow-violet-300 dark:border-violet-400/50 dark:shadow-violet-300/30",
-  red: "bg-slate-50 border-rose-600/70 shadow-rose-600/70",
-  orange: "bg-slate-50 border-orange-500/70 shadow-orange-400/70"
+    "bg-slate-50/50 hover:border-zinc-500 border-black/15 dark:border-violet-400/50 dark:shadow-violet-300/30",
+  red: "bg-rose-100 border-rose-600/70 shadow-rose-600/70",
+  orange: "bg-orange-100 border-orange-500/70 shadow-orange-400/70"
 }
 
 const InboxItemWrapper = ({
@@ -326,35 +330,24 @@ const InboxItemWrapper = ({
 }) => {
   return (
     <div
-      className={`${wrapperClass[variant]} border hover:shadow-none shadow-[0px_2px] rounded-2xl overflow-hidden`}>
+      className={`${wrapperClass[variant]} duration-200 border rounded-2xl overflow-hidden`}>
       {children}
     </div>
   )
 }
 
 const ItemView = ({ item }: { item: ITask }) => {
-  if (!item.reference) {
-    return (
-      <>
-        <h2 className="text-fetch-black flex items-center h-full font-semibold text-sm">
-          {getUpcomingPreview(item.nodes).value}
-        </h2>
-        {/* <p className="text-xs text-zinc-400">project</p> */}
-      </>
-    )
-  }
-  return <ItemViewFromReference item={item} />
-}
-
-const ItemViewFromReference = ({ item }: { item: ITask }) => {
   const { references } = useReference()
+
+  const nodes = getPreviewNodes(item, references)
+  const detailedPreview = getDetailedPreview(nodes)
   return (
-    <h2 className="text-fetch-black flex items-center h-full font-semibold text-sm">
-      {
-        getUpcomingPreview(
-          references.find((ref) => ref.id === item.reference).nodes
-        ).value
-      }
-    </h2>
+    <>
+      <h2 className="text-black flex items-center h-full font-medium text-sm">
+        {/* {getUpcomingPreview(nodes).value} */}
+        {detailedPreview[0].value}
+      </h2>
+      <p className="text-xs text-black/50">{detailedPreview[1].value}</p>
+    </>
   )
 }

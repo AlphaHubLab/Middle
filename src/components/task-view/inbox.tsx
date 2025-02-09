@@ -22,7 +22,7 @@ import { UpcomingList } from "./lists/list-upcoming"
 const tabs = [
   { title: "Upcoming", icon: PiBoxArrowDown },
   { title: "Drafts", icon: PiNotePencil },
-  { title: "Recent", icon: PiClockCounterClockwise },
+  { title: "Completed", icon: PiClockCounterClockwise },
   { title: "Notes", icon: PiNote },
   { title: "Search", icon: PiMagnifyingGlass },
   { title: "Filter", icon: PiFunnel }
@@ -35,7 +35,7 @@ export default function Inbox({ show, setHide }) {
   return (
     <div
       dir="rtl"
-      className="relative w-full h-full px-1 lg:px-4 transition-all duration-200 border bg-slate-50 border-fetch-primary dark:bg-fetch-black rounded-2xl">
+      className="relative w-full h-full px-1 lg:px-4 transition-all duration-200 border bg-white border-black/15 dark:bg-fetch-black rounded-3xl">
       {/* non-scrollables */}
       {!show && (
         <div className="relative cursor-pointer w-full h-12">
@@ -55,7 +55,7 @@ export default function Inbox({ show, setHide }) {
           {tabs.map((tab) => (
             <button
               onClick={() => setActiveTab(tab.title)}
-              className={`font-semibold border flex gap-2 items-center rounded-lg py-1 px-2 ${activeTab === tab.title ? "text-slate-50 bg-fetch-primary" : "text-fetch-primary bg-inherit hover:bg-violet-100"}`}
+              className={`border flex gap-2 items-center rounded-xl py-1 px-2 ${activeTab === tab.title ? "text-white bg-fetch-primary font-semibold" : "text-fetch-primary font-normal bg-inherit hover:bg-violet-100"}`}
               key={tab.title}>
               <span className="text-normal">{<tab.icon />}</span>
               <span
@@ -81,7 +81,7 @@ export default function Inbox({ show, setHide }) {
             <div className="relative z-100 bg-inherit">
               {activeTab === "Upcoming" && <UpcomingList />}
               {activeTab === "Drafts" && <DraftList />}
-              {activeTab === "Recent" && <HistoryList />}
+              {activeTab === "Completed" && <HistoryList />}
               {activeTab === "Notes" && <NoteList />}
               {activeTab === "Search" && <SearchList />}
             </div>

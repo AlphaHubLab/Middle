@@ -99,12 +99,13 @@ export const createIdentityExtenstions = (
     title: `Assign task to "${identity.label}"`,
     value: identity,
     action: "addIdentity",
-    description: "Add the ID you want to do task with",
+    description: "Add the ID you want to do the task with",
     keywords: [
       "id",
       "identity",
       "assignee",
-      ...identity.items.map((item) => item.key)
+      identity.label,
+      ...identity.items.map((item) => item.value)
     ]
   }))
 }

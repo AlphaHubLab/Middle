@@ -128,9 +128,9 @@ export const DraftStatus = ({
 }) => {
   return (
     <div className="flex items-center">
-      <div className="text-xs w-24 rounded-md flex justify-center gap-2 items-center bg-zinc-100 text-zinc-400">
+      <div className="text-xs w-24 rounded-md flex py-[2px] justify-center gap-2 items-center bg-zinc-100 text-zinc-400">
         {isTaskEmpty ? (
-          <>...</>
+          <>Empty</>
         ) : (
           <>
             {isLoading ? (

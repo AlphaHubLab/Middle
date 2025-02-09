@@ -4,27 +4,39 @@ import { PiArrowLeft, PiArrowRight, PiArrowSquareOut } from "react-icons/pi"
 export default function Sidebar({ isDev = false }) {
   const [isOpen, setIsOpen] = useState(false)
 
+  // Should be fetched from the server
+  const bookmarks = {
+    sponsered: [
+      { icon: "+", description: "Something awesome", url: "#" },
+      { icon: "+", description: "Something awesome", url: "#" },
+      { icon: "+", description: "Something awesome", url: "#" }
+    ],
+    hot: [
+      { icon: "+", description: "Something awesome", url: "#" },
+      { icon: "+", description: "Something awesome", url: "#" }
+    ]
+  }
+
   return (
     <div
-      className={`fixed h-[calc(100%-4rem)] top-16 right-0 w-[288px] transition-[margin-right] duration-200 ${isOpen ? "mr-0" : "-mr-[224px] md:mr-0"} z-20`}>
+      className={`fixed h-[calc(100%-3rem)] top-12 right-0 w-[288px] transition-[margin-right] duration-200 ${isOpen ? "mr-0" : "-mr-[224px] md:mr-0"} z-20`}>
       <div
-        className={`relative w-full h-full py-2 z-30 bg-slate-50 rounded-tl-2xl border-t border-l border-fetch-primary`}>
+        className={`relative w-full h-full py-2 z-30 bg-slate-50  border-l border-fetch-primary`}>
         <div className="w-full h-full ">
           <div className="h-[calc(100%-200px)]">
             <div className="w-full py-1 px-2 flex items-center gap-2">
               <div className="w-[50px] h-[50px] bg-violet-50 border border-violet-900 shadow-[0px_3px] shadow-violet-300 rounded-2xl"></div>
               Something
             </div>
-            <div className="py-4">
-              <Bookmark />
-              <Bookmark />
-            </div>
-            <div className="py-4">
-              <Bookmark />
-              <Bookmark />
-              <Bookmark />
-              <Bookmark />
-            </div>
+            <>
+              {Object.keys(bookmarks).map((group, i) => (
+                <div className="py-4" key={`bookmark-group-${i}`}>
+                  {bookmarks[group].map((bookmark, j) => (
+                    <Bookmark key={`bookmark-${i}-${j}`} {...bookmark} />
+                  ))}
+                </div>
+              ))}
+            </>
           </div>
         </div>
         <div className="w-full py-1 px-2 flex absolute bottom-2">
@@ -48,15 +60,15 @@ export default function Sidebar({ isDev = false }) {
   )
 }
 
-const Bookmark = () => {
+const Bookmark = ({ icon, description, url }) => {
   return (
     <div className="w-full py-1 px-2 flex items-center gap-2 text-sm text-fetch-primary">
       <a
-        href="#"
+        href={url}
         className="w-[50px] h-[50px] border border-violet-900 shadow-[0px_3px] hover:shadow-none shadow-violet-300 rounded-2xl text-2xl flex items-center justify-center">
-        +
+        {icon}
       </a>
-      Something Awsome <PiArrowSquareOut />
+      {description} <PiArrowSquareOut />
     </div>
   )
 }

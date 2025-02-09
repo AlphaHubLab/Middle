@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react"
 import { PiLink } from "react-icons/pi"
 
 import { useApp } from "~contexts/app-context"
-import { isTaskEmpty } from "~lib/task-helpers"
+import { isTaskEmpty, isUrlByRegex } from "~lib/task-helpers"
 import type { IRepeatParams, IStore } from "~lib/types"
 
 import {
@@ -60,27 +60,29 @@ const HeaderWithProps = (props: IHeaderProps) => {
 
   return (
     <div>
-      <div className="flex w-full pl-4 py-2">
-        <input
-          placeholder={editMode ? "LFG..." : "Click to start..."}
-          type="text"
-          ref={props.addToRef}
-          className="
+      <div className="w-full pl-4 pb-2">
+        <div className="has-[:focus]:outline outline-2 outline-violet-900 w-full rounded-2xl flex">
+          <input
+            placeholder={editMode ? "LFG..." : "Click to start..."}
+            type="text"
+            ref={props.addToRef}
+            className="
           w-full p-2 appearance-none rounded-lg bg-inherit
           font-bold text-xl leading-tight focus:text-2xl sm:focus:text-4xl sm:text-2xl 
           text-fetch-black dark:text-fetch-lightgray
           transition-all durration-100
-          outline-2 outline-violet-400
+          outline-none
           dark:placeholder-fetch-darkgray
           caret-fetch-primary"
-          value={props.value}
-          onPaste={props.onPaste}
-          onChange={props.onChange}
-          onKeyDown={props.onKeyDown}
-          onFocus={props.onFocus}
-        />
-        <div className="pl-2 sm:flex items-center hidden">
-          <LabelStatus taskCore={store} isEditor={true} />
+            value={props.value}
+            onPaste={props.onPaste}
+            onChange={props.onChange}
+            onKeyDown={props.onKeyDown}
+            onFocus={props.onFocus}
+          />
+          <div className="px-2 sm:flex items-center hidden">
+            <LabelStatus taskCore={store} isEditor={true} />
+          </div>
         </div>
       </div>
 
@@ -128,7 +130,7 @@ const LinkInputWithProps = (props: ILinkProps) => {
       <input
         placeholder="add link..."
         ref={props.addToRef}
-        className={`${isUrl(props.value) ? "text-blue-500" : "text-zinc-500 dark:text-zinc-400"}
+        className={`${isUrl(props.value) || isUrlByRegex(props.value) ? "text-blue-500" : "text-zinc-500 dark:text-zinc-400"}
         leading-tight text-sm outline-none underline 
         w-full px-2 py-[2px] bg-inherit rounded-md resize-none overflow-y-hidden appearance-none
         focus:bg-zinc-100 dark:focus:bg-fetch-darkgray/40 

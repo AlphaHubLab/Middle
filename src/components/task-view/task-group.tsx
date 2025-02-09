@@ -34,7 +34,11 @@ export const TaskGroupWrapper = ({
           ? messages[Math.floor(Math.random() * messages.length)]
           : "Found Nothing!"}
 
-        <img src={NothingToFind} alt="nothing" width={200} />
+        <img
+          src={NothingToFind}
+          alt="nothing"
+          width={200}
+        />
       </div>
     )
   }
@@ -62,10 +66,10 @@ export const TaskGroup = (props: {
       id={props.value}
       data-fetch-task-group={props.value}>
       <h1
-        className={`text-sm sticky top-0 z-10 pb-2 border-b-[0.5px] bg-inherit ${props.variant === "red" && "text-rose-500"} ${props.variant === "orange" && "text-orange-500"} ${props.variant === "neutral" && "text-zinc-500"}`}>
+        className={`text-sm sticky py-1 top-0 z-10 border-b border-black/15 bg-inherit ${props.variant === "red" && "text-rose-500"} ${props.variant === "orange" && "text-orange-500"} ${props.variant === "neutral" && "text-zinc-400"}`}>
         {props.label}
       </h1>
-      <div className="transition-all duration-200">{props.children}</div>
+      <div className="transition-all duration-200 py-2">{props.children}</div>
     </div>
   )
 }

@@ -4,8 +4,8 @@ import FetchLogo from "~components/ui/fetch-logo"
 
 export default function NavbarContainer({ isDev = false }) {
   return (
-    <nav className="relative w-full h-16 py-2 px-1 flex items-center justify-center">
-      <div className="rounded-2xl w-full h-full bg-indigo-50 border border-fetch-primary flex p-1">
+    <nav className="relative w-full h-12 flex items-center justify-center">
+      <div className="w-full h-full bg-indigo-50 border-b border-fetch-primary flex p-1">
         <div className="flex-auto h-full flex gap-2 flex items-center">
           <FetchLogo />
         </div>

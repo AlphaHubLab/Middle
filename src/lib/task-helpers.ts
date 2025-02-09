@@ -17,6 +17,7 @@ const urlRegex =
 const onlyUrlRegex =
   /^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})$/gi
 
+export const isUrlByRegex = (str: string) => str.match(onlyUrlRegex)
 /**
  *
  * @param store
@@ -119,8 +120,11 @@ export const splitTextByUrls = (e: ClipboardEvent, store: IStore) => {
  */
 export const getNodeType = (_node: INode, _newValue = null): NodeType => {
   _newValue = typeof _newValue === "string" ? _newValue : _node.value
+
   if (_node.type === "h") return "h"
-  if (_newValue.match(onlyUrlRegex)) return "a"
+
+  if (isUrlByRegex(_newValue)) return "a"
+
   return "p"
 }
 
@@ -164,10 +168,15 @@ export const getAvailableExtensions = (
   store: IStore,
   extensions: IExtenstion[]
 ) => {
-  // Remove Title if There is one
-  return hasTitle(store)
-    ? extensions.filter((ex) => ex.value !== "h")
-    : extensions
+  const usedIdentitesID = store.params.identities.map((i) => i.id)
+
+  return extensions.filter((ext) => {
+    if (ext.action !== "addIdentity") {
+      return true
+    } else {
+      return !usedIdentitesID.includes(ext.value.id)
+    }
+  })
 }
 
 /**
@@ -182,13 +191,19 @@ export const convertToStore = ({
   nodes: INode[]
   params: ITaskParams | IStoreParams
 }): IStore => {
+  // If task has just one node, We add a single empty node
+  // to the end of the noes for a better user experience.
+  const _nodes = [...nodes]
+
+  if (_nodes.length === 1) _nodes.push({ type: "p", value: "" })
+
   return {
     id: id,
-    nodes: [...nodes],
+    nodes: _nodes,
     params: {
       ...params,
       repeatParams: params.hasOwnProperty("repeatParams")
-        ? (params as IStoreParams).repeatParams // if edit
+        ? (params as IStoreParams).repeatParams // if edit reference/draft
         : null // if task edit
     },
     focusedNode: nodes.length - 1,
@@ -197,9 +212,15 @@ export const convertToStore = ({
 }
 
 export const convertReferenceToStore = (reference: IReference): IStore => {
+  // If task has just one node, We add a single empty node
+  // to the end of the noes for a better user experience.
+  const _nodes = [...reference.nodes]
+
+  if (_nodes.length === 1) _nodes.push({ type: "p", value: "" })
+
   return {
     id: reference.id,
-    nodes: reference.nodes,
+    nodes: _nodes,
     params: reference.params,
     focusedNode: 0,
     range: 0
@@ -267,19 +288,43 @@ export const getDetailedPreview = (nodes: INode[], limit = 25): INode[] => {
   return preview
 }
 
+/**
+ *
+ * @param str
+ * @param limit
+ * @returns
+ */
 const strShortener = (str: string, limit: number) => {
   return str.length > limit ? str.slice(0, limit).trim() + "..." : str
 }
 
+/**
+ *
+ */
 export const getTaskDefaultParams = (): ITaskParams => ({
   dueDate: -1,
   tags: [],
   identities: []
 })
 
+/**
+ *
+ */
 export const getStoreDefaultParams = (): IStoreParams => ({
   dueDate: -1,
   tags: [],
   identities: [],
   repeatParams: null
 })
+
+/**
+ * Get the preview nodes of a task
+ */
+export const getPreviewNodes = (item: ITaskCore, references: IReference[]) => {
+  const nodes =
+    item.reference.length === 0
+      ? item.nodes
+      : references.find((r) => r.id === item.reference).nodes
+
+  return nodes
+}

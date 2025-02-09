@@ -1,4 +1,5 @@
 import { useEffect } from "react"
+import { PiWarning } from "react-icons/pi"
 
 import { Modal, type IModalProps } from "~components/ui/modal"
 import { usePersist } from "~contexts/persist-context"
@@ -14,6 +15,8 @@ export default function RemoveModal({ item, ...props }: ITaskActionModalProps) {
   const { tasks, setTasks } = usePersist()
 
   const reference = references.find((r) => r.id === item.reference)
+
+  // if (!reference) return props.onClose()
 
   const multipleIdentities = reference.params.identities.length > 1
   const multipleDates = reference.params.repeatParams
@@ -58,7 +61,7 @@ export default function RemoveModal({ item, ...props }: ITaskActionModalProps) {
       const _prev = [...prev]
       const found = prev.find((r) => r.id === item.reference)
 
-      found.params = params
+      if (found) found.params = params
 
       return _prev
     })
@@ -73,7 +76,7 @@ export default function RemoveModal({ item, ...props }: ITaskActionModalProps) {
       )
     )
 
-    // Todo: Remove Similar dates?
+    // Todo: Remove Similar dates on referencees?
   }
 
   const removeAllSimilar = () => {
@@ -81,10 +84,14 @@ export default function RemoveModal({ item, ...props }: ITaskActionModalProps) {
   }
 
   return (
-    <Modal {...props}>
-      <p className="pt-2 pb-12 text-fetch-primary text-sm font-bold">
-        {message}
-      </p>
+    <Modal
+      {...props}
+      title={
+        <h1 className="flex items-center gap-2 w-full">
+          <PiWarning /> <span className="text-rose-500">Delete Items</span>
+        </h1>
+      }>
+      <p className="pt-2 pb-12 text-zinc-600 text-sm">{message}</p>
       <div className="py-2 text-sm flex flex-col items-center *:my-1">
         <button
           className="block text-rose-500 hover:text-rose-400 py-1 w-full border rounded-xl h-8 border-rose-500 hover:bg-rose-100/50"

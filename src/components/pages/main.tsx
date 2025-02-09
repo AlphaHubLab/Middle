@@ -1,6 +1,6 @@
 import Editor from "~components/editor/editor"
 import NavbarContainer from "~components/navbar/navbar-container"
-import Inbox from "~components/task-manager/inbox"
+import Inbox from "~components/task-view/inbox"
 import { useApp } from "~contexts/app-context"
 
 export default function Main({ isDev = false }) {
@@ -26,7 +26,7 @@ export default function Main({ isDev = false }) {
           </div>
           <div className="flex justify-center">
             <div
-              className={`${!editMode ? "drawer-up" : "drawer-down"} absolute overflow-y-hidden max-w-[690px] h-[calc(100%-180px)] w-[calc(100%-8px)] shadow-md rounded-xl`}>
+              className={`${!editMode ? "drawer-up" : "drawer-down"} absolute overflow-y-hidden max-w-[690px] h-[calc(100%-170px)] w-[calc(100%-8px)] shadow-md rounded-xl`}>
               <Inbox show={!editMode} setHide={setEditMode} />
             </div>
           </div>
