@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { PiCheckFat, PiWarning } from "react-icons/pi"
 
 import { Modal, type IModalProps } from "~components/ui/modal"
+import ButtonFull from "~components/ui/svgs/buttons/full-w-buttons"
 import { P, Section } from "~components/ui/typograrphy"
 import { useDraft } from "~contexts/draft-context"
 import { usePersist } from "~contexts/persist-context"
@@ -140,11 +141,9 @@ const Alert = ({ onDone, doneLabel, ...props }: IAlertProps) => {
       }>
       <div className="pt-2 pb-12 text-black/70 text-sm">{props.children}</div>
       <div className="py-2 text-sm flex flex-col items-center *:my-1">
-        <button
-          className="block text-white/90 hover:bg-violet-800 bg-fetch-primary py-1 w-full border rounded-xl h-8 border-fetch-primary"
-          onClick={onDone}>
+        <ButtonFull variant="primary" onClick={onDone}>
           {doneLabel}
-        </button>
+        </ButtonFull>
       </div>
     </Modal>
   )
@@ -168,17 +167,12 @@ const Prompt = ({
       }>
       <div className="pt-2 pb-12 text-black/70 text-sm">{props.children}</div>
       <div className="py-2 text-sm flex flex-col items-center *:my-1">
-        <button
-          className="block text-white/90 hover:bg-violet-800 bg-fetch-primary py-1 w-full border rounded-xl h-8 border-fetch-primary"
-          onClick={onCancel}>
+        <ButtonFull variant="primary" onClick={onCancel}>
           {cancelLabel}
-        </button>
-
-        <button
-          className="block text-rose-500 hover:text-rose-400 py-1 w-full border rounded-xl h-8 border-rose-500 hover:bg-rose-100/50"
-          onClick={onAccept}>
+        </ButtonFull>
+        <ButtonFull variant="red" onClick={onAccept}>
           {acceptLabel}
-        </button>
+        </ButtonFull>
       </div>
     </Modal>
   )

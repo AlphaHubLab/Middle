@@ -83,7 +83,7 @@ export const UpcomingItem = ({ type, item, variant }) => {
   }
 
   return (
-    <div style={hidingStyle} className="transition-all py-[3px]">
+    <div style={hidingStyle} className="transition-all duration-500 py-[3px]">
       <InboxItemWrapper variant={variant}>
         <C.CollapsibleForTasks show={show} setShow={setShow}>
           <C.Action>

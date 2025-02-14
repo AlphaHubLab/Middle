@@ -8,6 +8,7 @@ export interface IModalProps {
   onClose?: () => void
   className?: string
   title?: ReactNode
+  closeOnBackdrop?: boolean
 }
 
 export const Modal = (props: IModalProps) => {
@@ -18,12 +19,16 @@ export const Modal = (props: IModalProps) => {
       {createPortal(
         <div className="fixed top-0 left-0 right-0 bottom-0 w-full h-full flex items-center justify-center z-30 p-2">
           <div
-            // onClick={props.onClose && props.onClose}
+            onClick={props.closeOnBackdrop ? props.onClose : () => false}
             className="fixed top-0 left-0 right-0 bottom-0 w-full h-full bg-black/70 z-0"></div>
           <div
             className={`modal-show px-8 relative ${props.className && props.className}`}>
             <header className="flex w-full items-center h-12 border-b">
-              {props.title ? <>{props.title}</> : <h1 className="text-fetch-primary w-full">Action needed</h1>}
+              {props.title ? (
+                <>{props.title}</>
+              ) : (
+                <h1 className="text-fetch-primary w-full">Action needed</h1>
+              )}
               {props.onClose && (
                 <div className="flex flex-auto items-center justify-end">
                   <button

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { PiWarning } from "react-icons/pi"
 
 import { Modal, type IModalProps } from "~components/ui/modal"
+import ButtonFull from "~components/ui/svgs/buttons/full-w-buttons"
 import { usePersist } from "~contexts/persist-context"
 import { useRecurrence } from "~contexts/recurrence-context"
 import type { ITaskCore } from "~lib/types"
@@ -86,7 +87,6 @@ export default function RemoveModal({ item, ...props }: ITaskActionModalProps) {
     await setTasks((prev) =>
       prev.filter((task) => task.recurrenceId !== item.recurrenceId)
     )
-    // props.onClose()
   }
 
   return (
@@ -100,30 +100,22 @@ export default function RemoveModal({ item, ...props }: ITaskActionModalProps) {
       }>
       <p className="pt-2 pb-12 text-black/70 text-sm">{message}</p>
       <div className="py-2 text-sm flex flex-col items-center *:my-1">
-        <button
-          className="block text-rose-500 hover:text-rose-400 py-1 w-full border rounded-xl h-8 border-rose-500 hover:bg-rose-100/50"
-          onClick={() => removeSingleTask()}>
+        <ButtonFull variant="red" onClick={() => removeSingleTask()}>
           Just remove this one
-        </button>
+        </ButtonFull>
         {multipleIdentities && multipleDates && (
           <>
-            <button
-              className="block text-rose-500 hover:text-rose-400 py-1 w-full border rounded-xl h-8 border-rose-500 hover:bg-rose-100/50"
-              onClick={() => removeSimilarIdentities()}>
+            <ButtonFull variant="red" onClick={() => removeSimilarIdentities()}>
               Remove all similar tasks using this identity
-            </button>
-            <button
-              className="block text-rose-500 hover:text-rose-400 py-1 w-full border rounded-xl h-8 border-rose-500 hover:bg-rose-100/50"
-              onClick={() => removeSimilarDates()}>
+            </ButtonFull>
+            <ButtonFull variant="red" onClick={() => removeSimilarDates()}>
               Remove all similar tasks with this due date
-            </button>
+            </ButtonFull>
           </>
         )}
-        <button
-          className="block text-rose-500 hover:text-rose-400 py-1 w-full border rounded-xl h-8 border-rose-500 hover:bg-rose-100/50"
-          onClick={() => removeAllSimilar()}>
+        <ButtonFull variant="red" onClick={() => removeAllSimilar()}>
           Remove all similar tasks
-        </button>
+        </ButtonFull>
       </div>
     </Modal>
   )

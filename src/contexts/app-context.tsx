@@ -7,6 +7,7 @@ type IEditorType = "new" | "draft" | "task" | "recurrence"
 
 export interface IRecurrenceEditData {
   id: string
+  taskId: string
   type: "all" | "single" | "identity" | "date" | ""
   identityId: number
   date: number
@@ -26,7 +27,7 @@ interface IAppContext {
 const App = createContext<IAppContext>(null)
 
 /**
- * Responsible for change app state between editmode/view mode and handles
+ * Responsible for changing app state between editmode/view mode and handles
  * all necessary functions and states.
  */
 export default function AppStateProvider({ children }) {
@@ -36,6 +37,7 @@ export default function AppStateProvider({ children }) {
   const [recurrenceEditData, setRecurrenceEditData] =
     useState<IRecurrenceEditData>({
       id: "",
+      taskId: "",
       type: "",
       date: -1,
       identityId: -1

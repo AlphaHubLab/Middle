@@ -36,7 +36,7 @@ const getCleanNodes = (nodes: INode[]) => {
   for (let i = _nodes.length - 1; i >= 0; i--) {
     if (_nodes[i].value.trim().length > 0) break
     if (_nodes[i].type === "h") break
-    
+
     _nodes.pop()
   }
 
@@ -168,7 +168,7 @@ const persistEditRecurrenceDispatcher = (
   const { newTasks: _newTasks, newRecurrence: _newRecurrence } =
     persistDispatcher(store, tasks)
 
-  const { id, type, date, identityId } = recurrenceEditData
+  const { id, taskId, type, date, identityId } = recurrenceEditData
 
   let newTasks = []
   let newRecurrences = []
@@ -210,15 +210,7 @@ const persistEditRecurrenceDispatcher = (
   }
 
   if (type === "single") {
-    newTasks = _newTasks.filter(
-      (task) =>
-        !(
-          task.recurrenceId === id &&
-          task.params.dueDate === date &&
-          task.params.identities.length > 0 &&
-          task.params.identities[0].id === identityId
-        )
-    )
+    newTasks = _newTasks.filter((task) => task.id !== taskId)
 
     newRecurrences = [...recurrences]
 

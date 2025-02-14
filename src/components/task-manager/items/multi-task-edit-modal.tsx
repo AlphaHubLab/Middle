@@ -3,6 +3,7 @@ import { PiWarning } from "react-icons/pi"
 import uuid4 from "uuid4"
 
 import { Modal, type IModalProps } from "~components/ui/modal"
+import ButtonFull from "~components/ui/svgs/buttons/full-w-buttons"
 import { useApp } from "~contexts/app-context"
 import { usePersist } from "~contexts/persist-context"
 import { useRecurrence } from "~contexts/recurrence-context"
@@ -29,7 +30,7 @@ export default function EditModal({ item, ...props }: ITaskActionModalProps) {
     (multipleDates ? "multiple dates" : "") +
     ". What do you want to do?"
 
-  // Remove unused recurrence
+  // Remove unused recurrence obj
   useEffect(() => {
     if (
       tasks.filter((task) => task.recurrenceId === item.recurrenceId).length ===
@@ -42,6 +43,7 @@ export default function EditModal({ item, ...props }: ITaskActionModalProps) {
   const editSimilarIdentities = () => {
     setRecurrenceEditData({
       id: item.recurrenceId,
+      taskId: item.id,
       type: "identity",
       date: -1,
       identityId: item.params.identities[0].id
@@ -68,6 +70,7 @@ export default function EditModal({ item, ...props }: ITaskActionModalProps) {
   const editSimilarDates = () => {
     setRecurrenceEditData({
       id: item.recurrenceId,
+      taskId: item.id,
       type: "date",
       date: item.params.dueDate,
       identityId: -1
@@ -96,16 +99,17 @@ export default function EditModal({ item, ...props }: ITaskActionModalProps) {
   const editSingleTask = () => {
     setRecurrenceEditData({
       id: item.recurrenceId,
+      taskId: item.id,
       type: "single",
-      date: item.params.dueDate,
-      identityId: item.params.identities[0].id
+      date: -1,
+      identityId: -1
     })
 
     const newParams = {
       ...recurrence.params,
       repeatParams: null,
       dueDate: item.params.dueDate,
-      identities: [recurrence.params.identities[0]]
+      identities: recurrence.params.identities
     }
 
     const taskCore = {
@@ -122,6 +126,7 @@ export default function EditModal({ item, ...props }: ITaskActionModalProps) {
   const editAllSimilar = () => {
     setRecurrenceEditData({
       id: item.recurrenceId,
+      taskId: item.id,
       type: "all",
       date: -1,
       identityId: -1
@@ -149,30 +154,22 @@ export default function EditModal({ item, ...props }: ITaskActionModalProps) {
       }>
       <p className="pt-2 pb-12 text-black/70 text-sm">{message}</p>
       <div className="py-2 text-sm flex flex-col items-center *:my-1">
-        <button
-          className="block text-rose-500 hover:text-rose-400 py-1 w-full border rounded-xl h-8 border-rose-500 hover:bg-rose-100/50"
-          onClick={editSingleTask}>
+        <ButtonFull variant="blue" onClick={editSingleTask}>
           Just edit this one
-        </button>
+        </ButtonFull>
         {multipleIdentities && multipleDates && (
           <>
-            <button
-              className="block text-rose-500 hover:text-rose-400 py-1 w-full border rounded-xl h-8 border-rose-500 hover:bg-rose-100/50"
-              onClick={editSimilarIdentities}>
+            <ButtonFull variant="blue" onClick={editSimilarIdentities}>
               Edit all similar tasks using this identity
-            </button>
-            <button
-              className="block text-rose-500 hover:text-rose-400 py-1 w-full border rounded-xl h-8 border-rose-500 hover:bg-rose-100/50"
-              onClick={editSimilarDates}>
+            </ButtonFull>
+            <ButtonFull variant="blue" onClick={editSimilarDates}>
               Edit all similar tasks with this due date
-            </button>
+            </ButtonFull>
           </>
         )}
-        <button
-          className="block text-rose-500 hover:text-rose-400 py-1 w-full border rounded-xl h-8 border-rose-500 hover:bg-rose-100/50"
-          onClick={editAllSimilar}>
+        <ButtonFull variant="blue" onClick={editAllSimilar}>
           Edit all similar tasks
-        </button>
+        </ButtonFull>
       </div>
     </Modal>
   )
