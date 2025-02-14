@@ -96,10 +96,10 @@ export const createIdentityExtenstions = (
 ): IExtenstion[] => {
   return identities.map((identity) => ({
     icon: () => <IdentityIcon color={identity.color} />,
-    title: `Assign task to "${identity.label}"`,
+    title: `Assign to "${identity.label}"`,
     value: identity,
     action: "addIdentity",
-    description: "Add the ID you want to do the task with",
+    description: "ID you want to do the task with",
     keywords: [
       "id",
       "identity",

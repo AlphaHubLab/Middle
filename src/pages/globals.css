@@ -235,7 +235,7 @@
 .checkbox-wrapper-12 .cbx label {
   width: 20px;
   height: 20px;
-  background: none;
+  background: #ffffff55;
   border-radius: 50%;
   position: absolute;
   top: 0;
@@ -355,4 +355,84 @@
       -32px 16px 0 -10px transparent,
       -32px -16px 0 -10px transparent;
   }
+}
+
+@keyframes fade-in-to-left {
+  0% {
+    opacity: 0;
+    right: -100%;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    right: 0px;
+  }
+}
+
+@keyframes fade-out-to-left {
+  0% {
+    opacity: 1;
+    right: 0;
+  }
+
+  30% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+    right: 100%;
+  }
+}
+
+@keyframes fade-in-to-right {
+  0% {
+    opacity: 0;
+    right: 100%;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    right: 0px;
+  }
+}
+
+@keyframes fade-out-to-right {
+  0% {
+    opacity: 1;
+    right: 0px;
+  }
+
+  30% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0;
+    right: -100%;
+  }
+}
+
+.fadeInToLeft {
+  animation: fade-in-to-left 0.4s forwards;
+}
+
+.fadeOutToLeft {
+  animation: fade-out-to-left 0.4s forwards;
+}
+
+.fadeInToRight {
+  animation: fade-in-to-right 0.4s forwards;
+}
+
+.fadeOutToRight {
+  animation: fade-out-to-right 0.4s forwards;
 }

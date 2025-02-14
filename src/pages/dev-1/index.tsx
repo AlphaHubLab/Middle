@@ -1,7 +1,7 @@
 import { Space_Grotesk } from "next/font/google"
 
-import Main from "~components/pages/main"
 import Sidebar from "~components/sidebar/sidebar"
+import TaskManager from "~components/task-manager/task-manager"
 import FetchProvider from "~contexts/fetch-provider"
 
 // const S = Space_Grotesk({
@@ -16,7 +16,7 @@ export default function Page() {
       <div className="h-screen min-h-[600px]">
         <div className="w-full h-full flex">
           <FetchProvider isDev>
-            <Main isDev />
+            <TaskManager isDev />
           </FetchProvider>
           <Sidebar isDev />
         </div>

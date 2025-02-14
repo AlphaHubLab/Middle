@@ -1,16 +1,7 @@
 import { Space_Grotesk } from "next/font/google"
 
-import OptionMain from "~components/pages/options"
+import OptionMain from "~components/options/options"
 
-const S = Space_Grotesk({
-  weight: ["300", "400", "500", "600", "700"],
-  subsets: ["latin"]
-})
-
-export default function Otions() {
-  return (
-    <div className={S.className}>
-      <OptionMain isDev={true} />
-    </div>
-  )
+export default function Options() {
+  return <OptionMain isDev />
 }

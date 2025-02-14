@@ -1,10 +1,4 @@
-import {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  type ElementType
-} from "react"
+import { useEffect, useRef, useState, type ElementType } from "react"
 import { IoCloseOutline } from "react-icons/io5"
 
 /**
@@ -101,10 +95,11 @@ export const CollapsibleForTasks = ({ children, show, setShow }) => {
             animState === 0
               ? "0rem"
               : content.current
-                ? content.current.scrollHeight > 200
-                  ? 200 + "px"
-                  : content.current.scrollHeight
-                : "auto"
+                ? content.current.scrollHeight
+                : // ? content.current.scrollHeight > 200
+                  //   ? 200 + "px"
+                  //   : content.current.scrollHeight
+                  "auto"
         }}
         onTransitionEnd={() => animState == 0 && setShow(false)}
         className={`transition-[height] duration-200 text-xs w-full`}>
@@ -221,44 +216,3 @@ export const Toolbar = ({ children }) => <>{children}</>
 export const Toggle = ({ children }) => <>{children}</>
 export const Action = ({ children }) => <>{children}</>
 export const Content = ({ children }) => <>{children}</>
-
-// export const CollapsibleFromParent = ({ children, show, setShow }) => {
-//   // const [show, setShow] = useState(false)
-//   // const [animState, setAnimState] = useState(0)
-
-//   const current = { toggle: null, content: null }
-
-//   children.forEach((child) => {
-//     if (child.type.name === "Toggle") current.toggle = child
-//     if (child.type.name === "Content") current.content = child
-//   })
-
-//   const parts = { current }
-
-//   const content = useRef<HTMLDivElement>(null)
-//   console.log(content.current)
-//   return (
-//     <div>
-//       <div onClick={() => setShow(!show)} className="h-full">
-//         {parts.current.toggle}
-//       </div>
-//       <div
-//         style={{
-//           height: !show
-//             ? "0rem"
-//             : content.current
-//               ? content.current.scrollHeight + "px"
-//               : "auto"
-//         }}
-//         className={`transition-[height] duration-200 oveflow-y-hidden text-xs w-full ${!show && "cursor-pointer"}`}>
-//         {show && (
-//           <div
-//             ref={content}
-//             className={`w-full transition-all ${!show ? "duration-500" : "duration-100"}`}>
-//             {parts.current.content}
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   )
-// }

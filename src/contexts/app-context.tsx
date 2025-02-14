@@ -3,7 +3,14 @@ import { createContext, useContext, useState, type Dispatch } from "react"
 import { convertToStore, createEmptyStore } from "~lib/task-helpers"
 import type { IStore, ITaskCore } from "~lib/types"
 
-type IEditorType = "new" | "draft" | "task" | "reference"
+type IEditorType = "new" | "draft" | "task" | "recurrence"
+
+export interface IRecurrenceEditData {
+  id: string
+  type: "all" | "single" | "identity" | "date" | ""
+  identityId: number
+  date: number
+}
 
 interface IAppContext {
   openEditMode: (taskCore: ITaskCore, editorType: IEditorType) => void
@@ -12,14 +19,27 @@ interface IAppContext {
   editMode: boolean
   initialStore: IStore
   editorType: IEditorType
+  recurrenceEditData: IRecurrenceEditData
+  setRecurrenceEditData: Dispatch<IRecurrenceEditData>
 }
 
 const App = createContext<IAppContext>(null)
 
+/**
+ * Responsible for change app state between editmode/view mode and handles
+ * all necessary functions and states.
+ */
 export default function AppStateProvider({ children }) {
   const [editMode, setEditMode] = useState(false)
   const [initialStore, setInitialStore] = useState<IStore>(createEmptyStore())
   const [editorType, setEditorType] = useState<IEditorType>("new")
+  const [recurrenceEditData, setRecurrenceEditData] =
+    useState<IRecurrenceEditData>({
+      id: "",
+      type: "",
+      date: -1,
+      identityId: -1
+    })
 
   const newEditor = (setActive = true) => {
     setInitialStore(createEmptyStore())
@@ -28,8 +48,9 @@ export default function AppStateProvider({ children }) {
   }
 
   const openEditMode = (taskCore: ITaskCore, editorType: IEditorType) => {
-    // since drafts params is type of IStoreParams, convertToStore() should convert draft item differently
-    // currently convertToStore() checks for "repeatParams" presence for difference between tasks and drafts
+    // since drafts and recurrece params is typeof IStoreParams,
+    // convertToStore() should converts draft and recurrence items differently
+    // currently convertToStore() checks for "repeatParams" presence for difference between tasks and drafts/recurrence objects
 
     // todo: dispatch for drafts and tasks in here and libs
     setInitialStore(convertToStore(taskCore))
@@ -43,7 +64,9 @@ export default function AppStateProvider({ children }) {
     newEditor,
     editMode,
     initialStore,
-    editorType
+    editorType,
+    recurrenceEditData,
+    setRecurrenceEditData
   }
 
   return <App.Provider value={context}>{children}</App.Provider>

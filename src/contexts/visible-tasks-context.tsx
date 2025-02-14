@@ -75,7 +75,17 @@ export default function VisibleTasksProvider({
     useState<IVisibleTasks>(emptyVisibleTasks)
 
   useEffect(() => {
-    if (tasks.length === 0) return
+    if (tasks.length === 0) {
+      setVisibleTasks({
+        overdue: [],
+        urgent: [],
+        next24: [],
+        next48: [],
+        unschaduled: [],
+        other: []
+      })
+      return
+    }
 
     setVisibleTasks(filterTasks(tasks))
 

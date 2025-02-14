@@ -178,7 +178,7 @@
 .checkbox-wrapper-12 .cbx label {
   width: 20px;
   height: 20px;
-  background: none;
+  background: #ffffff55;
   border-radius: 50%;
   position: absolute;
   top: 0;
@@ -298,4 +298,36 @@
       -32px 16px 0 -10px transparent,
       -32px -16px 0 -10px transparent;
   }
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+    right: 100%;
+  }
+
+  100% {
+    opacity: 1;
+    right: 0%;
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+    right: 0%;
+  }
+
+  100% {
+    opacity: 0;
+    right: 100%;
+  }
+}
+
+.fadeIn {
+  animation: fade-in 0.4s forwards;
+}
+
+.fadeOut {
+  animation: fade-out 0.4s forwards;
 }

@@ -1,5 +1,7 @@
 import { PiGear } from "react-icons/pi"
 
+// import ConnectWallet from "~components/connect-wallets/connect-wallet-rainbow"
+// import ConnectWallet from "~components/connect-wallets/connect-wallet"
 import FetchLogo from "~components/ui/fetch-logo"
 
 export default function NavbarContainer({ isDev = false }) {
@@ -13,9 +15,10 @@ export default function NavbarContainer({ isDev = false }) {
           <button className="h-full border border-fetch-primary text-fetch-primary px-2 rounded-xl text-sm">
             Create wallet
           </button>
-          <button className="h-full border border-fetch-primary text-fetch-primary px-2 rounded-xl text-sm">
+          {/* <button className="h-full border border-fetch-primary text-fetch-primary px-2 rounded-xl text-sm">
             Connect
-          </button>
+          </button> */}
+          {/* <ConnectWallet /> */}
           <a
             href={isDev ? "/options" : "/options.html"}
             rel="noopener noreferrer"

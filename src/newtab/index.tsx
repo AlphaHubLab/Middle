@@ -1,26 +1,23 @@
-// import { Space_Grotesk } from "next/font/google"
-import { Profiler, useState } from "react"
+// import { Profiler } from "react"
 
 import Sidebar from "~components/sidebar/sidebar"
 
 import "../style.css"
 
-import Main from "~components/pages/main"
-// import { WidgetContainer } from "~components/sidebar/sidebar"
+import TaskManager from "~components/task-manager/task-manager"
 import FetchProvider from "~contexts/fetch-provider"
 
-// const SG = Space_Grotesk({
-//   weight: ["300", "400", "500", "600", "700"],
-//   subsets: ["latin"]
-// })
-
 export default function Page() {
+  return <NewTab />
+}
+
+export const NewTab = () => {
   return (
     <div className={`h-screen overflow-hidden`}>
       <div className="h-screen">
         <div className="w-full h-full flex">
           <FetchProvider>
-            <Main />
+            <TaskManager />
           </FetchProvider>
           <Sidebar />
         </div>

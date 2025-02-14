@@ -20,10 +20,10 @@ import type {
   NodeType
 } from "~lib/types"
 
+import { RenderElement } from "../renderables/render-element"
+import { DraftStatus } from "../renderables/status"
 import { Command } from "./commands"
 import { createIdentityExtenstions, GENERAL_EXTENTIONS } from "./extenstions"
-import { RenderElement } from "./render-element"
-import { DraftStatus } from "./status"
 
 type HTMLInputs = HTMLInputElement | HTMLTextAreaElement
 
@@ -31,8 +31,14 @@ const tagRegExp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z_]+\w*/g)
 // const projectRegExp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z0-9_]+\w*/g)
 
 export default function Editor({ disabled }) {
-  const { initialStore, editorType, setEditMode, newEditor } = useApp()
-  const { handlePersist } = usePersist()
+  const {
+    initialStore,
+    editorType,
+    setEditMode,
+    newEditor,
+  } = useApp()
+
+  const { handlePersist, handlePersistByRecurrence } = usePersist()
   const { drafts, setDrafts } = useDraft()
   const { setting } = useSetting()
 
@@ -520,9 +526,14 @@ export default function Editor({ disabled }) {
     newTask()
   }
 
-  const persistTask = () => {
+  const persistTask = async () => {
     addTags()
-    handlePersist(store)
+    if (editorType === "recurrence") {
+      await handlePersistByRecurrence(store)
+    } else {
+      await handlePersist(store)
+    }
+
     deleteDraft()
   }
 

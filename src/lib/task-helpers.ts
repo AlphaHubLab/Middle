@@ -3,19 +3,14 @@ import uuid4 from "uuid4"
 import type {
   IExtenstion,
   INode,
-  IReference,
+  IRecurrence,
   IStore,
   IStoreParams,
   ITaskCore,
   ITaskParams,
   NodeType
 } from "./types"
-
-const urlRegex =
-  /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi
-
-const onlyUrlRegex =
-  /^(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})$/gi
+import { onlyUrlRegex, strShortener, urlRegex } from "./utils"
 
 export const isUrlByRegex = (str: string) => str.match(onlyUrlRegex)
 /**
@@ -211,7 +206,7 @@ export const convertToStore = ({
   }
 }
 
-export const convertReferenceToStore = (reference: IReference): IStore => {
+export const convertReferenceToStore = (reference: IRecurrence): IStore => {
   // If task has just one node, We add a single empty node
   // to the end of the noes for a better user experience.
   const _nodes = [...reference.nodes]
@@ -290,16 +285,6 @@ export const getDetailedPreview = (nodes: INode[], limit = 25): INode[] => {
 
 /**
  *
- * @param str
- * @param limit
- * @returns
- */
-const strShortener = (str: string, limit: number) => {
-  return str.length > limit ? str.slice(0, limit).trim() + "..." : str
-}
-
-/**
- *
  */
 export const getTaskDefaultParams = (): ITaskParams => ({
   dueDate: -1,
@@ -320,11 +305,14 @@ export const getStoreDefaultParams = (): IStoreParams => ({
 /**
  * Get the preview nodes of a task
  */
-export const getPreviewNodes = (item: ITaskCore, references: IReference[]) => {
-  const nodes =
-    item.reference.length === 0
-      ? item.nodes
-      : references.find((r) => r.id === item.reference).nodes
+export const getPreviewNodes = (item: ITaskCore, recurrenes: IRecurrence[]) => {
+  // console.log("rec", recurrenes)
 
-  return nodes
+  const nodes = !item.hasOwnProperty("recurrenceId") // item is type of draft or recurrence?
+    ? item.nodes
+    : item.recurrenceId.length === 0
+      ? item.nodes
+      : recurrenes.find((r) => r.id === item.recurrenceId)?.nodes
+
+  return nodes || [{ type: "h", value: "" }]
 }

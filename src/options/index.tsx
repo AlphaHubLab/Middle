@@ -1,4 +1,4 @@
-import OptionMain from "~components/pages/options"
+import OptionMain from "~components/options/options"
 
 import "../style.css"
 

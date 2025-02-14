@@ -5,21 +5,40 @@ import { sendToBackground } from "@plasmohq/messaging"
 import { Storage } from "@plasmohq/storage"
 import { useStorage } from "@plasmohq/storage/hook"
 
-import type { IStore, ITask } from "~lib/types"
+import type { INode, IRecurrence, IStore, ITask } from "~lib/types"
 import { mockTask } from "~mock/mock-tasks"
 
-import { useReference } from "./reference-context"
+import { useApp, type IRecurrenceEditData } from "./app-context"
+import { useRecurrence } from "./recurrence-context"
 
 interface IPersistContext {
   tasks: ITask[]
   history: ITask[]
   storageLoading: boolean
   historyLoading: boolean
-  handlePersist: (store: IStore) => void
+  handlePersist: (store: IStore) => Promise<void>
+  handlePersistByRecurrence: (store: IStore) => Promise<void>
   handleDone: (id: string) => void
   handleUndone: (id: string) => void
   setTasks: (arg: ITask[] | ((prev: ITask[]) => void)) => Promise<void>
   setHistory: (arg: ITask[] | ((prev: ITask[]) => void)) => Promise<void>
+}
+
+const Persist = createContext<IPersistContext>(undefined)
+
+/**
+ * Delete empty nodes from the end of the tasks for
+ * for better user experience on view mode.
+ */
+const getCleanNodes = (nodes: INode[]) => {
+  const _nodes = [...nodes]
+
+  for (let i = _nodes.length - 1; i >= 0; i--) {
+    if (_nodes[i].value.trim().length > 0) break
+    _nodes.pop()
+  }
+
+  return _nodes
 }
 
 const generateDates = (store: IStore, dateAdded: number) => {
@@ -47,7 +66,177 @@ const generateDates = (store: IStore, dateAdded: number) => {
   return gd.reverse()
 }
 
-const Persist = createContext<IPersistContext>(undefined)
+const persistNonRecurrentTask = (store: IStore, tasks: ITask[]) => {
+  const _tasks = [...tasks]
+  const found = _tasks.find((t) => t.id === store.id)
+
+  const nodes = getCleanNodes(store.nodes)
+
+  // Convert IStoreParams to ITaskParams
+  const { dueDate, tags, identities } = store.params
+  const params = { dueDate, tags, identities }
+
+  // If existed
+  if (found) {
+    found.nodes = nodes
+    found.params = params
+  }
+  // if new
+  if (!found) {
+    const dateAdded = new Date().getTime()
+
+    _tasks.push({
+      id: store.id,
+      nodes,
+      params,
+      recurrenceId: "",
+      done: false,
+      dateAdded,
+      dateDone: -1
+    })
+  }
+
+  return { newTasks: _tasks, newRecurrence: null }
+}
+
+const persistRecurrentTask = (store: IStore, tasks: ITask[]) => {
+  const _tasks = [...tasks]
+
+  const nodes = getCleanNodes(store.nodes)
+
+  const dateAdded = new Date().getTime()
+
+  const dueDates = generateDates(store, dateAdded)
+
+  // Tasks can be without any identities, so we need to make sure
+  // the loop works with 0 identities
+  const identitiesLen =
+    store.params.identities.length > 0 ? store.params.identities.length : 1
+
+  for (let i = 0; i < dueDates.length; i++) {
+    for (let j = 0; j < identitiesLen; j++) {
+      const identities =
+        store.params.identities.length > 0 ? [store.params.identities[j]] : []
+
+      const params = {
+        dueDate: dueDates[i],
+        tags: store.params.tags,
+        identities
+      }
+
+      _tasks.push({
+        id: uuid4(),
+        nodes: [{ type: "h", value: "" }],
+        params,
+        recurrenceId: store.id,
+        done: false,
+        dateDone: -1,
+        dateAdded
+      })
+    }
+  }
+
+  const recurrence = {
+    id: store.id,
+    nodes: nodes,
+    params: store.params
+  }
+
+  return { newTasks: _tasks, newRecurrence: recurrence }
+}
+
+const persistDispatcher = (store: IStore, tasks: ITask[]) => {
+  const repeatByDate = store.params.repeatParams
+    ? store.params.repeatParams.goal
+    : 0
+
+  if (repeatByDate === 0 && store.params.identities.length < 2) {
+    return persistNonRecurrentTask(store, tasks)
+  } else {
+    return persistRecurrentTask(store, tasks)
+  }
+}
+
+const persistEditRecurrenceDispatcher = (
+  store: IStore,
+  tasks: ITask[],
+  recurrences: IRecurrence[],
+  recurrenceEditData: IRecurrenceEditData
+) => {
+  const { newTasks: _newTasks, newRecurrence: _newRecurrence } =
+    persistDispatcher(store, tasks)
+
+  const { id, type, date, identityId } = recurrenceEditData
+
+  let newTasks = []
+  let newRecurrences = []
+
+  if (type === "identity") {
+    newTasks = _newTasks.filter(
+      (task) =>
+        !(
+          task.recurrenceId === id &&
+          task.params.identities.length > 0 &&
+          task.params.identities[0].id === identityId
+        )
+    )
+
+    const _recurrences = [...recurrences]
+    const found = _recurrences.find((r) => r.id === id)
+
+    found.params.identities = found.params.identities.filter(
+      (identity) => identity.id !== identityId
+    )
+
+    newRecurrences = [..._recurrences]
+
+    if (_newRecurrence) {
+      newRecurrences.push(_newRecurrence)
+    }
+  }
+
+  if (type === "date") {
+    newTasks = _newTasks.filter(
+      (task) => !(task.recurrenceId === id && task.params.dueDate === date)
+    )
+
+    newRecurrences = [...recurrences]
+
+    if (_newRecurrence) {
+      newRecurrences.push(_newRecurrence)
+    }
+  }
+
+  if (type === "single") {
+    newTasks = _newTasks.filter(
+      (task) =>
+        !(
+          task.recurrenceId === id &&
+          task.params.dueDate === date &&
+          task.params.identities.length > 0 &&
+          task.params.identities[0].id === identityId
+        )
+    )
+
+    newRecurrences = [...recurrences]
+
+    if (_newRecurrence) {
+      newRecurrences.push(_newRecurrence)
+    }
+  }
+
+  if (type === "all") {
+    newTasks = _newTasks.filter((task) => task.recurrenceId !== id)
+
+    newRecurrences = [...recurrences]
+
+    if (_newRecurrence) {
+      newRecurrences.push(_newRecurrence)
+    }
+  }
+
+  return { newTasks, newRecurrences }
+}
 
 export default function PersistProvider({ children, isDev = false }) {
   const [tasks, setTasks, { isLoading: storageLoading, remove: removeTasks }] =
@@ -75,7 +264,8 @@ export default function PersistProvider({ children, isDev = false }) {
     (v: ITask[]) => (!v ? [] : v)
   )
 
-  const { setReferences } = useReference()
+  const { recurrences, setRecurrences } = useRecurrence()
+  const { recurrenceEditData } = useApp()
 
   // uncomment the following lines to reset storage and
   // refresh the page with cmd + r ~ 7-8 times
@@ -123,116 +313,26 @@ export default function PersistProvider({ children, isDev = false }) {
     setHistory(_history.filter((h) => h.id !== id))
   }
 
-  const handlePersist = (store: IStore, editAsReference?: boolean) => {
-    const _tasks = [...tasks]
+  const handlePersistByRecurrence = async (store: IStore) => {
+    const { newTasks, newRecurrences } = persistEditRecurrenceDispatcher(
+      store,
+      tasks,
+      recurrences,
+      recurrenceEditData
+    )
 
-    const found = _tasks.find((t) => t.id === store.id)
+    await setTasks(newTasks)
+    await setRecurrences(newRecurrences)
+  }
 
-    const _nodes = [...store.nodes]
+  const handlePersist = async (store: IStore) => {
+    const { newTasks, newRecurrence } = persistDispatcher(store, tasks)
 
-    // Delete last empty nodes for better user experience.
-    for (let i = _nodes.length - 1; i >= 0; i--) {
-      if (_nodes[i].value.trim().length > 0) break
-      _nodes.pop()
+    if (newRecurrence) {
+      await setRecurrences((prev) => [...prev, newRecurrence])
     }
 
-    // Save changes to an existing task
-    if (found) {
-      // Convert IStoreParams to ITaskParams
-      const params = {
-        dueDate: store.params.dueDate,
-        tags: store.params.tags,
-        identities: store.params.identities
-      }
-
-      found.nodes = _nodes
-      found.params = params
-    } else {
-      const dateAdded = new Date().getTime()
-
-      const repeatByDate = store.params.repeatParams
-        ? store.params.repeatParams.goal
-        : 0
-
-      // No need to generate repeated tasks for date and identities
-      if (repeatByDate === 0 && store.params.identities.length < 2) {
-        // Convert store params to single task params
-        const params = {
-          dueDate: store.params.dueDate,
-          tags: store.params.tags,
-          identities: store.params.identities
-        }
-
-        _tasks.push({
-          id: store.id,
-          nodes: _nodes,
-          params,
-          reference: "",
-          done: false,
-          dateAdded,
-          dateDone: -1
-        })
-      }
-      // Need for generate repeated tasks
-      else {
-        const generatedDates = generateDates(store, dateAdded)
-
-        generatedDates.forEach((dueDate) => {
-          // No need for generate by identities
-          if (store.params.identities.length < 2) {
-            // Convert store params to single task params with dueDate
-            const params = {
-              dueDate,
-              tags: store.params.tags,
-              identities: store.params.identities
-              // incrementors: store.params.incrementors
-            }
-
-            _tasks.push({
-              id: uuid4(),
-              nodes: [{ type: "h", value: "" }],
-              params,
-              reference: store.id,
-              done: false,
-              dateDone: -1,
-              dateAdded
-            })
-          }
-          // Generating by identities and date
-          else {
-            store.params.identities.forEach((identity) => {
-              // Convert store params to single task params with dueDate and identity
-              const params = {
-                dueDate,
-                tags: store.params.tags,
-                identities: [identity]
-                // incrementors: store.params.incrementors
-              }
-
-              _tasks.push({
-                id: uuid4(),
-                nodes: [{ type: "h", value: "" }],
-                params,
-                reference: store.id,
-                done: false,
-                dateDone: -1,
-                dateAdded
-              })
-            })
-          }
-        })
-
-        const reference = {
-          id: store.id,
-          nodes: store.nodes,
-          params: store.params
-        }
-
-        setReferences((prev) => [...prev, reference])
-      }
-    }
-
-    setTasks(_tasks)
+    await setTasks(newTasks)
   }
 
   const context = {
@@ -243,6 +343,7 @@ export default function PersistProvider({ children, isDev = false }) {
     handleDone,
     handleUndone,
     handlePersist,
+    handlePersistByRecurrence,
     setTasks,
     setHistory
   }

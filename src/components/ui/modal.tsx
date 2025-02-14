@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { createPortal } from "react-dom"
-import { PiXCircle } from "react-icons/pi"
+import { PiXCircleThin } from "react-icons/pi"
 
 export interface IModalProps {
   children: ReactNode
@@ -29,8 +29,8 @@ export const Modal = (props: IModalProps) => {
                   <button
                     onClick={props.onClose}
                     aria-label="Close modal"
-                    className="cursor-pointer w-8 flex items-center justify-center hover:text-zinc-500 py-1 px-2">
-                    <PiXCircle />
+                    className="cursor-pointer text-black/80 text-xl flex items-center justify-center hover:text-black/50 py-1 px-2">
+                    <PiXCircleThin />
                   </button>
                 </div>
               )}

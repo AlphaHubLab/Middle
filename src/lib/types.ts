@@ -8,14 +8,14 @@ export interface IBookmark {
 
 /**
  * A type representing a node type.
- * h: header, a: anchor, p: paragraph
+ * "h": Header | "a": Link | "p": text.
  */
 export type NodeType = "h" | "a" | "p"
 
 /**
  * A type representing a node.
- * @property {NodeType} type - The type of the node.
- * @property {string} value - The string value of the node.
+ * @property {NodeType} type - "h": Header | "a": Link | "p": text.
+ * @property {string} value - The text of the node.
  */
 export interface INode {
   type: NodeType
@@ -27,19 +27,15 @@ export interface IStoreParams {
   tags: string[]
   identities: IIdentity[]
   repeatParams: IRepeatParams | null
-  // todo on next version
-  // incrementors: IIncrementor[]
 }
 
 export interface ITaskParams {
   dueDate: number
   tags: string[]
   identities: IIdentity[]
-  // todo on next version
-  // incrementors: IIncrementor[]
 }
 
-export interface IReference {
+export interface IRecurrence {
   id: string
   nodes: INode[]
   params: IStoreParams
@@ -49,7 +45,7 @@ export interface ITaskCore {
   id: string
   nodes: INode[]
   params: ITaskParams
-  reference: string
+  recurrenceId: string
 }
 
 export interface IDraft extends ITaskCore {
@@ -62,7 +58,7 @@ export interface ITask extends ITaskCore {
   dateDone: number
 }
 
-export interface IStore extends Omit<ITaskCore, "reference" | "params"> {
+export interface IStore extends Omit<ITaskCore, "recurrenceId" | "params"> {
   params: IStoreParams
   range: number
   focusedNode: number

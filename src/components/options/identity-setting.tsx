@@ -1,15 +1,13 @@
-import { init } from "next/dist/compiled/@vercel/og/satori"
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { HexColorPicker } from "react-colorful"
-import { setSelection } from "slate"
 
-import ButtonFetch from "~components/ui/button-fetch"
-import * as C from "~components/ui/collapsible"
 import Input from "~components/ui/input"
 import Label from "~components/ui/label"
 import { Note, P, Section } from "~components/ui/typograrphy"
 import { useSetting } from "~contexts/setting-context"
 import type { IIdentity } from "~lib/types"
+
+import { IdentityPreview } from "../renderables/identity-preview"
 
 const createNewIdentity = (identities: IIdentity[]) => {
   // New Id based on last registerrred Id
@@ -62,17 +60,18 @@ export default function IdentitySection() {
 
   const onClose = () => {
     setOpen(false)
-    const timer = setTimeout(() => setShowIdEditor(false), 700)
+    const timer = setTimeout(() => setShowIdEditor(false), 200)
     return () => clearTimeout(timer)
   }
 
   return (
     <Section title="Identities">
       <P>
-        Creating a well managed Identities let you track your acitivies more
-        precisely, assign one or more wallets, socials, etc. to a task to track.
+        Creating well-managed identities allows you to track your activities
+        more precisely. Assign one or more wallets, social accounts, or other
+        identifiers to a task for better tracking and organization.
       </P>
-      <Note type="red">
+      <Note variant="red">
         <b>DO NOT STORE</b> passwords, key phrases, private keys or other
         sensetive data in identity items!
       </Note>
@@ -81,20 +80,20 @@ export default function IdentitySection() {
         <div className="flex">
           <div className="w-full">
             <div
+              onClick={() => {
+                if (showIdEditor === false) {
+                  openEditor(createNewIdentity(identities))
+                  setEditorMode("new")
+                }
+              }}
               style={{ height: !open ? "40px" : "440px" }}
-              className={`${!showIdEditor && "cursor-pointer hover:bg-slate-200"} w-full overflow-hidden transition-all duration-500 p-2 bg-slate-100 border-[1px] rounded-md`}>
+              className={`${!showIdEditor && "cursor-pointer hover:bg-slate-200"} w-full overflow-hidden transition-all duration-300 p-2 bg-slate-100 rounded-2xl`}>
               <div
-                className={`text-sm w-full flex items-center  ${open && "border-b-[1px]"}`}
-                onClick={() => {
-                  if (showIdEditor === false) {
-                    openEditor(createNewIdentity(identities))
-                    setEditorMode("new")
-                  }
-                }}>
+                className={`text-sm w-full flex items-center bg-inherit pb-2 px-2 text-black/80 border-b-[1px]  ${open || showIdEditor ? "border-black/10" : "border-transparent"}`}>
                 +Add Identity
               </div>
               {showIdEditor && (
-                <div className="h-[400px] overflow-y-auto overflow-x-hidden styled-scrollbar">
+                <div className="h-[400px] bg-inherit overflow-y-auto overflow-x-hidden styled-scrollbar">
                   <IdentityEditor
                     editorMode={editorMode}
                     initialIdentity={initialIdentity}
@@ -108,7 +107,7 @@ export default function IdentitySection() {
       </div>
 
       <div className="pt-6">
-        <h2 className="font-bold text-sm border-b text-zinc-700">
+        <h2 className="font-medium text-sm border-b text-black/80">
           Your Identities
         </h2>
         {identities.length === 0 && (
@@ -128,29 +127,6 @@ export default function IdentitySection() {
                 setEditorMode={setEditorMode}
                 openEditor={openEditor}
               />
-              // <div
-              //   className="flex w-full items-center"
-              //   key={`loaded-identity-${identity.id}`}>
-              //   <div className="flex w-full">
-              //     <IdentityPreview identity={identity} />
-              //     <div className="flex gap-2 h-6 items-center text-xs pl-2">
-              //       <button
-              //         className="text-blue-500 hover:text-blue-300"
-              //         onClick={() => {
-              //           openEditor(structuredClone(identity))
-              //           setEditorMode("edit")
-              //         }}>
-              //         Edit
-              //       </button>
-              //       <button
-              //         className="text-rose-500 hover:text-rose-300"
-              //         // onClick={() => openEditor(identity)}
-              //       >
-              //         Remove
-              //       </button>
-              //     </div>
-              //   </div>
-              // </div>
             ))}
           </div>
         )}
@@ -270,15 +246,15 @@ const IdentityEditor = ({ initialIdentity, onClose, editorMode }) => {
   }
 
   return (
-    <div className="w-full p-2">
-      <div className="flex text-sm gap-2">
+    <div className="w-full px-2 pb-2 bg-inherit">
+      <div className="sticky top-0 py-4 flex text-xs gap-2 bg-inherit">
         <button
-          className="px-2 py-1 bg-fetch-primary hover:bg-violet-700 text-white rounded-md"
+          className="px-2 py-1 bg-fetch-primary hover:bg-violet-700 text-white rounded-lg"
           onClick={saveIdentity}>
           Save
         </button>
         <button
-          className="px-2 py-1 border hover:border-rose-500 text-rose-500 hover:text-rose-300 rounded-md"
+          className="px-2 py-1 border hover:border-rose-500 text-rose-500 hover:text-rose-300 rounded-lg"
           onClick={onClose}>
           Discard
         </button>
@@ -395,40 +371,6 @@ const IdentityEditor = ({ initialIdentity, onClose, editorMode }) => {
             </div>
           ))}
         </div>
-      </div>
-    </div>
-  )
-}
-
-export const IdentityPreview = ({ identity }: { identity: IIdentity }) => {
-  return (
-    <div className="w-full flex">
-      <div
-        style={{ color: identity.color }}
-        className="w-4 text-xs flex items-center h-6">
-        <p>ID</p>
-      </div>
-      <div className="w-full">
-        <C.Collapsible>
-          <C.Toggle>
-            <header className="select-none text-zinc-700 text-sm font-bold py-[2px] cursor-pointer px-2 hover:bg-slate-100 rounded-md ">
-              <p>{identity.label}</p>
-            </header>
-          </C.Toggle>
-          <C.Content>
-            <div className="pl-2 pb-3">
-              {identity.items.map((item, i) => (
-                <div
-                  key={`${item}-${i}`}
-                  style={{ borderColor: identity.color }}
-                  className="flex px-2 gap-2 border-l text-sm text-zinc-500">
-                  <p className="font-bold">{item.key}:</p>
-                  <p>{item.value}</p>
-                </div>
-              ))}
-            </div>
-          </C.Content>
-        </C.Collapsible>
       </div>
     </div>
   )

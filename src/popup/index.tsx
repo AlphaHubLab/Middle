@@ -1,15 +1,15 @@
 import "../style.css"
 
-import Popup from "~components/pages/popup"
+import Popup from "~components/popup/popup"
 import PersistProvider from "~contexts/persist-context"
-import ReferenceProvider from "~contexts/reference-context"
+import RecurrenceProvider from "~contexts/recurrence-context"
 
 export default function IndexPopup() {
   return (
-    <ReferenceProvider>
+    <RecurrenceProvider>
       <PersistProvider>
         <Popup />
       </PersistProvider>
-    </ReferenceProvider>
+    </RecurrenceProvider>
   )
 }
