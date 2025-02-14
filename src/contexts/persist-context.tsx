@@ -35,6 +35,8 @@ const getCleanNodes = (nodes: INode[]) => {
 
   for (let i = _nodes.length - 1; i >= 0; i--) {
     if (_nodes[i].value.trim().length > 0) break
+    if (_nodes[i].type === "h") break
+    
     _nodes.pop()
   }
 
