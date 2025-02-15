@@ -30,6 +30,7 @@ export const UpcomingItem = ({ type, item, variant }) => {
   const [show, setShow] = useState(false)
 
   const [hidingStyle, setHidingStyle] = useState({
+    opacity: 1,
     transform: "none",
     maxHeight: "1000px"
   })
@@ -62,7 +63,7 @@ export const UpcomingItem = ({ type, item, variant }) => {
         ? () => handleDone(item.id)
         : () => setTasks((prev) => prev.filter((task) => task.id !== item.id))
 
-    const timer = setTimeout(fn, 150)
+    const timer = setTimeout(fn, 200)
 
     return () => timer && clearTimeout(timer)
   }, [hidingStyle])
@@ -70,20 +71,23 @@ export const UpcomingItem = ({ type, item, variant }) => {
   const slideToHistory = () => {
     timerStyle.width === "100%" &&
       setHidingStyle({
-        transform: "translateX(200%)",
+        opacity: 0,
+        transform: "translateX(50%)",
         maxHeight: "0px"
       })
   }
 
   const slideToDelete = () => {
     setHidingStyle({
-      transform: "translateX(200%)",
+      // transitionDuration: "500ms",
+      opacity: 0,
+      transform: "translateX(50%)",
       maxHeight: "1px"
     })
   }
 
   return (
-    <div style={hidingStyle} className="transition-all duration-500 py-[3px]">
+    <div style={hidingStyle} className="transition-all duration-200 py-[3px]">
       <InboxItemWrapper variant={variant}>
         <C.CollapsibleForTasks show={show} setShow={setShow}>
           <C.Action>
@@ -98,7 +102,7 @@ export const UpcomingItem = ({ type, item, variant }) => {
               <div
                 onTransitionEnd={slideToHistory}
                 style={timerStyle}
-                className="absolute z-0 h-full left-0 top-0 transition-[width] ease-in bg-emerald-200 "></div>
+                className="absolute z-0 h-full left-0 top-0 transition-[width] ease-in bg-emerald-200 rounded-r-2xl"></div>
 
               <div className="relative z-1 h-full flex flex-col justify-center">
                 <div className="flex gap-2 items-center h-full">
@@ -152,7 +156,8 @@ export const DraftItem = ({ type, item }) => {
 
   const [hidingStyle, setHidingStyle] = useState({
     transform: "none",
-    maxHeight: "1000px"
+    maxHeight: "1000px",
+    opacity: 1
   })
 
   useEffect(() => {
@@ -160,7 +165,7 @@ export const DraftItem = ({ type, item }) => {
 
     const timer = setTimeout(
       () => setDrafts((prev) => prev.filter((d) => d.id !== item.id)),
-      150
+      200
     )
 
     return () => timer && clearTimeout(timer)
@@ -168,13 +173,14 @@ export const DraftItem = ({ type, item }) => {
 
   const slideToDelete = () => {
     setHidingStyle({
-      transform: "translateX(200%)",
-      maxHeight: "0px"
+      transform: "translateX(50%)",
+      maxHeight: "0px",
+      opacity: 0
     })
   }
 
   return (
-    <div style={hidingStyle} className="transition-all py-[3px]">
+    <div style={hidingStyle} className="transition-all duration-200 py-[3px]">
       <InboxItemWrapper>
         <C.CollapsibleForTasks show={show} setShow={setShow}>
           <C.Action>
@@ -244,7 +250,8 @@ export const HistoryItem = ({ item }) => {
 
   const [hidingStyle, setHidingStyle] = useState({
     transform: "none",
-    maxHeight: "1000px"
+    maxHeight: "1000px",
+    opacity: 1
   })
 
   const [timerStyle, setTimerStyle] = useState({
@@ -268,20 +275,21 @@ export const HistoryItem = ({ item }) => {
 
   useEffect(() => {
     if (hidingStyle.maxHeight !== "0px") return
-    const timer = setTimeout(() => handleUndone(item.id), 150)
+    const timer = setTimeout(() => handleUndone(item.id), 200)
     return () => timer && clearTimeout(timer)
   }, [hidingStyle])
 
   const slide = () => {
     timerStyle.width === "100%" &&
       setHidingStyle({
-        transform: "translateX(200%)",
-        maxHeight: "0px"
+        transform: "translateX(50%)",
+        maxHeight: "0px",
+        opacity: 0
       })
   }
 
   return (
-    <div style={hidingStyle} className="transition-all py-[3px]">
+    <div style={hidingStyle} className="transition-all duration-200 py-[3px]">
       <InboxItemWrapper>
         <C.CollapsibleForTasks show={show} setShow={setShow}>
           <C.Action>
@@ -365,7 +373,6 @@ const ItemView = ({ item }: { item: ITask }) => {
   const nodes = getPreviewNodes(item, recurrences)
   const detailedPreview = getDetailedPreview(nodes)
 
-
   return (
     <>
       <h2 className="text-black flex items-center h-full font-medium text-sm">
@@ -376,3 +383,34 @@ const ItemView = ({ item }: { item: ITask }) => {
     </>
   )
 }
+
+
+
+
+// <!-- HTML !-->
+// <button class="button-33" role="button">Button 33</button>
+
+// /* CSS */
+// .button-33 {
+//   background-color: #c2fbd7;
+//   border-radius: 100px;
+//   box-shadow: rgba(44, 187, 99, .2) 0 -25px 18px -14px inset,rgba(44, 187, 99, .15) 0 1px 2px,rgba(44, 187, 99, .15) 0 2px 4px,rgba(44, 187, 99, .15) 0 4px 8px,rgba(44, 187, 99, .15) 0 8px 16px,rgba(44, 187, 99, .15) 0 16px 32px;
+//   color: green;
+//   cursor: pointer;
+//   display: inline-block;
+//   font-family: CerebriSans-Regular,-apple-system,system-ui,Roboto,sans-serif;
+//   padding: 7px 20px;
+//   text-align: center;
+//   text-decoration: none;
+//   transition: all 250ms;
+//   border: 0;
+//   font-size: 16px;
+//   user-select: none;
+//   -webkit-user-select: none;
+//   touch-action: manipulation;
+// }
+
+// .button-33:hover {
+//   box-shadow: rgba(44,187,99,.35) 0 -25px 18px -14px inset,rgba(44,187,99,.25) 0 1px 2px,rgba(44,187,99,.25) 0 2px 4px,rgba(44,187,99,.25) 0 4px 8px,rgba(44,187,99,.25) 0 8px 16px,rgba(44,187,99,.25) 0 16px 32px;
+//   transform: scale(1.05) rotate(-1deg);
+// }

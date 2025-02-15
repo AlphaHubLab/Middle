@@ -1,23 +1,23 @@
-import { useEffect, useState } from "react"
-import { PiWarning } from "react-icons/pi"
+import { useEffect } from "react"
 
-import { Modal, type IModalProps } from "~components/ui/modal"
 import ButtonFull from "~components/ui/svgs/buttons/full-w-buttons"
 import { usePersist } from "~contexts/persist-context"
 import { useRecurrence } from "~contexts/recurrence-context"
 import type { ITaskCore } from "~lib/types"
 
-interface ITaskActionModalProps extends Omit<IModalProps, "children"> {
+export default function RemoveModal({
+  item,
+  onClose
+}: {
   item: ITaskCore
-}
-
-export default function RemoveModal({ item, ...props }: ITaskActionModalProps) {
+  onClose: () => void
+}) {
   const { recurrences, setRecurrences } = useRecurrence()
   const { tasks, history, setTasks } = usePersist()
 
   const recurrence = recurrences.find((r) => r.id === item.recurrenceId)
 
-  if (!recurrence) props.onClose()
+  if (!recurrence) onClose()
 
   const multipleIdentities = recurrence?.params.identities.length > 1
   const multipleDates = recurrence?.params.repeatParams
@@ -90,14 +90,7 @@ export default function RemoveModal({ item, ...props }: ITaskActionModalProps) {
   }
 
   return (
-    <Modal
-      {...props}
-      className="w-full max-w-[600px] rounded-3xl bg-white"
-      title={
-        <h1 className="flex items-center gap-2 w-full">
-          <PiWarning /> <span className="text-rose-500">Delete Items</span>
-        </h1>
-      }>
+    <>
       <p className="pt-2 pb-12 text-black/70 text-sm">{message}</p>
       <div className="py-2 text-sm flex flex-col items-center *:my-1">
         <ButtonFull variant="red" onClick={() => removeSingleTask()}>
@@ -117,6 +110,6 @@ export default function RemoveModal({ item, ...props }: ITaskActionModalProps) {
           Remove all similar tasks
         </ButtonFull>
       </div>
-    </Modal>
+    </>
   )
 }

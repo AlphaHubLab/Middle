@@ -3,11 +3,13 @@ import {
   PiArrowLeft,
   PiArrowRight,
   PiArrowSquareOut,
-  PiCalendarCheck
+  PiCalendarHeartBold,
+  PiCloudBold
 } from "react-icons/pi"
 
 import { sendToBackground } from "@plasmohq/messaging"
 
+import Loading from "~components/ui/loading"
 import { FETCH_API } from "~fetch.config"
 
 const defaultBookmarks = {
@@ -89,12 +91,63 @@ export default function Sidebar({ isDev = false }) {
         className={`relative w-full h-full py-2 z-30 bg-slate-50 border-l border-black/15`}>
         <div className="w-full h-full ">
           <div className="h-[calc(100%-200px)]">
-            <div className="w-full py-1 px-1 md:px-2 flex items-center gap-2">
-              <div className="w-[54px] h-[54px] border rounded-2xl flex items-center justify-center text-fetch-primary text-2xl">
-                <PiCalendarCheck />
+            <div className="w-full py-2 px-1 md:px-2 flex items-center gap-2">
+              <button
+                className="
+              relative flex shrink-0 items-center justify-center text-2xl text-white w-[54px] h-[54px] rounded-2xl 
+              bg-gradient-to-t from-emerald-200 to-green-400 shadow-[0px_0px_12px] shadow-green-300
+              border-t border-t-emerald-300 border-violet-100
+              transition-all duration-200
+              hover:rotate-[5deg] hover:scale-[1.05]
+              disabled:bg-none disabled:bg-zinc-300 disabled:shadow-none
+              disabled:border-none disabled:hover:rotate-0 disabled:hover:scale-100
+              after:absolute after:content-[''] after:h-3/5 after:w-[calc(100%-6px)]
+              after:top-[2px] after:left-[3px] after:rounded-xl
+              after:bg-gradient-to-t after:from-white/0 after:to-white/60
+              ">
+                <PiCalendarHeartBold />
+              </button>
+              <div>
+                <p className="text-black/80 text-sm font-medium flex gap-1 items-center">
+                  Check-in!
+                </p>
+                <p className="text-black/50 flex gap-1 text-xs">
+                  Collect points by submitting a check-in tx.
+                </p>
+              </div>
+            </div>
+            <div className="w-full py-2 px-1 md:px-2 flex items-center gap-2">
+              <button
+                className="
+              relative border-t border-t-violet-500 border-violet-100
+              after:absolute after:content-[''] after:h-3/5 after:w-[calc(100%-6px)]
+              after:top-[2px] after:left-[3px] after:rounded-xl
+              after:bg-gradient-to-t after:from-white/0 after:to-white/60
+              bg-gradient-to-t from-violet-500 to-fetch-primary
+              shadow-[0px_0px_12px] shadow-violet-400
+              transition-all duration-200
+              hover:rotate-[5deg] hover:scale-[1.05]
+              w-[54px] h-[54px] rounded-2xl text-white
+              flex items-center justify-center text-2xl
+              ">
+                <PiCloudBold />
+              </button>
+              <div>
+                <p className="text-black/80 text-sm font-medium flex gap-1 items-center">
+                  Fetch Cloud!
+                </p>
+                <p className="text-black/50 flex gap-1 text-xs">
+                  Backup, restore and share your tasks!
+                </p>
               </div>
             </div>
             <>
+              {Object.keys(bookmarks).length === 0 && (
+                <div
+                  className={`${isOpen ? "w-full" : "w-[64px] md:w-full"} h-full flex items-center justify-center`}>
+                  <Loading r={20} color="#0000005f" />
+                </div>
+              )}
               {Object.keys(bookmarks).map((group, i) => (
                 <div className="py-4 px-1 md:px-2" key={`bookmark-group-${i}`}>
                   {bookmarks[group].map((bookmark, j) => (

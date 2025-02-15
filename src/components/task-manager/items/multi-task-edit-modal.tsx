@@ -1,19 +1,19 @@
 import { useEffect } from "react"
-import { PiWarning } from "react-icons/pi"
 import uuid4 from "uuid4"
 
-import { Modal, type IModalProps } from "~components/ui/modal"
 import ButtonFull from "~components/ui/svgs/buttons/full-w-buttons"
 import { useApp } from "~contexts/app-context"
 import { usePersist } from "~contexts/persist-context"
 import { useRecurrence } from "~contexts/recurrence-context"
 import type { ITaskCore } from "~lib/types"
 
-interface ITaskActionModalProps extends Omit<IModalProps, "children"> {
+export default function EditModal({
+  item,
+  onClose
+}: {
   item: ITaskCore
-}
-
-export default function EditModal({ item, ...props }: ITaskActionModalProps) {
+  onClose: () => void
+}) {
   const { recurrences, setRecurrences } = useRecurrence()
   const { tasks } = usePersist()
   const { setRecurrenceEditData, openEditMode } = useApp()
@@ -64,7 +64,7 @@ export default function EditModal({ item, ...props }: ITaskActionModalProps) {
     }
 
     openEditMode(taskCore, "recurrence")
-    props.onClose()
+    onClose()
   }
 
   const editSimilarDates = () => {
@@ -93,7 +93,7 @@ export default function EditModal({ item, ...props }: ITaskActionModalProps) {
     }
 
     openEditMode(taskCore, "recurrence")
-    props.onClose()
+    onClose()
   }
 
   const editSingleTask = () => {
@@ -120,7 +120,7 @@ export default function EditModal({ item, ...props }: ITaskActionModalProps) {
     }
 
     openEditMode(taskCore, "recurrence")
-    props.onClose()
+    onClose()
   }
 
   const editAllSimilar = () => {
@@ -140,18 +140,11 @@ export default function EditModal({ item, ...props }: ITaskActionModalProps) {
     }
 
     openEditMode(taskCore, "recurrence")
-    props.onClose()
+    onClose()
   }
 
   return (
-    <Modal
-      {...props}
-      className="w-full max-w-[600px] rounded-3xl bg-white"
-      title={
-        <h1 className="flex items-center gap-2 w-full">
-          <PiWarning /> <span className="text-blue-500">Edit Items</span>
-        </h1>
-      }>
+    <>
       <p className="pt-2 pb-12 text-black/70 text-sm">{message}</p>
       <div className="py-2 text-sm flex flex-col items-center *:my-1">
         <ButtonFull variant="blue" onClick={editSingleTask}>
@@ -171,6 +164,6 @@ export default function EditModal({ item, ...props }: ITaskActionModalProps) {
           Edit all similar tasks
         </ButtonFull>
       </div>
-    </Modal>
+    </>
   )
 }

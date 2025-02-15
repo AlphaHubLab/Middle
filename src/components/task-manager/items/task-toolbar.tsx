@@ -2,12 +2,20 @@ import { lazy, Suspense, useState } from "react"
 import {
   PiArrowCounterClockwise,
   PiPencilSimpleLine,
-  PiTrash
+  PiTrash,
+  PiWarning
 } from "react-icons/pi"
 
+import Loading from "~components/ui/loading"
+import { Modal } from "~components/ui/modal"
 import { useApp } from "~contexts/app-context"
-import { usePersist } from "~contexts/persist-context"
 import type { ITaskCore } from "~lib/types"
+
+// const LazyRemoveModal = lazy(() => {
+//   return new Promise((resolve) => {
+//     setTimeout(() => resolve(import("../items/multi-task-remove-modal")), 1000)
+//   })
+// })
 
 const LazyRemoveModal = lazy(() => import("../items/multi-task-remove-modal"))
 const LazyEditModal = lazy(() => import("../items/multi-task-edit-modal"))
@@ -93,22 +101,50 @@ export const TaskToolbar = ({
         </button>
       )}
       {showRemoveModal && (
-        <Suspense>
-          <LazyRemoveModal
-            item={item}
-            onClose={() => setShowRemoveModal(false)}
-            show={showRemoveModal}
-          />
-        </Suspense>
+        <Modal
+          className="w-full max-w-[600px] rounded-3xl bg-white"
+          title={
+            <h1 className="flex items-center gap-2 w-full">
+              <PiWarning /> <span className="text-rose-500">Delete Items</span>
+            </h1>
+          }
+          onClose={() => setShowRemoveModal(false)}
+          show={showRemoveModal}>
+          <Suspense
+            fallback={
+              <div className="w-full h-[200px] flex items-center justify-center">
+                <Loading r={20} color="#0000001f" />
+              </div>
+            }>
+            <LazyRemoveModal
+              item={item}
+              onClose={() => setShowRemoveModal(false)}
+            />
+          </Suspense>
+        </Modal>
       )}
       {showEditModal && (
-        <Suspense>
-          <LazyEditModal
-            item={item}
-            onClose={() => setShowEditModal(false)}
-            show={showEditModal}
-          />
-        </Suspense>
+        <Modal
+          className="w-full max-w-[600px] rounded-3xl bg-white"
+          title={
+            <h1 className="flex items-center gap-2 w-full">
+              <PiWarning /> <span className="text-blue-500">Edit Items</span>
+            </h1>
+          }
+          onClose={() => setShowEditModal(false)}
+          show={showEditModal}>
+          <Suspense
+            fallback={
+              <div className="w-full h-[200px] flex items-center justify-center">
+                <Loading r={20} color="#0000001f" />
+              </div>
+            }>
+            <LazyEditModal
+              item={item}
+              onClose={() => setShowEditModal(false)}
+            />
+          </Suspense>
+        </Modal>
       )}
     </>
   )

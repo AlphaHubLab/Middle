@@ -1,98 +1,37 @@
-import { useState } from "react"
-
-import {
-  Checkbox,
-  CollapsibleForTasks,
-  Content,
-  Toggle,
-  Toolbar
-} from "~components/ui/collapsible"
-
 export default function Page() {
-  const [show, setShow] = useState(false)
-  const [timerStyle, setTimerStyle] = useState({
-    width: "0%",
-    transitionDuration: "1.5s"
-  })
-
-  const handleCheck = (e) => {
-    if (!e.target.checked) {
-      setTimerStyle({ width: "0%", transitionDuration: "0.3s" })
-    } else {
-      setTimerStyle({ width: "100%", transitionDuration: "1.5s" })
-    }
-  }
   return (
-    <div className="p-20">
-      <UpcommingItemWrapper>
-        <CollapsibleForTasks show={show} setShow={setShow}>
-          <Checkbox>
-            <div
-              className={`flex w-8 h-full justify-center items-center bg-zinc-100 ${show && "border-b-[1px]"}`}>
-              <input type="checkbox" onChange={handleCheck} />
-            </div>
-          </Checkbox>
-          <Toggle>
-            <div
-              className={`h-10 relative bg-zinc-100 hover:cursor-pointer select-none ${show && "border-b-[1px]"}`}>
-              <div
-                onTransitionEnd={() =>
-                  timerStyle.width === "100%" && console.log("done")
-                }
-                style={timerStyle}
-                className="z-0 transition-[width] left-0 top-0 ease-in absolute h-full bg-emerald-200 "></div>
-              <div className="relative z-1 flex w-full items-center">click</div>
-            </div>
-          </Toggle>
-          <Content>
-            <div className="flex">
-              <div className="w-8"></div>
-              <div className="overflow-y-auto styled-scrollbar h-content max-h-[176px] w-full">
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>content</div>
-                <div>contents</div>
-              </div>
-            </div>
-          </Content>
-          <Toolbar>
-            <div className="bg-zinc-200 w-full border-t-[1px] h-[24px]">
-              asdf
-            </div>
-          </Toolbar>
-        </CollapsibleForTasks>
-      </UpcommingItemWrapper>
-    </div>
-    // </div>
-  )
-}
+    <>
+      <button className="relative after:absolute after:content-[''] after:w-1/3 after:h-[calc(100%-4px)] after:top-[2px] after:left-[2px] after:rounded-l-2xl after:bg-gradient-to-r after:from-white/70 after:to-white/10 bg-gradient-to-l from-lime-200 to-emerald-300 shadow-md hover:shadow-lg shodow-emerald-200 transition-all duration-200 hover:rotate-[5deg] hover:scale-[1.05] w-[54px] h-[54px] rounded-2xl text-white">
+        A
+      </button>
+      <button className="relative after:absolute after:content-[''] after:w-1/2 after:h-[calc(100%-4px)] after:top-[2px] after:left-[2px] after:rounded-l-2xl after:bg-gradient-to-r after:from-white/50 after:to-white/10 bg-gradient-to-l from-violet-600 to-fetch-primary shadow-md hover:shadow-lg shodow-emerald-200 transition-all duration-200 hover:rotate-[5deg] hover:scale-[1.05] w-[54px] h-[54px] rounded-2xl text-white">
+        A
+      </button>
 
-const UpcommingItemWrapper = ({ children }) => {
-  return (
-    <div
-      className={`border-[1px] hover:shadow-md rounded-md flex flex-col justify-center overflow-hidden`}>
-      <div className="h-full w-full flex w-full">
-        <div className=" w-full h-full">
-          <div className=" w-full h-full">{children}</div>
-        </div>
-      </div>
-    </div>
+      <button className="relative after:absolute after:content-[''] after:w-1/3 after:h-[calc(100%-4px)] after:top-[2px] after:left-[2px] after:rounded-l-2xl after:bg-gradient-to-r after:from-white/70 after:to-white/10 bg-gradient-to-l from-lime-200 to-emerald-300 shadow-md hover:shadow-lg shodow-emerald-200 transition-all duration-200 hover:rotate-[5deg] hover:scale-[1.05] w-[54px] h-[54px] rounded-2xl text-white">
+        A
+      </button>
+      <button className="relative border-t border-t-violet-200 border-violet-100 outline outline-blue-zinc-100 after:absolute after:content-[''] after:h-3/5 after:w-[calc(100%-6px)] after:top-[2px] after:left-[3px] after:rounded-xl after:bg-gradient-to-t after:from-white/0 after:to-white/60 bg-gradient-to-t from-violet-500 to-fetch-primary shadow-md hover:shadow-lg shodow-emerald-200 transition-all duration-200 hover:rotate-[5deg] hover:scale-[1.05] w-[54px] h-[54px] rounded-2xl text-white">
+        A
+      </button>
+      <button className="relative border-t border-t-violet-200 border-violet-100 outline outline-blue-zinc-100 after:absolute after:content-[''] after:h-3/5 after:w-[calc(100%-6px)] after:top-[2px] after:left-[3px] after:rounded-xl after:bg-gradient-to-t after:from-white/0 after:to-white/60 bg-gradient-to-t from-lime-200 to-emerald-500 shadow-md hover:shadow-lg shodow-emerald-200 transition-all duration-200 hover:rotate-[5deg] hover:scale-[1.05] w-[54px] h-[54px] rounded-2xl text-white">
+        A
+      </button>
+      <button
+        style={{ boxShadow: "inset 0px -10px 20px 10px white" }}
+        className="relative border-t border-t-violet-200 border-violet-100 bg-gradient-to-t from-violet-500 to-fetch-primary shadow-md hover:shadow-lg shodow-emerald-200 transition-all duration-200 hover:rotate-[5deg] hover:scale-[1.05] w-[54px] h-[54px] rounded-2xl text-white">
+        A
+      </button>
+      <button
+        style={{ boxShadow: "inset 1px 20px 25px 1px rgb(75, 0, 180)" }}
+        className="relative border-t border-t-violet-200 border-violet-100 bg-gradient-to-l from-pink-500/90 to-violet-200 shadow-md hover:shadow-lg shodow-emerald-200 transition-all duration-200 hover:rotate-[5deg] hover:scale-[1.05] w-[54px] h-[54px] rounded-2xl text-white">
+        A
+      </button>
+      <button
+        style={{ boxShadow: "inset 1px 1px 10px 1px rgb(0, 184, 6)" }}
+        className="relative border-t border-t-violet-200 border-violet-100 bg-gradient-to-l from-emerald-500/90 to-lime-200 shadow-md hover:shadow-lg shodow-emerald-200 transition-all duration-200 hover:rotate-[5deg] hover:scale-[1.05] w-[54px] h-[54px] rounded-2xl text-white">
+        A
+      </button>
+    </>
   )
 }
