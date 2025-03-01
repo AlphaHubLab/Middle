@@ -47,5 +47,7 @@ keys.json
 # dev
 archive/
 test/
+/test
+/test/
 
 
