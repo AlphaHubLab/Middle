@@ -1,6 +1,6 @@
-import { useApp } from "providers/app-context"
-import { usePersist } from "providers/persist-context"
-import { useRecurrence } from "providers/recurrence-context"
+import { useApp } from "~providers/app-context"
+import { usePersist } from "~providers/persist-context"
+import { useRecurrence } from "~providers/recurrence-context"
 import { useEffect } from "react"
 import uuid4 from "uuid4"
 

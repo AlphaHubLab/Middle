@@ -1,6 +1,6 @@
 import { useModal, useSIWE, type SIWESession } from "connectkit"
-import { useAuth } from "providers/auth-provider"
-import CloudProvider from "providers/cloud-provider"
+import { useAuth } from "~providers/auth-provider"
+import CloudProvider from "~providers/cloud-provider"
 import { useAccount, useDisconnect } from "wagmi"
 
 import { FETCH_API } from "~fetch.config"

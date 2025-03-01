@@ -1,4 +1,4 @@
-import { useSetting } from "providers/setting-context"
+import { useSetting } from "~providers/setting-context"
 import { useEffect, useState } from "react"
 import { HexColorPicker } from "react-colorful"
 

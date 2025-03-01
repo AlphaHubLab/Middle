@@ -1,4 +1,4 @@
-import { useApp } from "providers/app-context"
+import { useApp } from "~providers/app-context"
 
 import Editor from "~components/editor/editor"
 import NavbarContainer from "~components/navbar/navbar-container"

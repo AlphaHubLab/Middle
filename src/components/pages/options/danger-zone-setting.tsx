@@ -1,6 +1,6 @@
 import type { title } from "process"
-import { useDraft } from "providers/draft-context"
-import { usePersist } from "providers/persist-context"
+import { useDraft } from "~providers/draft-context"
+import { usePersist } from "~providers/persist-context"
 import { useEffect, useState } from "react"
 import { PiCheckFat, PiWarning } from "react-icons/pi"
 

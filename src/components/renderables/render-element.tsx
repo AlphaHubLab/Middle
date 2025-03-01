@@ -1,5 +1,5 @@
 import isUrl from "is-url"
-import { useApp } from "providers/app-context"
+import { useApp } from "~providers/app-context"
 import { useEffect, useRef } from "react"
 import { PiLink } from "react-icons/pi"
 

@@ -1,4 +1,4 @@
-import { usePersist } from "providers/persist-context"
+import { usePersist } from "~providers/persist-context"
 import { useState } from "react"
 import {
   PiBoxArrowDown,

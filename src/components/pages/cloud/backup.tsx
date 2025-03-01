@@ -1,7 +1,7 @@
-import { useDraft } from "providers/draft-context"
-import { usePersist } from "providers/persist-context"
-import { useRecurrence } from "providers/recurrence-context"
-import { useSetting } from "providers/setting-context"
+import { useDraft } from "~providers/draft-context"
+import { usePersist } from "~providers/persist-context"
+import { useRecurrence } from "~providers/recurrence-context"
+import { useSetting } from "~providers/setting-context"
 import { useState, type ChangeEvent } from "react"
 import { PiTrash } from "react-icons/pi"
 

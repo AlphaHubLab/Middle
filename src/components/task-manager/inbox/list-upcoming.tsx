@@ -1,4 +1,4 @@
-import { useVisibleTasks } from "providers/visible-tasks-context"
+import { useVisibleTasks } from "~providers/visible-tasks-context"
 
 import type { ITask } from "~lib/types"
 

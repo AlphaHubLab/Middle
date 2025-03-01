@@ -1,4 +1,4 @@
-import { useSetting } from "providers/setting-context"
+import { useSetting } from "~providers/setting-context"
 
 export default function ToggleTheme() {
   const { setSetting } = useSetting()

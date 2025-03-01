@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import uuid4 from "uuid4"
 
 import FetchLogo from "~components/ui/fetch-logo"
-import { usePersist } from "providers/persist-context"
+import { usePersist } from "~providers/persist-context"
 import { getTaskDefaultParams } from "~lib/task-helpers"
 import type { ITask } from "~lib/types"
 

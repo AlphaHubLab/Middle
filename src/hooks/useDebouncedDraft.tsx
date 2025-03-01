@@ -1,9 +1,9 @@
-import { useDraft } from "providers/draft-context"
 import React from "react"
 import isEqual from "react-fast-compare"
 
 import { isTaskEmpty } from "~lib/task-helpers"
 import type { IStore } from "~lib/types"
+import { useDraft } from "~providers/draft-context"
 
 export default function useDebouncedDraft(
   store: IStore,

@@ -1,4 +1,4 @@
-import { useSetting } from "providers/setting-context"
+import { useSetting } from "~providers/setting-context"
 
 import { P, Section, SubSection } from "~components/ui/typograrphy"
 

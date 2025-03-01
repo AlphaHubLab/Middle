@@ -1,4 +1,4 @@
-import FetchProvider from "providers/fetch-provider"
+import FetchProvider from "~providers/fetch-provider"
 import { useState } from "react"
 
 import { Section } from "~components/ui/typograrphy"

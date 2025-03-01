@@ -1,5 +1,5 @@
-import { useApp } from "providers/app-context"
-import { useRecurrence } from "providers/recurrence-context"
+import { useApp } from "~providers/app-context"
+import { useRecurrence } from "~providers/recurrence-context"
 import { lazy, Suspense, useState } from "react"
 import {
   PiArrowCounterClockwise,
