@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { PiXLogo } from "react-icons/pi"
 
-import Fade from "~components/fade/fade"
+import Fade from "~components/ui/fade"
 
 import Chasing from "./chasing"
 import Sitting from "./sitting"
@@ -71,7 +71,9 @@ export default function Welcome({ isDev = false }) {
             <div className="h-1/4 flex justify-center text-black/90">
               <div>
                 <h1 className="text-center text-4xl font-medium">Fetch</h1>
-                <h1 className="text-center text-2xl">The Best thing ever happened</h1>
+                <h1 className="text-center text-2xl">
+                  The Best thing ever happened
+                </h1>
               </div>
             </div>
             <div className="h-3/4 flex justify-center text-black/70">
