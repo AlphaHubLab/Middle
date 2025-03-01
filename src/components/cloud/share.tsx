@@ -1,16 +1,18 @@
 import { useState, type ChangeEvent } from "react"
-import { PiTrash } from "react-icons/pi"
 
 import ButtonFull from "~components/ui/buttons/full-w-buttons"
 import Input from "~components/ui/input"
-import PasswordInput from "~components/ui/input-password"
 import { Note, Section } from "~components/ui/typograrphy"
+import { usePersist } from "~contexts/persist-context"
+import { useRecurrence } from "~contexts/recurrence-context"
+import { createShare } from "~lib/cloud"
 
 import TaskSelector from "./task-selector/task-selector"
 
-const defaultSelection = {
+const defaultShareConfig = {
   tasks: true,
-  history: true
+  history: true,
+  customSelection: false
 }
 
 const categories = [
@@ -19,52 +21,58 @@ const categories = [
 ]
 
 export default function Share() {
-  const authorizedWallet = "0x0"
-
-  const [wallets, setWallets] = useState([authorizedWallet])
-  const [changeWallet, setChangeWallet] = useState(false)
-  const [selectedCategories, setSelectedCategories] = useState(defaultSelection)
-  const [customSelection, setCustomSelection] = useState(false)
+  const [shareConfig, setShareConfig] = useState(defaultShareConfig)
   const [selectedItems, setSelectedItems] = useState<string[]>([])
   const [showTaskSelector, setShowTaskSelector] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-  const backup = () => {}
+  const { tasks, history } = usePersist()
+  const { recurrences } = useRecurrence()
 
-  const handleChangeWallets = (e: ChangeEvent<HTMLInputElement>, i: number) => {
-    const _wallets = [...wallets]
-    _wallets[i] = e.target.value
-    setWallets(_wallets)
-  }
+  const createAndStoreShare = async () => {
+    setLoading(true)
 
-  const addWallet = () => setWallets([...wallets, ""])
+    const data = await createShare(
+      tasks,
+      history,
+      recurrences,
+      selectedItems,
+      shareConfig
+    )
 
-  const removeWallet = (i: number) => {
-    const _wallets = [...wallets]
-    _wallets.splice(i, 1)
-    setWallets(_wallets)
+    const share = {
+      data
+    }
+
+    setLoading(false)
+    console.log(share)
   }
 
   const handleSelectCategory = (name: string) => {
-    setCustomSelection(false)
-    setSelectedCategories({
-      ...selectedCategories,
-      [name]: !selectedCategories[name]
+    setShareConfig({
+      ...shareConfig,
+      customSelection: false,
+      [name]: !shareConfig[name]
     })
   }
 
   const handleSelectCustomSelection = () => {
     setShowTaskSelector(true)
-    setCustomSelection(true)
-    setSelectedCategories({
+    setShareConfig({
       tasks: false,
-      history: false
+      history: false,
+      customSelection: true
     })
   }
 
+  const isDisable = () => {
+    return shareConfig.customSelection === true && selectedItems.length === 0
+  }
+
   return (
-    <Section title={"Backup for myself"}>
+    <Section title={"Share"}>
       <TaskSelector
-        title={"Select Items to backup"}
+        title={"Select Items to share"}
         show={showTaskSelector}
         selectedItems={selectedItems}
         setSelectedItems={setSelectedItems}
@@ -83,17 +91,17 @@ export default function Share() {
           {categories.map((c) => (
             <button
               key={c.value}
-              className={`my-[2px] block py-2 text-sm w-full max-w-[350px] border transition rounded-xl duration-200 ${selectedCategories[c.value] ? "border-fetch-primary text-fetch-primary bg-fetch-secondary/40 hover:bg-fetch-secondary/70" : "text-black/70 border-black/15 hover:bg-zinc-500/10"}`}
+              className={`my-[2px] block py-2 text-sm w-full max-w-[350px] border transition rounded-xl duration-200 ${shareConfig[c.value] ? "border-fetch-primary text-fetch-primary bg-fetch-secondary/40 hover:bg-fetch-secondary/70" : "text-black/70 border-black/15 hover:bg-zinc-500/10"}`}
               onClick={() => handleSelectCategory(c.value)}>
               {c.label}
             </button>
           ))}
           <p className="text-sm mt-2 text-blue-400">or create a custom list</p>
           <button
-            className={`my-[1px] block py-2 text-sm w-full max-w-[350px] border transition rounded-xl duration-200 ${customSelection ? "border-fetch-primary text-fetch-primary bg-fetch-secondary/40 hover:bg-fetch-secondary/70" : "text-black/70 border-black/15 hover:bg-zinc-500/10"}`}
+            className={`my-[1px] block py-2 text-sm w-full max-w-[350px] border transition rounded-xl duration-200 ${shareConfig.customSelection ? "border-fetch-primary text-fetch-primary bg-fetch-secondary/40 hover:bg-fetch-secondary/70" : "text-black/70 border-black/15 hover:bg-zinc-500/10"}`}
             onClick={handleSelectCustomSelection}>
             Custom Selection{" "}
-            {customSelection && `(${selectedItems.length} Items)`}
+            {shareConfig.customSelection && `(${selectedItems.length} Items)`}
           </button>
         </div>
       </div>
@@ -101,71 +109,24 @@ export default function Share() {
         <label className="block text-black/70 text-sm">
           Authorized wallet(s) to restore this backup
         </label>
-        {!changeWallet && (
-          <div>
-            <Input
-              value={wallets[0]}
-              disabled
-              className="break-all text-black/50 border py-1 rounded-xl border-black/15 bg-zinc-500/10"
-            />
-            <div>
-              <p className="text-blue-500 text-xs mt-2">
-                I Want to grant access to another wallet(s) to restore this
-                backup
-              </p>
-              <ButtonFull onClick={() => setChangeWallet(true)} variant="blue">
-                Grant access
-              </ButtonFull>
-            </div>
-          </div>
-        )}
-        {changeWallet && (
-          <div>
-            {wallets.map((wallet, i) => (
-              <div className="flex gap-2 mb-1">
-                <Input
-                  className="py-1 rounded-xl"
-                  key={`wallet-${i}`}
-                  value={wallet}
-                  onChange={(e) => handleChangeWallets(e, i)}
-                />
 
-                {i !== 0 && (
-                  <button
-                    className="text-rose-500 hover:text-rose-300"
-                    onClick={() => removeWallet(i)}
-                    aria-label="Remove wallet">
-                    <PiTrash />
-                  </button>
-                )}
-              </div>
-            ))}
-            <p className="text-blue-500 text-xs mt-2">
-              Owner(s) of the above wallet(s) can restore the backup if they
-              have the password.
-            </p>
-            <div className="flex gap-2">
-              <ButtonFull onClick={addWallet} variant="blue">
-                Add a wallet
-              </ButtonFull>
-              <ButtonFull
-                onClick={() => {
-                  setChangeWallet(false)
-                  setWallets([authorizedWallet])
-                }}
-                variant="red">
-                Cancel
-              </ButtonFull>
-            </div>
-          </div>
-        )}
+        <div>
+          <Input
+            value={""}
+            disabled
+            className="break-all text-black/50 border py-1 rounded-xl border-black/15 bg-zinc-500/10"
+          />
+        </div>
       </div>
       <div>
         <p className="text-xs py-2 text-black/50">
           All backups will be stored for 30 days.
         </p>
-        <ButtonFull disabled={selectedItems.length === 0} variant="primary">
-          Get the share
+        <ButtonFull
+          disabled={isDisable() || loading}
+          variant="primary"
+          onClick={() => createAndStoreShare()}>
+          {loading ? "loading" : "Shaer"}
         </ButtonFull>
       </div>
     </Section>

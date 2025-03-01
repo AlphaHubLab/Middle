@@ -123,3 +123,14 @@ export interface IBackupConfig {
   setting: boolean
   history: boolean
 }
+
+export interface IShareData {
+  tasks: ITask[]
+  history: ITask[]
+  recurrences: IRecurrence[]
+}
+export interface IShareConfig {
+  customSelection: boolean
+  tasks: boolean
+  history: boolean
+}

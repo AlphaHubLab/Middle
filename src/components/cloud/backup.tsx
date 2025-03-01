@@ -14,11 +14,12 @@ import type { IBackupConfig } from "~lib/types"
 
 import TaskSelector from "./task-selector/task-selector"
 
-const defaultSelection = {
+const defaultSelection: IBackupConfig = {
   tasks: true,
   drafts: false,
   setting: true,
-  history: true
+  history: true,
+  customSelection: false
 }
 
 const categories = [
@@ -35,8 +36,7 @@ export default function SelfBackup() {
   const [pwd2, setPwd2] = useState("")
   const [wallets, setWallets] = useState([authorizedWallet])
   const [changeWallet, setChangeWallet] = useState(false)
-  const [selectedCategories, setSelectedCategories] = useState(defaultSelection)
-  const [customSelection, setCustomSelection] = useState(false)
+  const [backupConfig, setBackupConfig] = useState(defaultSelection)
   const [selectedItems, setSelectedItems] = useState<string[]>([])
   const [showTaskSelector, setShowTaskSelector] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -49,11 +49,6 @@ export default function SelfBackup() {
   const createAndStoreBackup = async () => {
     setLoading(true)
 
-    const config: IBackupConfig = {
-      customSelection,
-      ...selectedCategories
-    }
-
     const data = await createBackup(
       tasks,
       history,
@@ -61,7 +56,7 @@ export default function SelfBackup() {
       recurrences,
       setting,
       selectedItems,
-      config
+      backupConfig
     )
 
     const backup = {
@@ -80,8 +75,13 @@ export default function SelfBackup() {
     setWallets(_wallets)
   }
 
-  const enableButton = () => {
-    return pwd.length !== 0 && pwd2.length !== 0 && pwd === pwd2
+  const isDisable = () => {
+    return (
+      pwd.length === 0 ||
+      pwd2.length === 0 ||
+      pwd !== pwd2 ||
+      (backupConfig.customSelection === true && selectedItems.length === 0)
+    )
   }
 
   const addWallet = () => setWallets([...wallets, ""])
@@ -93,21 +93,22 @@ export default function SelfBackup() {
   }
 
   const handleSelectCategory = (name: string) => {
-    setCustomSelection(false)
-    setSelectedCategories({
-      ...selectedCategories,
-      [name]: !selectedCategories[name]
+    setBackupConfig({
+      ...backupConfig,
+      customSelection:
+        name === "setting" ? backupConfig.customSelection : false,
+      [name]: !backupConfig[name]
     })
   }
 
   const handleSelectCustomSelection = () => {
     setShowTaskSelector(true)
-    setCustomSelection(true)
-    setSelectedCategories({
+    setBackupConfig({
       tasks: false,
       drafts: false,
-      setting: false,
-      history: false
+      setting: backupConfig.setting,
+      history: false,
+      customSelection: true
     })
   }
 
@@ -129,17 +130,17 @@ export default function SelfBackup() {
           {categories.map((c) => (
             <button
               key={c.value}
-              className={`my-[2px] block py-2 text-sm w-full max-w-[350px] border transition rounded-xl duration-200 ${selectedCategories[c.value] ? "border-fetch-primary text-fetch-primary bg-fetch-secondary/40 hover:bg-fetch-secondary/70" : "text-black/70 border-black/15 hover:bg-zinc-500/10"}`}
+              className={`my-[2px] block py-2 text-sm w-full max-w-[350px] border transition rounded-xl duration-200 ${backupConfig[c.value] ? "border-fetch-primary text-fetch-primary bg-fetch-secondary/40 hover:bg-fetch-secondary/70" : "text-black/70 border-black/15 hover:bg-zinc-500/10"}`}
               onClick={() => handleSelectCategory(c.value)}>
               {c.label}
             </button>
           ))}
           <p className="text-sm mt-2 text-blue-400">or create a custom list</p>
           <button
-            className={`my-[1px] block py-2 text-sm w-full max-w-[350px] border transition rounded-xl duration-200 ${customSelection ? "border-fetch-primary text-fetch-primary bg-fetch-secondary/40 hover:bg-fetch-secondary/70" : "text-black/70 border-black/15 hover:bg-zinc-500/10"}`}
+            className={`my-[1px] block py-2 text-sm w-full max-w-[350px] border transition rounded-xl duration-200 ${backupConfig.customSelection ? "border-fetch-primary text-fetch-primary bg-fetch-secondary/40 hover:bg-fetch-secondary/70" : "text-black/70 border-black/15 hover:bg-zinc-500/10"}`}
             onClick={handleSelectCustomSelection}>
             Custom Selection{" "}
-            {customSelection && `(${selectedItems.length} Items)`}
+            {backupConfig.customSelection && `(${selectedItems.length} Items)`}
           </button>
         </div>
       </div>
@@ -231,7 +232,7 @@ export default function SelfBackup() {
           All backups will be stored for 30 days.
         </p>
         <ButtonFull
-          disabled={!enableButton() || loading}
+          disabled={isDisable() || loading}
           variant="primary"
           onClick={() => createAndStoreBackup()}>
           {loading ? "loading" : "Create Backup"}
