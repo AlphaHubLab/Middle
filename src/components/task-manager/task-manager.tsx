@@ -2,6 +2,7 @@ import Editor from "~components/editor/editor"
 import NavbarContainer from "~components/navbar/navbar-container"
 import Inbox from "~components/task-manager/inbox/inbox"
 import { useApp } from "~contexts/app-context"
+import Web3Provider from "~contexts/web3-context"
 
 export default function TaskManager({ isDev = false }) {
   const { editMode, setEditMode } = useApp()
@@ -9,18 +10,19 @@ export default function TaskManager({ isDev = false }) {
   return (
     <>
       {/* <Profiler id="todo" onRender={onRender}> */}
-      <div className="relative h-full w-full">
+      <div className="h-full w-full">
+        {/* <Web3Provider> */}
         <NavbarContainer isDev={isDev} />
-        <div className="relative h-full w-[calc(100%-64px)] md:w-[calc(100%-288px)] dark:bg-fetch-black">
+
+        <div className="relative h-full w-[calc(100%-64px)] md:w-[calc(100%-286px)]">
           <div
-            // style={{ scale: disabled ? "95%" : "100%" }}
             className={
               "relative w-full h-[calc(100%-180px)] max-w-[650px] overflow-y-auto mx-auto px-4 styled-scrollbar"
             }>
             {!editMode && (
               <div
                 onClick={() => setEditMode(true)}
-                className="hover:cursor-text absolute w-full h-full left-0 top-0 bg-white/50 dark:bg-fetch-black/50"></div>
+                className="hover:cursor-text absolute w-full h-full left-0 top-0 bg-white/50"></div>
             )}
             <Editor disabled={!editMode} />
           </div>
@@ -31,6 +33,7 @@ export default function TaskManager({ isDev = false }) {
             </div>
           </div>
         </div>
+        {/* </Web3Provider> */}
       </div>
       {/* </Profiler> */}
     </>

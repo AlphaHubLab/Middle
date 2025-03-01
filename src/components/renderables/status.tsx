@@ -47,8 +47,6 @@ export const LabelStatus = ({
 }) => {
   const { date, link, tag } = getLabels(taskCore)
 
-  if (!date && !link && !tag) return false
-
   if (isEditor) {
     return (
       <div className="flex gap-2 items-center">

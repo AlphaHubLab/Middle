@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { PiCheckFat, PiWarning } from "react-icons/pi"
 
 import { Modal, type IModalProps } from "~components/ui/modal"
-import ButtonFull from "~components/ui/svgs/buttons/full-w-buttons"
+import ButtonFull from "~components/ui/buttons/full-w-buttons"
 import { P, Section } from "~components/ui/typograrphy"
 import { useDraft } from "~contexts/draft-context"
 import { usePersist } from "~contexts/persist-context"

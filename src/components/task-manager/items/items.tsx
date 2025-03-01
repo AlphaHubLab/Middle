@@ -12,8 +12,8 @@ import { useRecurrence } from "~contexts/recurrence-context"
 import { fetchconfig } from "~fetch.config"
 import {
   getDetailedPreview,
-  getPreviewNodes
-  // getUpcomingPreview
+  getPreviewNodes,
+  getUpcomingPreview
 } from "~lib/task-helpers"
 import type { ITask } from "~lib/types"
 
@@ -352,7 +352,7 @@ const wrapperClass = {
     "bg-orange-100 border-orange-500/70  hover:outline hover:outline-orange-500"
 }
 
-const InboxItemWrapper = ({
+export const InboxItemWrapper = ({
   children,
   variant = "neutral"
 }: {
@@ -375,8 +375,7 @@ const ItemView = ({ item }: { item: ITask }) => {
 
   return (
     <>
-      <h2 className="text-black flex items-center h-full font-medium text-sm">
-        {/* {getUpcomingPreview(nodes).value} */}
+      <h2 className="text-black/90 flex items-center h-full font-medium text-sm">
         {detailedPreview[0].value}
       </h2>
       <p className="text-xs text-black/50">{detailedPreview[1].value}</p>
@@ -384,33 +383,15 @@ const ItemView = ({ item }: { item: ITask }) => {
   )
 }
 
+export const ItemBriefView = ({ item }: { item: ITask }) => {
+  const { recurrences } = useRecurrence()
 
+  const nodes = getPreviewNodes(item, recurrences)
+  const briefPreview = getUpcomingPreview(nodes).value
 
-
-// <!-- HTML !-->
-// <button class="button-33" role="button">Button 33</button>
-
-// /* CSS */
-// .button-33 {
-//   background-color: #c2fbd7;
-//   border-radius: 100px;
-//   box-shadow: rgba(44, 187, 99, .2) 0 -25px 18px -14px inset,rgba(44, 187, 99, .15) 0 1px 2px,rgba(44, 187, 99, .15) 0 2px 4px,rgba(44, 187, 99, .15) 0 4px 8px,rgba(44, 187, 99, .15) 0 8px 16px,rgba(44, 187, 99, .15) 0 16px 32px;
-//   color: green;
-//   cursor: pointer;
-//   display: inline-block;
-//   font-family: CerebriSans-Regular,-apple-system,system-ui,Roboto,sans-serif;
-//   padding: 7px 20px;
-//   text-align: center;
-//   text-decoration: none;
-//   transition: all 250ms;
-//   border: 0;
-//   font-size: 16px;
-//   user-select: none;
-//   -webkit-user-select: none;
-//   touch-action: manipulation;
-// }
-
-// .button-33:hover {
-//   box-shadow: rgba(44,187,99,.35) 0 -25px 18px -14px inset,rgba(44,187,99,.25) 0 1px 2px,rgba(44,187,99,.25) 0 2px 4px,rgba(44,187,99,.25) 0 4px 8px,rgba(44,187,99,.25) 0 8px 16px,rgba(44,187,99,.25) 0 16px 32px;
-//   transform: scale(1.05) rotate(-1deg);
-// }
+  return (
+    <h2 className="text-black/90 flex items-center h-full font-medium text-sm">
+      {briefPreview}
+    </h2>
+  )
+}

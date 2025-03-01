@@ -264,7 +264,6 @@ export const getUpcomingPreview = (nodes: INode[], limit = 25): INode => {
 export const getDetailedPreview = (nodes: INode[], limit = 25): INode[] => {
   const preview = []
 
-  console.log(nodes)
   // Handle the title
   if (nodes[0].value.length > 0) {
     preview.push({ type: "h", value: strShortener(nodes[0].value, limit) })

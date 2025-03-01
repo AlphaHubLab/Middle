@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 
-import ButtonFull from "~components/ui/svgs/buttons/full-w-buttons"
+import ButtonFull from "~components/ui/buttons/full-w-buttons"
 import { usePersist } from "~contexts/persist-context"
 import { useRecurrence } from "~contexts/recurrence-context"
 import type { ITaskCore } from "~lib/types"

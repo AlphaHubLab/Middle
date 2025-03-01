@@ -3,6 +3,9 @@ import { PiXLogo } from "react-icons/pi"
 
 import Fade from "~components/fade/fade"
 
+import Chasing from "./chasing"
+import Sitting from "./sitting"
+
 const steps = 6
 export default function Welcome({ isDev = false }) {
   const [page, setPage] = useState(0)
@@ -46,10 +49,14 @@ export default function Welcome({ isDev = false }) {
       <Fade show={page === 0} type={action}>
         <StepsLayout onNext={next}>
           <div className="w-full h-full">
-            <div className="h-1/3 flex items-center justify-center text-black/90">
+            <div className="flex w-full justify-center">
+              <Chasing className="w-64" />
+            </div>
+            <div className="h-1/4 flex justify-center text-black/90">
               <h1 className="text-4xl font-medium">Welcome</h1>
             </div>
-            <div className="h-2/3 flex justify-center text-black/70">
+
+            <div className="h-3/4 flex justify-center text-black/70">
               <p className="text-sm">Some intruduction</p>
             </div>
           </div>
@@ -58,11 +65,16 @@ export default function Welcome({ isDev = false }) {
       <Fade show={page === 1} type={action}>
         <StepsLayout onNext={next} onPrev={prev}>
           <div className="w-full h-full">
-            <div className="h-1/3 flex flex-col items-center justify-center text-black/90">
-              <h1 className="text-4xl font-medium">Fetch</h1>
-              <h1 className="text-2xl">The Best thing ever happened</h1>
+            <div className="flex w-full justify-center">
+              <Sitting className="w-64" />
             </div>
-            <div className="h-2/3 flex justify-center text-black/70">
+            <div className="h-1/4 flex justify-center text-black/90">
+              <div>
+                <h1 className="text-center text-4xl font-medium">Fetch</h1>
+                <h1 className="text-center text-2xl">The Best thing ever happened</h1>
+              </div>
+            </div>
+            <div className="h-3/4 flex justify-center text-black/70">
               <p className="text-sm">Some intruduction</p>
             </div>
           </div>

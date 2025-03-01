@@ -9,13 +9,9 @@ import {
 import Loading from "~components/ui/loading"
 import { Modal } from "~components/ui/modal"
 import { useApp } from "~contexts/app-context"
-import type { ITaskCore } from "~lib/types"
-
-// const LazyRemoveModal = lazy(() => {
-//   return new Promise((resolve) => {
-//     setTimeout(() => resolve(import("../items/multi-task-remove-modal")), 1000)
-//   })
-// })
+import { useRecurrence } from "~contexts/recurrence-context"
+import { getPreviewNodes } from "~lib/task-helpers"
+import type { ITask, ITaskCore } from "~lib/types"
 
 const LazyRemoveModal = lazy(() => import("../items/multi-task-remove-modal"))
 const LazyEditModal = lazy(() => import("../items/multi-task-edit-modal"))
@@ -29,11 +25,12 @@ export const TaskToolbar = ({
   type: "task" | "draft" | "history"
   slideToDelete?: () => void
 }) => {
-  const { openEditMode } = useApp()
-
   const [showWarning, setShowWarning] = useState(false)
   const [showRemoveModal, setShowRemoveModal] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
+
+  const { openEditMode } = useApp()
+  const { recurrences } = useRecurrence()
 
   const removeTask = (item: ITaskCore) => {
     if (item.recurrenceId.length === 0) setShowWarning(true)
@@ -46,6 +43,13 @@ export const TaskToolbar = ({
     } else {
       openEditMode(item, type)
     }
+  }
+
+  const recycleTask = (item: ITask) => {
+    openEditMode(
+      { ...item, nodes: getPreviewNodes(item, recurrences), recurrenceId: "" },
+      "new"
+    )
   }
 
   return (
@@ -95,7 +99,7 @@ export const TaskToolbar = ({
         <button
           tabIndex={-1}
           className="text-zinc-500 text-xs hover:text-zinc-400 px-2 flex gap-2 items-center"
-          onClick={() => openEditMode(item, "new")}>
+          onClick={() => recycleTask(item as ITask)}>
           <PiArrowCounterClockwise />
           Recycle
         </button>

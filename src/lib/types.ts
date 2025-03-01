@@ -95,3 +95,31 @@ export interface IRepeatParams {
   goal: number
   step: number
 }
+
+export type IFilterAction = "all" | "active" | "completed" | "notes" | "drafts"
+
+export interface IFilter {
+  title: string
+  action: IFilterAction
+  icon: IconType
+}
+
+export interface IGroupedItems {
+  [categoryId: string]: ITask[]
+}
+
+export interface IBackupData {
+  tasks: ITask[]
+  history: ITask[]
+  drafts: IDraft[]
+  recurrences: IRecurrence[]
+  setting: any
+}
+
+export interface IBackupConfig {
+  customSelection: boolean
+  tasks: boolean
+  drafts: boolean
+  setting: boolean
+  history: boolean
+}

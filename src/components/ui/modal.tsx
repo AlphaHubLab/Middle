@@ -20,7 +20,7 @@ export const Modal = (props: IModalProps) => {
         <div className="fixed top-0 left-0 right-0 bottom-0 w-full h-full flex items-center justify-center z-30 p-2">
           <div
             onClick={props.closeOnBackdrop ? props.onClose : () => false}
-            className="fixed top-0 left-0 right-0 bottom-0 w-full h-full bg-black/70 z-0"></div>
+            className="fixed top-0 left-0 right-0 bottom-0 w-full h-full bg-black/50 z-0"></div>
           <div
             className={`modal-show px-8 relative ${props.className && props.className}`}>
             <header className="flex w-full items-center h-12 border-b">
@@ -40,7 +40,7 @@ export const Modal = (props: IModalProps) => {
                 </div>
               )}
             </header>
-            <div className="pt-4 pb-6">{props.children}</div>
+            <div className="pt-4 pb-6 h-full">{props.children}</div>
           </div>
         </div>,
         document.body

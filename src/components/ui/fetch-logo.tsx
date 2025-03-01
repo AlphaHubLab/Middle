@@ -1,5 +1,5 @@
 import PrimaryLogo from "~components/ui/svgs/primary"
-
+import LogoType from "./svgs/logo-type"
 export default function FetchLogo({ linkable = false }) {
   if (linkable)
     return (
@@ -8,15 +8,13 @@ export default function FetchLogo({ linkable = false }) {
         href="#"
         target="_blank"
         rel="noopener noreferrer">
-        <span className="font-bold">Fetch</span>
-        <PrimaryLogo className="h-full" />
+        <LogoType className="" />
       </a>
     )
 
   return (
     <>
-      <span className="text-2xl font-semibold text-fetch-primary pl-2">Fetch</span>
-      <PrimaryLogo className="h-full" />
+      <LogoType className="h-[120px]" />
     </>
   )
 }

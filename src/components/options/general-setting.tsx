@@ -1,5 +1,5 @@
 import Label from "~components/ui/label"
-import { P, Section } from "~components/ui/typograrphy"
+import { P, Section, SubSection } from "~components/ui/typograrphy"
 import { useSetting } from "~contexts/setting-context"
 
 export default function GeneralSetting() {
@@ -10,11 +10,9 @@ export default function GeneralSetting() {
   }
 
   return (
-    <Section title="General">
-      <div className="bg-slate-100 mt-2 p-2 rounded-2xl">
-        <h2 className="font-medium text-sm text-black/80">
-          Editor Time Zone
-        </h2>
+    <Section title="Time Zones">
+      <SubSection>
+        <h2 className="font-medium text-sm text-fetch-primary/90">Editor Time Zone</h2>
         <P>
           The time zone you prefer when creating or editing a note or task. You
           can always choose a different time zone directly in the editor.
@@ -32,18 +30,16 @@ export default function GeneralSetting() {
           <option value="pst">PST</option>
           <option value="utc+08">WST</option>
         </select>
-      </div>
-      <div className="bg-slate-100 mt-2 p-2 rounded-2xl">
-        <h2 className="font-medium text-sm text-black/80">
-          Working Time Zone
-        </h2>
+      </SubSection>
+      <SubSection>
+        <h2 className="font-medium text-sm text-fetch-primary/90">Working Time Zone</h2>
         <P>
           The time zone you prefer when viewing a note or task. You can change
           this setting at any time.
         </P>
         <select
           name="preferredTimeZone"
-     className="text-sm outline-none border-b-[1px] rounded-xl w-44 h-10 px-2 text-black/70"
+          className="text-sm outline-none border-b-[1px] rounded-xl w-44 h-10 px-2 text-black/70"
           value={setting.preferredTimeZone}
           onChange={setGeneralSetting}>
           <option value="local">Local</option>
@@ -54,7 +50,7 @@ export default function GeneralSetting() {
           <option value="pst">PST</option>
           <option value="utc+08">WST</option>
         </select>
-      </div>
+      </SubSection>
     </Section>
   )
 }

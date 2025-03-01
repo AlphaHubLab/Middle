@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import uuid4 from "uuid4"
 
-import ButtonFull from "~components/ui/svgs/buttons/full-w-buttons"
+import ButtonFull from "~components/ui/buttons/full-w-buttons"
 import { useApp } from "~contexts/app-context"
 import { usePersist } from "~contexts/persist-context"
 import { useRecurrence } from "~contexts/recurrence-context"

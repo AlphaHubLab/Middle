@@ -1,6 +1,6 @@
 import { useSetting } from "~contexts/setting-context"
 
-export default function ToggleColorMode() {
+export default function ToggleTheme() {
   const { setSetting } = useSetting()
 
   return (

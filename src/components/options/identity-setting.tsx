@@ -86,14 +86,14 @@ export default function IdentitySection() {
                   setEditorMode("new")
                 }
               }}
-              style={{ height: !open ? "40px" : "440px" }}
-              className={`${!showIdEditor && "cursor-pointer hover:bg-slate-200"} w-full overflow-hidden transition-all duration-300 p-2 bg-slate-100 rounded-2xl`}>
+              style={{ height: !open ? "52px" : "452px" }}
+              className={`${!showIdEditor && "cursor-pointer hover:bg-fetch-secondary/70"} w-full overflow-hidden transition-all duration-300 px-2 bg-fetch-secondary/40 rounded-2xl`}>
               <div
-                className={`text-sm w-full flex items-center bg-inherit pb-2 px-2 text-black/80 border-b-[1px]  ${open || showIdEditor ? "border-black/10" : "border-transparent"}`}>
+                className={`text-sm font-medium w-full h-[52px] flex items-center px-2 text-fetch-primary/90 border-b-[1px]  ${open || showIdEditor ? "border-black/10" : "border-transparent"}`}>
                 +Add Identity
               </div>
               {showIdEditor && (
-                <div className="h-[400px] bg-inherit overflow-y-auto overflow-x-hidden styled-scrollbar">
+                <div className="h-[400px] overflow-y-auto overflow-x-hidden styled-scrollbar">
                   <IdentityEditor
                     editorMode={editorMode}
                     initialIdentity={initialIdentity}
@@ -106,7 +106,7 @@ export default function IdentitySection() {
         </div>
       </div>
 
-      <div className="pt-6">
+      <div className="my-6">
         <h2 className="font-medium text-sm border-b text-black/80">
           Your Identities
         </h2>
@@ -247,7 +247,7 @@ const IdentityEditor = ({ initialIdentity, onClose, editorMode }) => {
 
   return (
     <div className="w-full px-2 pb-2 bg-inherit">
-      <div className="sticky top-0 py-4 flex text-xs gap-2 bg-inherit">
+      <div className="sticky top-0 py-4 flex text-xs gap-2">
         <button
           className="px-2 py-1 bg-fetch-primary hover:bg-violet-700 text-white rounded-lg"
           onClick={saveIdentity}>
@@ -324,8 +324,8 @@ const IdentityEditor = ({ initialIdentity, onClose, editorMode }) => {
       </div>
       <div>
         <div id="items" className="py-6">
-          <div className="sticky top-0 bg-slate-100">
-            <h2 className="font-bold text-sm text-zinc-700 ">Identity items</h2>
+          <div className="sticky top-12 bg-slate-100">
+            <h2 className="font-bold text-sm text-zinc-700">Identity items</h2>
             <p className="text-xs text-zinc-500 mb-2 border-b-[1px]">
               Identity items (wallets, socials, etc...)
             </p>

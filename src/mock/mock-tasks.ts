@@ -25,30 +25,30 @@ const mockNodes = [
   ]
 ]
 
-export const mockTask: ITask[] = []
-// export const mockTask: ITask[] = [
-//   ...(() =>
-//     Array.from({ length: 20 }).map((_, i) => ({
-//       id: uuid4(),
-//       done: false,
-//       dateAdded: new Date().getTime(),
-//       dateDone: -1,
-//       reference: "",
-//       params: {
-//         tags: [],
-//         identities:
-//           Math.random() > 0.5
-//             ? []
-//             : Math.random() > 0.5
-//               ? [mockIdentities[0]]
-//               : [mockIdentities[1]],
-//         dueDate:
-//           new Date().getTime() +
-//           Math.random() * 7 * Math.random() * 24 * 60 * 60 * 1000
-//       } as ITaskParams,
-//       nodes: [
-//         { type: "h", value: `task ${i}` },
-//         ...mockNodes[Math.floor(Math.random() * mockNodes.length)]
-//       ] as INode[]
-//     })))()
-// ]
+// export const mockTask: ITask[] = []
+export const mockTask: ITask[] = [
+  ...(() =>
+    Array.from({ length: 20 }).map((_, i) => ({
+      id: uuid4(),
+      done: false,
+      dateAdded: new Date().getTime(),
+      dateDone: -1,
+      recurrenceId: "",
+      params: {
+        tags: [],
+        identities:
+          Math.random() > 0.5
+            ? []
+            : Math.random() > 0.5
+              ? [mockIdentities[0]]
+              : [mockIdentities[1]],
+        dueDate:
+          new Date().getTime() +
+          Math.random() * 7 * Math.random() * 24 * 60 * 60 * 1000
+      } as ITaskParams,
+      nodes: [
+        { type: "h", value: `task ${i}` },
+        ...mockNodes[Math.floor(Math.random() * mockNodes.length)]
+      ] as INode[]
+    })))()
+]
