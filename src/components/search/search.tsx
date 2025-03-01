@@ -2,8 +2,8 @@ import Fuse from "fuse.js"
 import type { FC } from "react"
 import { CiSearch } from "react-icons/ci"
 
-import { useDraft } from "~contexts/draft-context"
-import { usePersist } from "~contexts/persist-context"
+import { useDraft } from "providers/draft-context"
+import { usePersist } from "providers/persist-context"
 import type { IDraft, ITask } from "~lib/types"
 
 export const SearchBar = ({ search, setSearch, onFocus }) => {

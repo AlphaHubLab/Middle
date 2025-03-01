@@ -26,7 +26,9 @@ export const IdentityPreview = ({ identity }: { identity: IIdentity }) => {
                   className="flex px-2 gap-2 border-l text-sm text-black/50 w-full">
                   <p className="font-medium">{item.key}:</p>
                   <Copiable textToCopy={item.value}>
-                    <p className="px-2 text-black/50 break-all w-full">{item.value}</p>
+                    <p className="px-2 text-black/50 break-all w-full">
+                      {item.value}
+                    </p>
                   </Copiable>
                 </div>
               ))}

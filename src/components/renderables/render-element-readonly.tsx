@@ -1,9 +1,9 @@
 import { DateTime } from "luxon"
+import { useRecurrence } from "providers/recurrence-context"
+import { useSetting } from "providers/setting-context"
 
 import { IdentityPreview } from "~components/renderables/identity-preview"
 import Copiable from "~components/ui/copiable"
-import { useRecurrence } from "~contexts/recurrence-context"
-import { useSetting } from "~contexts/setting-context"
 import { getPreviewNodes } from "~lib/task-helpers"
 import type { IIdentity, INode, ITaskCore } from "~lib/types"
 

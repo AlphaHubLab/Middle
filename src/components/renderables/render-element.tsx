@@ -1,8 +1,8 @@
 import isUrl from "is-url"
+import { useApp } from "providers/app-context"
 import { useEffect, useRef } from "react"
 import { PiLink } from "react-icons/pi"
 
-import { useApp } from "~contexts/app-context"
 import { isUrlByRegex } from "~lib/task-helpers"
 import type { IRepeatParams, IStore } from "~lib/types"
 

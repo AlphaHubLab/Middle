@@ -1,10 +1,10 @@
+import { useApp } from "providers/app-context"
+import { usePersist } from "providers/persist-context"
+import { useRecurrence } from "providers/recurrence-context"
 import { useEffect } from "react"
 import uuid4 from "uuid4"
 
 import ButtonFull from "~components/ui/buttons/full-w-buttons"
-import { useApp } from "~contexts/app-context"
-import { usePersist } from "~contexts/persist-context"
-import { useRecurrence } from "~contexts/recurrence-context"
 import type { ITaskCore } from "~lib/types"
 
 export default function EditModal({

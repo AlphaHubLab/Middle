@@ -1,17 +1,7 @@
+import FetchProvider from "providers/fetch-provider"
 import { useState } from "react"
 
-// import { PiTrash } from "react-icons/pi"
-
-// import ButtonFull from "~components/ui/buttons/full-w-buttons"
-// import Input from "~components/ui/input"
-// import PasswordInput from "~components/ui/input-password"
 import { Section } from "~components/ui/typograrphy"
-// import { useDraft } from "~contexts/draft-context"
-import FetchProvider from "~contexts/fetch-provider"
-
-// import { usePersist } from "~contexts/persist-context"
-// import { useRecurrence } from "~contexts/recurrence-context"
-// import { useSetting } from "~contexts/setting-context"
 
 import SelfBackup from "./backup"
 import Share from "./share"

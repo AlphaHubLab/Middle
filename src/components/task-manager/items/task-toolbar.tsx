@@ -1,3 +1,5 @@
+import { useApp } from "providers/app-context"
+import { useRecurrence } from "providers/recurrence-context"
 import { lazy, Suspense, useState } from "react"
 import {
   PiArrowCounterClockwise,
@@ -8,8 +10,6 @@ import {
 
 import Loading from "~components/ui/loading"
 import { Modal } from "~components/ui/modal"
-import { useApp } from "~contexts/app-context"
-import { useRecurrence } from "~contexts/recurrence-context"
 import { getPreviewNodes } from "~lib/task-helpers"
 import type { ITask, ITaskCore } from "~lib/types"
 

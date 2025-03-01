@@ -1,13 +1,13 @@
+import { useSetting } from "providers/setting-context"
 import { useEffect, useState } from "react"
 import { HexColorPicker } from "react-colorful"
 
 import Input from "~components/ui/input"
 import Label from "~components/ui/label"
 import { Note, P, Section } from "~components/ui/typograrphy"
-import { useSetting } from "~contexts/setting-context"
 import type { IIdentity } from "~lib/types"
 
-import { IdentityPreview } from "../renderables/identity-preview"
+import { IdentityPreview } from "../../renderables/identity-preview"
 
 const createNewIdentity = (identities: IIdentity[]) => {
   // New Id based on last registerrred Id

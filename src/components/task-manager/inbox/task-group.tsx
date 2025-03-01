@@ -34,11 +34,7 @@ export const TaskGroupWrapper = ({
           ? messages[Math.floor(Math.random() * messages.length)]
           : "Found Nothing!"}
 
-        <img
-          src={NothingToFind}
-          alt="nothing"
-          width={200}
-        />
+        <img src={NothingToFind} alt="nothing" width={200} />
       </div>
     )
   }

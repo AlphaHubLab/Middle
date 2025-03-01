@@ -1,6 +1,6 @@
-import Label from "~components/ui/label"
+import { useSetting } from "providers/setting-context"
+
 import { P, Section, SubSection } from "~components/ui/typograrphy"
-import { useSetting } from "~contexts/setting-context"
 
 export default function GeneralSetting() {
   const { setting, setSetting } = useSetting()
@@ -12,7 +12,9 @@ export default function GeneralSetting() {
   return (
     <Section title="Time Zones">
       <SubSection>
-        <h2 className="font-medium text-sm text-fetch-primary/90">Editor Time Zone</h2>
+        <h2 className="font-medium text-sm text-fetch-primary/90">
+          Editor Time Zone
+        </h2>
         <P>
           The time zone you prefer when creating or editing a note or task. You
           can always choose a different time zone directly in the editor.
@@ -32,7 +34,9 @@ export default function GeneralSetting() {
         </select>
       </SubSection>
       <SubSection>
-        <h2 className="font-medium text-sm text-fetch-primary/90">Working Time Zone</h2>
+        <h2 className="font-medium text-sm text-fetch-primary/90">
+          Working Time Zone
+        </h2>
         <P>
           The time zone you prefer when viewing a note or task. You can change
           this setting at any time.

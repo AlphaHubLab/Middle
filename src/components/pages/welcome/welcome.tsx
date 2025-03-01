@@ -11,7 +11,7 @@ export default function Welcome({ isDev = false }) {
   const [page, setPage] = useState(0)
   const [action, setAction] = useState("next")
   const [follow, setFollow] = useState(false)
-  const [wallet, setWallet] = useState("")
+  // const [wallet, setWallet] = useState("")
   const [plan, setPlan] = useState("free")
 
   const next = () => {

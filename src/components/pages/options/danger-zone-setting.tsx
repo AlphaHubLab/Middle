@@ -1,12 +1,12 @@
 import type { title } from "process"
+import { useDraft } from "providers/draft-context"
+import { usePersist } from "providers/persist-context"
 import { useEffect, useState } from "react"
 import { PiCheckFat, PiWarning } from "react-icons/pi"
 
-import { Modal, type IModalProps } from "~components/ui/modal"
 import ButtonFull from "~components/ui/buttons/full-w-buttons"
+import { Modal, type IModalProps } from "~components/ui/modal"
 import { P, Section } from "~components/ui/typograrphy"
-import { useDraft } from "~contexts/draft-context"
-import { usePersist } from "~contexts/persist-context"
 
 interface IPromptProps extends IModalProps {
   acceptLabel: string
@@ -48,7 +48,7 @@ export default function DangerZoneSetting() {
     }
   }, [tasks, history, drafts])
 
-  // const [promptParams, setPromptParams] = useState<IPromptProps>(NO_PƒROMPT_PARAMS)
+  // const [promptParams, setPromptParams] = useState<IPromptProps>(NO_PROMPT_PARAMS)
 
   return (
     <Section title="Danger zone!">

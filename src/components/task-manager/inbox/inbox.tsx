@@ -1,16 +1,13 @@
+import { usePersist } from "providers/persist-context"
 import { useState } from "react"
 import {
-  // PiArrowSquareDown,
   PiBoxArrowDown,
   PiClockCounterClockwise,
-  PiFunnel,
-  PiMagnifyingGlass,
   PiNote,
   PiNotePencil
 } from "react-icons/pi"
 
 import { SearchBar } from "~components/search/search"
-import { usePersist } from "~contexts/persist-context"
 
 import Loading from "../../ui/loading"
 import { Handle } from "../../ui/svgs/handle"

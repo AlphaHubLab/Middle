@@ -2,8 +2,8 @@
 
 import Sidebar from "~components/sidebar/sidebar"
 import TaskManager from "~components/task-manager/task-manager"
-import FetchProvider from "~contexts/fetch-provider"
-import Web3Provider from "~contexts/web3-context"
+import FetchProvider from "providers/fetch-provider"
+import Web3Provider from "providers/web3-context"
 
 export default function NewTab({ isDev = false }) {
   return (

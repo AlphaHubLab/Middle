@@ -1,9 +1,9 @@
 import { DateTime } from "luxon"
+import { useSetting } from "providers/setting-context"
 import { useRef, useState } from "react"
 import { PiHashStraight, PiRepeat, PiTimer, PiTrash } from "react-icons/pi"
 
 import { IdentityPreview } from "~components/renderables/identity-preview"
-import { useSetting } from "~contexts/setting-context"
 import { TIME } from "~lib/constants"
 import type { IIdentity, IRepeatParams } from "~lib/types"
 

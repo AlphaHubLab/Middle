@@ -1,4 +1,4 @@
-import Dashboard from "~components/cloud/dashboard"
+import Dashboard from "~components/pages/cloud/dashboard"
 
 import "../style.css"
 

@@ -1,12 +1,11 @@
+import { useApp } from "providers/app-context"
+import { useDraft } from "providers/draft-context"
+import { usePersist } from "providers/persist-context"
+import { useSetting } from "providers/setting-context"
 import { useEffect, useMemo, useRef, useState } from "react"
 import type { ChangeEvent, KeyboardEvent } from "react"
 import { PiFloppyDisk, PiTrash } from "react-icons/pi"
 
-// import ButtonFetch from "~components/ui/button-fetch"
-import { useApp } from "~contexts/app-context"
-import { useDraft } from "~contexts/draft-context"
-import { usePersist } from "~contexts/persist-context"
-import { useSetting } from "~contexts/setting-context"
 import useDebouncedDraft from "~hooks/useDebouncedDraft"
 import * as helpers from "~lib/task-helpers"
 import { getAvailableExtensions } from "~lib/task-helpers"
@@ -31,12 +30,7 @@ const tagRegExp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z_]+\w*/g)
 // const projectRegExp = new RegExp(/\B(?<!\!|\#|\_)\#\w*[a-zA-Z0-9_]+\w*/g)
 
 export default function Editor({ disabled }) {
-  const {
-    initialStore,
-    editorType,
-    setEditMode,
-    newEditor,
-  } = useApp()
+  const { initialStore, editorType, setEditMode, newEditor } = useApp()
 
   const { handlePersist, handlePersistByRecurrence } = usePersist()
   const { drafts, setDrafts } = useDraft()

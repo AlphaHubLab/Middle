@@ -1,4 +1,4 @@
-import NewTab from "~components/app/new-tab"
+import NewTab from "~components/pages/app/new-tab"
 
 import "../style.css"
 

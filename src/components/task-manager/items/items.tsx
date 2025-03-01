@@ -1,3 +1,6 @@
+import { useDraft } from "providers/draft-context"
+import { usePersist } from "providers/persist-context"
+import { useRecurrence } from "providers/recurrence-context"
 import { useEffect, useState } from "react"
 import type { ReactNode } from "react"
 import { PiTrash } from "react-icons/pi"
@@ -6,9 +9,6 @@ import { RenderAllElementsReadOnlyWithCopy } from "~components/renderables/rende
 import { LabelStatus, TimeStatus } from "~components/renderables/status"
 import Checkbox from "~components/ui/checkbox"
 import * as C from "~components/ui/collapsible"
-import { useDraft } from "~contexts/draft-context"
-import { usePersist } from "~contexts/persist-context"
-import { useRecurrence } from "~contexts/recurrence-context"
 import { fetchconfig } from "~fetch.config"
 import {
   getDetailedPreview,

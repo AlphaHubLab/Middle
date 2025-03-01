@@ -11,7 +11,7 @@ export default function useDebounce<T>(value: T, delay: number = 500) {
       setLoading(false)
       setDebouncedValue(value)
     }, delay)
-    
+
     return () => clearTimeout(timer)
   }, [value, delay])
 

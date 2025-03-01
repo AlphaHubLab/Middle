@@ -1,8 +1,8 @@
 import { DateTime } from "luxon"
+import { usePersist } from "providers/persist-context"
+import { useSetting } from "providers/setting-context"
 import { useMemo, useState } from "react"
 
-import { usePersist } from "~contexts/persist-context"
-import { useSetting } from "~contexts/setting-context"
 import { TIME } from "~lib/constants"
 import type { ITask } from "~lib/types"
 

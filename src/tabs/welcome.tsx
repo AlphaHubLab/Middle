@@ -1,4 +1,4 @@
-import Welcome from "~components/welcome/welcome"
+import Welcome from "~components/pages/welcome/welcome"
 
 import "../style.css"
 

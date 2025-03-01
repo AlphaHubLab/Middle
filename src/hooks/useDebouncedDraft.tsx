@@ -1,7 +1,7 @@
+import { useDraft } from "providers/draft-context"
 import React from "react"
 import isEqual from "react-fast-compare"
 
-import { useDraft } from "~contexts/draft-context"
 import { isTaskEmpty } from "~lib/task-helpers"
 import type { IStore } from "~lib/types"
 
@@ -44,7 +44,7 @@ export default function useDebouncedDraft(
         found.dateDrafted = dateDrafted
       } else {
         _drafts.push({
-          reference: "",
+          recurrenceId: "",
           id: store.id,
           nodes: store.nodes,
           params: store.params,

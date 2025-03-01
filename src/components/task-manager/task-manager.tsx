@@ -1,8 +1,8 @@
+import { useApp } from "providers/app-context"
+
 import Editor from "~components/editor/editor"
 import NavbarContainer from "~components/navbar/navbar-container"
 import Inbox from "~components/task-manager/inbox/inbox"
-import { useApp } from "~contexts/app-context"
-import Web3Provider from "~contexts/web3-context"
 
 export default function TaskManager({ isDev = false }) {
   const { editMode, setEditMode } = useApp()
@@ -11,7 +11,6 @@ export default function TaskManager({ isDev = false }) {
     <>
       {/* <Profiler id="todo" onRender={onRender}> */}
       <div className="h-full w-full">
-        {/* <Web3Provider> */}
         <NavbarContainer isDev={isDev} />
 
         <div className="relative h-full w-[calc(100%-64px)] md:w-[calc(100%-286px)]">
@@ -33,7 +32,6 @@ export default function TaskManager({ isDev = false }) {
             </div>
           </div>
         </div>
-        {/* </Web3Provider> */}
       </div>
       {/* </Profiler> */}
     </>
