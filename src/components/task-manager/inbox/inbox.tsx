@@ -9,6 +9,7 @@ import {
   PiNotePencil
 } from "react-icons/pi"
 
+import { SearchBar } from "~components/search/search"
 import { usePersist } from "~contexts/persist-context"
 
 import Loading from "../../ui/loading"
@@ -23,14 +24,15 @@ const tabs = [
   { title: "Upcoming", icon: PiBoxArrowDown },
   { title: "Drafts", icon: PiNotePencil },
   { title: "Completed", icon: PiClockCounterClockwise },
-  { title: "Notes", icon: PiNote },
-  { title: "Search", icon: PiMagnifyingGlass },
-  { title: "Filter", icon: PiFunnel }
+  { title: "Notes", icon: PiNote }
+  // { title: "Search", icon: PiMagnifyingGlass },
+  // { title: "Filter", icon: PiFunnel }
 ]
 
 export default function Inbox({ show, setHide }) {
   const { storageLoading } = usePersist()
   const [activeTab, setActiveTab] = useState("Upcoming")
+  const [search, setSearch] = useState("")
 
   return (
     <div
@@ -47,23 +49,32 @@ export default function Inbox({ show, setHide }) {
         </div>
       )}
       {show && (
-        <div
-          dir="ltr"
-          role="tablist"
-          aria-orientation="horizontal"
-          className="w-full flex gap-1 px-5 lg:px-11 py-6">
-          {tabs.map((tab) => (
-            <button
-              onClick={() => setActiveTab(tab.title)}
-              className={`border flex gap-2 items-center rounded-xl py-1 px-2 ${activeTab === tab.title ? "text-white bg-fetch-primary font-semibold" : "text-fetch-primary font-normal bg-inherit hover:bg-violet-100"}`}
-              key={tab.title}>
-              <span className="text-normal">{<tab.icon />}</span>
-              <span
-                className={`${activeTab === tab.title ? "flex" : "hidden"} lg:flex text-xs`}>
-                {tab.title}
-              </span>
-            </button>
-          ))}
+        <div>
+          <div
+            dir="ltr"
+            role="tablist"
+            aria-orientation="horizontal"
+            className="w-full flex gap-1 px-5 lg:px-11 pt-6">
+            {tabs.map((tab) => (
+              <button
+                onClick={() => setActiveTab(tab.title)}
+                className={`border flex gap-2 items-center rounded-xl py-1 px-2 ${activeTab === tab.title ? "text-white bg-fetch-primary font-semibold" : "text-fetch-primary font-normal bg-inherit hover:bg-violet-100"}`}
+                key={tab.title}>
+                <span className="text-normal">{<tab.icon />}</span>
+                <span
+                  className={`${activeTab === tab.title ? "flex" : "hidden"} lg:flex text-xs`}>
+                  {tab.title}
+                </span>
+              </button>
+            ))}
+          </div>
+          <div dir="ltr" className="pl-5 pr-3 lg:pl-11 lg:pr-9">
+            <SearchBar
+              search={search}
+              setSearch={setSearch}
+              onFocus={() => setActiveTab("Search")}
+            />
+          </div>
         </div>
       )}
       {/* non-scrollables */}
@@ -83,7 +94,7 @@ export default function Inbox({ show, setHide }) {
               {activeTab === "Drafts" && <DraftList />}
               {activeTab === "Completed" && <HistoryList />}
               {activeTab === "Notes" && <NoteList />}
-              {activeTab === "Search" && <SearchList />}
+              {activeTab === "Search" && <SearchList search={search} />}
             </div>
           )}
         </div>

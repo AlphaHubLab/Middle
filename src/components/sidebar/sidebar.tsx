@@ -1,3 +1,6 @@
+// after:absolute after:content-[''] after:h-3/5 after:w-[calc(100%-6px)]
+// after:top-[2px] after:left-[3px] after:rounded-xl
+// after:bg-gradient-to-t after:from-white/0 after:to-white/60
 import { useEffect, useState } from "react"
 import {
   PiArrowLeft,
@@ -94,16 +97,13 @@ export default function Sidebar({ isDev = false }) {
             <div className="w-full py-2 px-1 md:px-2 flex items-center gap-2">
               <button
                 className="
-              relative flex shrink-0 items-center justify-center text-2xl text-white w-[54px] h-[54px] rounded-2xl 
-              bg-gradient-to-t from-emerald-200 to-green-400 shadow-[0px_0px_12px] shadow-green-300
-              border-t border-t-emerald-300 border-violet-100
-              transition-all duration-200
-              hover:rotate-[5deg] hover:scale-[1.05]
-              disabled:bg-none disabled:bg-zinc-300 disabled:shadow-none
-              disabled:border-none disabled:hover:rotate-0 disabled:hover:scale-100
-              after:absolute after:content-[''] after:h-3/5 after:w-[calc(100%-6px)]
-              after:top-[2px] after:left-[3px] after:rounded-xl
-              after:bg-gradient-to-t after:from-white/0 after:to-white/60
+                  relative flex shrink-0 items-center justify-center text-2xl text-white w-[54px] h-[54px] rounded-2xl 
+                  bg-gradient-to-t from-emerald-200 to-green-400 shadow-[0px_0px_12px] shadow-green-300
+                  border-t border-t-emerald-300 border-violet-100
+                  transition-all duration-200
+                  hover:scale-[1.05]
+                  disabled:bg-none disabled:bg-zinc-300 disabled:shadow-none
+                  disabled:border-none disabled:hover:rotate-0 disabled:hover:scale-100
               ">
                 <PiCalendarHeartBold />
               </button>
@@ -117,21 +117,21 @@ export default function Sidebar({ isDev = false }) {
               </div>
             </div>
             <div className="w-full py-2 px-1 md:px-2 flex items-center gap-2">
-              <button
+              <a
+                href={isDev ? "/clouddev" : "/tabs/clouddev.html"}
+                rel="noopener noreferrer"
+                target="_blank"
                 className="
-              relative border-t border-t-violet-500 border-violet-100
-              after:absolute after:content-[''] after:h-3/5 after:w-[calc(100%-6px)]
-              after:top-[2px] after:left-[3px] after:rounded-xl
-              after:bg-gradient-to-t after:from-white/0 after:to-white/60
-              bg-gradient-to-t from-violet-500 to-fetch-primary
-              shadow-[0px_0px_12px] shadow-violet-400
-              transition-all duration-200
-              hover:rotate-[5deg] hover:scale-[1.05]
-              w-[54px] h-[54px] rounded-2xl text-white
-              flex items-center justify-center text-2xl
+                  relative border-t border-t-violet-500 border-violet-100
+                  bg-gradient-to-t from-violet-500 to-fetch-primary
+                  shadow-[0px_0px_12px] shadow-violet-400
+                  transition-all duration-200
+                  hover:scale-[1.05]
+                  w-[54px] h-[54px] rounded-2xl text-white
+                  flex items-center justify-center text-2xl
               ">
                 <PiCloudBold />
-              </button>
+              </a>
               <div>
                 <p className="text-black/80 text-sm font-medium flex gap-1 items-center">
                   Fetch Cloud!
@@ -162,7 +162,9 @@ export default function Sidebar({ isDev = false }) {
           <button
             onClick={() => setIsOpen(!isOpen)}
             aria-label={isOpen ? "Close Sidebar" : "Open Sidebar"}
-            className="hover:bg-violet-100 visible md:hidden w-[54px] h-[54px] flex items-center justify-center md:w-full bg-slate-50 border border-violet-900 rounded-2xl text-2xl text-fetch-primary">
+            className="hover:bg-violet-100 visible md:hidden w-[54px] h-[54px]
+              flex items-center justify-center md:w-full bg-slate-50 border border-violet-900
+              rounded-2xl text-2xl text-fetch-primary">
             {isOpen ? <PiArrowRight /> : <PiArrowLeft />}
           </button>
         </div>

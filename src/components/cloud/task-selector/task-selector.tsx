@@ -1,17 +1,12 @@
 import { useEffect, useMemo, useState } from "react"
-import type { IconType } from "react-icons"
 import {
-  // PiArrowSquareDown,
   PiBoxArrowDown,
   PiClockCounterClockwise,
-  PiFunnel,
-  PiMagnifyingGlass,
   PiNote,
   PiNotePencil
 } from "react-icons/pi"
 
-import { SearchBar, SearchResults } from "~components/search/search"
-import { TaskGroup } from "~components/task-manager/inbox/task-group"
+import { SearchBar } from "~components/search/search"
 import Loading from "~components/ui/loading"
 import { Modal } from "~components/ui/modal"
 import { useDraft } from "~contexts/draft-context"
@@ -19,7 +14,8 @@ import { usePersist } from "~contexts/persist-context"
 import { groupItems } from "~lib/cloud"
 import type { IFilter, IFilterAction, IGroupedItems, ITask } from "~lib/types"
 
-import { SelectableItem, SelectableList } from "./task-selector-items"
+import { SelectableList } from "./task-selector-items"
+import TaskSelectorSearch from "./task-selector-search"
 
 const filters: IFilter[] = [
   { title: "All Tasks", action: "all", icon: PiBoxArrowDown },
@@ -27,7 +23,6 @@ const filters: IFilter[] = [
   { title: "Completed", action: "completed", icon: PiClockCounterClockwise },
   { title: "Notes", action: "notes", icon: PiNote },
   { title: "Drafts", action: "drafts", icon: PiNotePencil }
-  // { title: "Search", icon: PiMagnifyingGlass }
   //   { title: "Filter", icon: PiFunnel }
 ]
 
@@ -72,7 +67,6 @@ export default function TaskSelector({
     setActiveTab("items")
     setFilteredItems(filterItems(activeFilter))
   }, [activeFilter])
-  //   const filteredItems =
 
   const filterItems = (by: IFilterAction) => {
     if (by === "all") {
@@ -172,34 +166,11 @@ export default function TaskSelector({
                   />
                 )}
                 {activeTab === "search" && (
-                  <div className="w-full">
-                    {search.length < 2 ? (
-                      <p className="text-black/50 text-sm text-center w-full">
-                        Please type at least 2 letters.
-                      </p>
-                    ) : (
-                      <SearchResults search={search}>
-                        {(result) => (
-                          <TaskGroup
-                            variant="neutral"
-                            label="Tasks"
-                            value="tasks">
-                            {result.taskResults.map(
-                              (item, i) =>
-                                i < 5 && (
-                                  <SelectableItem
-                                    key={item.id}
-                                    setSelectedItems={handleSelectItems}
-                                    item={item}
-                                    isSelected={selectedItems.includes(item.id)}
-                                  />
-                                )
-                            )}
-                          </TaskGroup>
-                        )}
-                      </SearchResults>
-                    )}
-                  </div>
+                  <TaskSelectorSearch
+                    search={search}
+                    selectedItems={selectedItems}
+                    handleSelectItems={handleSelectItems}
+                  />
                 )}
               </div>
             )}

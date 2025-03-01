@@ -67,7 +67,7 @@ export default function PopupComponent() {
           </div>
         ) : (
           <div className="flex flex-col w-full h-full items-center justify-center">
-            <p className="p-2 text-blue-500 border border-fetch-primary rounded-2xl my-4">
+            <p className="break-all p-2 text-blue-500 border border-fetch-primary rounded-2xl my-4">
               {tab}
             </p>
             <button
