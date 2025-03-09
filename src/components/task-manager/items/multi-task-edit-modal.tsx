@@ -1,11 +1,11 @@
-import { useApp } from "~providers/app-context"
-import { usePersist } from "~providers/persist-context"
-import { useRecurrence } from "~providers/recurrence-context"
+import { v4 as uuidv4 } from "uuid"
 import { useEffect } from "react"
-import uuid4 from "uuid4"
 
 import ButtonFull from "~components/ui/buttons/full-w-buttons"
 import type { ITaskCore } from "~lib/types"
+import { useApp } from "~providers/app-context"
+import { usePersist } from "~providers/persist-context"
+import { useRecurrence } from "~providers/recurrence-context"
 
 export default function EditModal({
   item,
@@ -57,7 +57,7 @@ export default function EditModal({
     }
 
     const taskCore = {
-      id: uuid4(),
+      id: uuidv4(),
       nodes: recurrence.nodes,
       recurrenceId: "",
       params: newParams
@@ -86,7 +86,7 @@ export default function EditModal({
     }
 
     const taskCore = {
-      id: uuid4(),
+      id: uuidv4(),
       nodes: recurrence.nodes,
       recurrenceId: "",
       params: newParams
@@ -113,7 +113,7 @@ export default function EditModal({
     }
 
     const taskCore = {
-      id: uuid4(),
+      id: uuidv4(),
       nodes: recurrence.nodes,
       recurrenceId: "",
       params: newParams
@@ -133,7 +133,7 @@ export default function EditModal({
     })
 
     const taskCore = {
-      id: uuid4(),
+      id: uuidv4(),
       nodes: recurrence.nodes,
       recurrenceId: "",
       params: recurrence.params

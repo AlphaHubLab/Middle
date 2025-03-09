@@ -56,56 +56,72 @@
 // }
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+// works for now
+import { ConnectKitProvider } from "connectkit/build/index.es"
 // import { ConnectKitProvider, getDefaultConfig } from "connectkit"
 import { createConfig, http, WagmiProvider } from "wagmi"
-import { base, mainnet } from "wagmi/chains"
+import { base } from "wagmi/chains"
+import { coinbaseWallet, metaMask, walletConnect } from "wagmi/connectors"
 
-// works for now
-import {
-  ConnectKitProvider,
-  getDefaultConfig
-} from "../../node_modules/connectkit/build/index.es"
+const config = createConfig({
+  connectors: [
+    coinbaseWallet({ preference: "eoaOnly" }),
+    metaMask(),
+    walletConnect({ projectId: "a" })
+  ],
+  chains: [base],
+  transports: {
+    [base.id]: http()
+    // RPC URL for each chain
+    //   [mainnet.id]: http(
+    //     `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`
+    //   )
+  }
+  // walletConnectProjectId: process.env.PLASMO_PUBLIC_WALLETCONNECT_PROJECT_ID,
+  // appName: "Your App Name",
+  // appDescription: "Your App Description",
+  // appUrl: "https://family.co", // your app's url
+  // appIcon: "https://family.co/logo.png" // your app's icon, no bigger than 1024x1024px (max. 1MB)
+})
 
-// export const config = createConfig({
-//   connectors: [rabbyWallet],
-//   chains: [mainnet, base],
-//   transports: {
-//     [mainnet.id]: http(),
-//     [base.id]: http()
-//   }
-// })
+const coinbaseWalletConfig = {
+  appName: "Fetch",
+  appLogoUrl: "https://example.com/myLogoUrl.png"
+}
 
-const config = createConfig(
-  getDefaultConfig({
-    // Your dApps chains
-    chains: [mainnet, base],
-    transports: {
-      [mainnet.id]: http(),
-      [base.id]: http()
-      // RPC URL for each chain
-      //   [mainnet.id]: http(
-      //     `https://eth-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_ID}`
-      //   )
-    },
+export const smartWalletConfig = createConfig({
+  chains: [base],
+  connectors: [
+    coinbaseWallet({
+      ...coinbaseWalletConfig,
+      preference: "smartWalletOnly"
+    })
+  ],
+  transports: {
+    [base.id]: http()
+  }
+})
 
-    // Required API Keys
-    walletConnectProjectId: process.env.PLASMO_PUBLIC_WALLETCONNECT_PROJECT_ID,
-
-    // Required App Info
-    appName: "Your App Name",
-
-    // Optional App Info
-    appDescription: "Your App Description",
-    appUrl: "https://family.co", // your app's url
-    appIcon: "https://family.co/logo.png" // your app's icon, no bigger than 1024x1024px (max. 1MB)
-  })
-)
+export const defaultConfig = createConfig({
+  chains: [base],
+  connectors: [
+    coinbaseWallet({
+      ...coinbaseWalletConfig,
+      preference: "eoaOnly"
+    }),
+    metaMask(),
+    walletConnect({ projectId: "a" })
+  ],
+  transports: {
+    [base.id]: http()
+  }
+})
 
 const queryClient = new QueryClient()
 
 export default function Web3Provider({ children }) {
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={defaultConfig}>
       <QueryClientProvider client={queryClient}>
         <ConnectKitProvider>{children}</ConnectKitProvider>
       </QueryClientProvider>

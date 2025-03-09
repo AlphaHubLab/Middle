@@ -1,4 +1,4 @@
-import uuid4 from "uuid4"
+import { v4 as uuidv4 } from "uuid"
 
 import type {
   IExtenstion,
@@ -143,7 +143,7 @@ export const getLabels = (taskCore: ITaskCore | IStore) => {
  */
 export const createEmptyStore = () =>
   ({
-    id: uuid4(),
+    id: uuidv4(),
     nodes: [
       { type: "h", value: "" },
       { type: "p", value: "" }

@@ -141,7 +141,7 @@
   scrollbar-gutter: stable;
 }
 
-@keyframes drawer-down {
+/* @keyframes drawer-down {
   0% {
     top: 136px;
   }
@@ -175,6 +175,45 @@
 
 .drawer-up {
   animation: drawer-up 0.3s forwards;
+} */
+
+@keyframes drawer-down {
+  0% {
+    transform: translateY(calc(-100% + 152px));
+  }
+
+  40% {
+    transform: translateY(46px);
+  }
+
+  100% {
+    transform: translateY(20px);
+  }
+}
+
+
+@keyframes drawer-up {
+  0% {
+    transform: translateY(0%);
+  }
+
+  40% {
+    transform: translateY(calc(-100% + 136px));
+  }
+
+  100% {
+    transform: translateY(calc(-100% + 152px));
+  }
+}
+
+
+
+.drawer-down {
+  animation: drawer-down 0.4s forwards;
+}
+
+.drawer-up {
+  animation: drawer-up 0.4s forwards;
 }
 
 @keyframes modal-show {

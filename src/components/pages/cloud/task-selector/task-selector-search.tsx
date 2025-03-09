@@ -6,7 +6,10 @@ import { SelectableItem } from "./task-selector-items"
 export default function TaskSelectorSearch({
   search,
   handleSelectItems,
-  selectedItems
+  selectedItems,
+  tasks,
+  history,
+  drafts
 }) {
   return (
     <div className="w-full">
@@ -15,7 +18,11 @@ export default function TaskSelectorSearch({
           Please type at least 2 letters.
         </p>
       ) : (
-        <SearchResults search={search}>
+        <SearchResults
+          tasks={tasks}
+          history={history}
+          drafts={drafts}
+          search={search}>
           {(result) => (
             <>
               <TaskGroup variant="neutral" label="Tasks" value="tasks">

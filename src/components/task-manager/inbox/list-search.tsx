@@ -1,17 +1,53 @@
-// import Fuse from "fuse.js"
-// import { useState } from "react"
-// import { CiSearch } from "react-icons/ci"
-
-// import { SearchResults } from "~components/search/search"
-// import { useDraft } from "~contexts/draft-context"
-// import { usePersist } from "~contexts/persist-context"
+import { useMemo } from "react"
 
 import { SearchResults } from "~components/search/search"
+import { getPreviewNodes } from "~lib/task-helpers"
+import type { IRecurrence, ITaskCore } from "~lib/types"
+import { useDraft } from "~providers/draft-context"
+import { usePersist } from "~providers/persist-context"
+import { useRecurrence } from "~providers/recurrence-context"
 
 import { DraftItem, HistoryItem, UpcomingItem } from "../items/items"
 import { TaskGroup, TaskGroupWrapper } from "./task-group"
 
+const getFullTask = (item: ITaskCore, recurrences: IRecurrence[]) => {
+  if (!item) return
+
+  if (item.hasOwnProperty("recurrenceId") && item.recurrenceId.length !== 0) {
+    const nodes = getPreviewNodes(item, recurrences)
+    return { ...item, nodes }
+  }
+
+  return item
+}
+
 export default function SearchList({ search }) {
+  const { drafts } = useDraft()
+  const { tasks, history } = usePersist()
+  const { recurrences } = useRecurrence()
+
+  const replacedTasks = useMemo(() => {
+    if (!tasks) return []
+    const _tasks = []
+
+    for (let i = 0; i < tasks.length; i++) {
+      _tasks.push(getFullTask(tasks[i], recurrences))
+    }
+
+    return _tasks
+  }, [tasks])
+
+  const replacedHistory = useMemo(() => {
+    if (!history) return []
+    const _tasks = []
+
+    for (let i = 0; i < history.length; i++) {
+      _tasks.push(getFullTask(history[i], recurrences))
+    }
+
+    return _tasks
+  }, [history])
+
   return (
     <div dir="ltr">
       <div className="pt-2 pb-4 px-2">
@@ -22,7 +58,11 @@ export default function SearchList({ search }) {
             </p>
           )}
           {search.length >= 2 && (
-            <SearchResults search={search}>
+            <SearchResults
+              tasks={replacedTasks}
+              history={replacedHistory}
+              drafts={drafts}
+              search={search}>
               {(result) => (
                 <div className="h-full overflow-y-auto styled-scrollbar p-2">
                   <TaskGroupWrapper messageType="search">

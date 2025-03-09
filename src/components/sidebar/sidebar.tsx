@@ -89,9 +89,9 @@ export default function Sidebar({ isDev = false }) {
 
   return (
     <div
-      className={`fixed h-[calc(100%-3rem)] top-12 right-0 w-[286px] transition-[margin-right] duration-200 ${isOpen ? "mr-0" : "-mr-[222px] md:mr-0"} z-20`}>
+      className={`fixed h-[calc(100%-3rem)] md:py-1 md:pr-1 p-0 top-12 right-0 w-[286px] transition-[margin-right] duration-200 z-20 ${isOpen ? "mr-0" : "-mr-[222px] md:mr-0"}`}>
       <div
-        className={`relative w-full h-full py-2 z-30 bg-slate-50 border-l border-black/15`}>
+        className={`relative w-full h-full z-30 bg-white shadow-lg border-l rounded-none md:border md:rounded-3xl border-black/15`}>
         <div className="w-full h-full ">
           <div className="h-[calc(100%-200px)]">
             <div className="w-full py-2 px-1 md:px-2 flex items-center gap-2">
@@ -118,7 +118,7 @@ export default function Sidebar({ isDev = false }) {
             </div>
             <div className="w-full py-2 px-1 md:px-2 flex items-center gap-2">
               <a
-                href={isDev ? "/clouddev" : "/tabs/clouddev.html"}
+                href={isDev ? "/clouddev" : "/tabs/cloud.html"}
                 rel="noopener noreferrer"
                 target="_blank"
                 className="

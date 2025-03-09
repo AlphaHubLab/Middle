@@ -1,6 +1,4 @@
-import { useDraft } from "~providers/draft-context"
-import { usePersist } from "~providers/persist-context"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState, type Dispatch } from "react"
 import {
   PiBoxArrowDown,
   PiClockCounterClockwise,
@@ -9,15 +7,20 @@ import {
 } from "react-icons/pi"
 
 import { SearchBar } from "~components/search/search"
-import Loading from "~components/ui/loading"
-import { Modal } from "~components/ui/modal"
+import ButtonFull from "~components/ui/buttons/full-w-buttons"
 import { groupItems } from "~lib/cloud"
-import type { IFilter, IFilterAction, IGroupedItems, ITask } from "~lib/types"
+import type {
+  IDraft,
+  IFilter,
+  IFilterAction,
+  IGroupedItems,
+  ITask
+} from "~lib/types"
 
 import { SelectableList } from "./task-selector-items"
 import TaskSelectorSearch from "./task-selector-search"
 
-const filters: IFilter[] = [
+const defaultFilters: IFilter[] = [
   { title: "All Tasks", action: "all", icon: PiBoxArrowDown },
   { title: "Active", action: "active", icon: PiClockCounterClockwise },
   { title: "Completed", action: "completed", icon: PiClockCounterClockwise },
@@ -32,15 +35,26 @@ const filter = {
   notes: (item: ITask) => item.params.dueDate === -1
 }
 
+interface ITaskSelectorProps {
+  selectedItems: string[]
+  setSelectedItems: Dispatch<string[]>
+  skipSimilarIdentities: boolean
+  overrideFilters?: IFilterAction[]
+  items: { tasks: ITask[]; history: ITask[]; drafts: IDraft[] }
+  buttonTitle?: string
+  buttonAction?: () => any
+}
+
 //npx update-browserslist-db@latest
 export default function TaskSelector({
-  show,
-  title,
   selectedItems,
   setSelectedItems,
-  onClose,
-  skipSimilarIdentities
-}) {
+  skipSimilarIdentities,
+  items,
+  overrideFilters,
+  buttonTitle,
+  buttonAction
+}: ITaskSelectorProps) {
   const [search, setSearch] = useState("")
   const [activeTab, setActiveTab] = useState<"items" | "search">("items")
   const [filteredItems, setFilteredItems] = useState<IGroupedItems>({})
@@ -48,19 +62,19 @@ export default function TaskSelector({
     "all"
   )
 
-  const { tasks, history, storageLoading, historyLoading } = usePersist()
-  const { drafts } = useDraft()
+  // const filters = noFilter ? [filtersTemplate[0]] : filtersTemplate
+  const filters = !overrideFilters
+    ? defaultFilters
+    : defaultFilters.filter((f) => overrideFilters.includes(f.action))
 
-  const allItems = useMemo(() => {
-    if (!storageLoading && !historyLoading) {
-      return groupItems([...tasks, ...history], skipSimilarIdentities)
-    }
-    return null
-  }, [storageLoading, historyLoading, tasks, history])
+  const height = buttonAction ? "h-[calc(100%-184px)]" : "h-[calc(100%-128px)]"
 
-  useEffect(() => {
-    setFilteredItems(allItems)
-  }, [allItems])
+  const allItems = useMemo(
+    () => groupItems([...items.tasks, ...items.history], skipSimilarIdentities),
+    [items]
+  )
+
+  // useEffect(() => setFilteredItems(allItems), [allItems])
 
   useEffect(() => {
     if (activeFilter === "none") return
@@ -74,7 +88,7 @@ export default function TaskSelector({
     }
 
     if (by === "drafts") {
-      return drafts.reduce((a, v, i) => ({ ...a, [i]: [v] }), {})
+      return items.drafts?.reduce((a, v, i) => ({ ...a, [i]: [v] }), {})
     }
 
     const keys = Object.keys(allItems)
@@ -89,6 +103,11 @@ export default function TaskSelector({
     }
 
     return _items
+  }
+
+  const getButtonLabel = () => {
+    const activeLabel = filters.find((f) => f.action === activeFilter).title
+    return activeLabel === "All tasks" ? "Tasks" : activeLabel
   }
 
   const handleSelectItems = (
@@ -110,73 +129,91 @@ export default function TaskSelector({
     }
   }
 
-  return (
-    <Modal
-      onClose={onClose}
-      show={show}
-      className="w-full max-w-[600px] rounded-3xl bg-white h-full"
-      title={
-        <h1 className="flex items-center gap-2 w-full">
-          <span className="text-fetch-primary">{title}</span>
-        </h1>
-      }>
-      <div className="relative h-[calc(100%-60px)] bg-inherit">
-        <div
-          dir="ltr"
-          role="tablist"
-          aria-orientation="horizontal"
-          className="sticky bg-inherit top-0 z-20 bg-inherit w-full flex gap-1 pb-2">
-          {filters.map((filter) => (
-            <button
-              onClick={() => setActiveFilter(filter.action)}
-              className={`border flex gap-2 items-center rounded-xl py-1 px-2 ${activeFilter === filter.action ? "text-white bg-fetch-primary font-semibold" : "text-fetch-primary font-normal bg-inherit hover:bg-violet-100"}`}
-              key={filter.action}>
-              <span className="text-normal">{<filter.icon />}</span>
-              <span
-                className={`${activeFilter === filter.action ? "flex" : "hidden"} lg:flex text-xs`}>
-                {filter.title}
-              </span>
-            </button>
-          ))}
-        </div>
-        <SearchBar
-          search={search}
-          setSearch={setSearch}
-          onFocus={() => {
-            setActiveTab("search")
-            setActiveFilter("none")
-          }}
-        />
-        <div
-          className={`w-full styled-scrollbar overflow-y-auto h-[calc(100%-64px)] pr-2`}>
-          {/* <a href="#other">OTHER</a> */}
+  const selectAll = () => {
+    handleSelectItems(
+      "select",
+      Object.values(filteredItems)
+        .map((array) => array.map((item) => item.id))
+        .flat()
+    )
+  }
 
-          <div dir="ltr" className="mb-4 bg-inherit">
-            {storageLoading ? (
-              <div className="h-full w-full flex items-center justify-center">
-                <Loading r={20} color="#aaaaaa" />
-              </div>
-            ) : (
-              <div className="bg-inherit">
-                {activeTab === "items" && (
-                  <SelectableList
-                    items={filteredItems}
-                    setSelectedItems={handleSelectItems}
-                    selectedItems={selectedItems}
-                  />
-                )}
-                {activeTab === "search" && (
-                  <TaskSelectorSearch
-                    search={search}
-                    selectedItems={selectedItems}
-                    handleSelectItems={handleSelectItems}
-                  />
-                )}
-              </div>
+  const deselectAll = () => {
+    setSelectedItems([])
+  }
+
+  return (
+    <div className="relative h-[calc(100%-60px)] bg-inherit">
+      <div
+        dir="ltr"
+        role="tablist"
+        aria-orientation="horizontal"
+        className="sticky bg-inherit top-0 z-20 bg-inherit w-full flex gap-1 pb-2">
+        {filters.map((filter) => (
+          <button
+            onClick={() => setActiveFilter(filter.action)}
+            className={`border flex gap-2 items-center rounded-xl h-6 px-2 ${activeFilter === filter.action ? "text-white bg-fetch-primary font-semibold" : "text-fetch-primary font-normal bg-inherit hover:bg-violet-100"}`}
+            key={filter.action}>
+            <span className="text-normal">{<filter.icon />}</span>
+            <span
+              className={`${activeFilter === filter.action ? "flex" : "hidden"} lg:flex text-xs`}>
+              {filter.title}
+            </span>
+          </button>
+        ))}
+      </div>
+      <SearchBar
+        search={search}
+        setSearch={setSearch}
+        onFocus={() => {
+          setActiveTab("search")
+          setActiveFilter("none")
+        }}
+      />
+
+      {activeTab !== "search" && (
+        <div className="mt-4 flex w-full items-center justify-end gap-1">
+          <button
+            className="px-2 py-1 border border-blue-400 rounded-lg hover:text-blue-200 hover:border-blue-200 text-blue-400"
+            onClick={deselectAll}>
+            Reset selection
+          </button>
+          <button
+            className="px-2 py-1 border rounded-lg bg-fetch-primary hover:bg-fetch-primary/80 text-white/90"
+            onClick={selectAll}>
+            Select all {getButtonLabel()}
+          </button>
+        </div>
+      )}
+      <div
+        className={`mt-2 w-full styled-scrollbar border rounded-2xl p-2 overflow-y-auto pr-2 ${height}`}>
+        <div dir="ltr" className="mb-4 bg-inherit">
+          <div className="bg-inherit">
+            {activeTab === "items" && (
+              <SelectableList
+                items={filteredItems}
+                setSelectedItems={handleSelectItems}
+                selectedItems={selectedItems}
+              />
+            )}
+            {activeTab === "search" && (
+              <TaskSelectorSearch
+                search={search}
+                selectedItems={selectedItems}
+                handleSelectItems={handleSelectItems}
+                {...items}
+              />
             )}
           </div>
         </div>
       </div>
-    </Modal>
+      {buttonAction && (
+        <div className="my-2">
+          <ButtonFull onClick={buttonAction} variant="primary">
+            {buttonTitle}
+          </ButtonFull>
+        </div>
+      )}
+    </div>
   )
 }

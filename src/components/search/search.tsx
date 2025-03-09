@@ -2,8 +2,6 @@ import Fuse from "fuse.js"
 import type { FC } from "react"
 import { CiSearch } from "react-icons/ci"
 
-import { useDraft } from "~providers/draft-context"
-import { usePersist } from "~providers/persist-context"
 import type { IDraft, ITask } from "~lib/types"
 
 export const SearchBar = ({ search, setSearch, onFocus }) => {
@@ -25,7 +23,10 @@ export const SearchBar = ({ search, setSearch, onFocus }) => {
 
 export const SearchResults = ({
   search,
-  children
+  children,
+  tasks,
+  history,
+  drafts
 }: {
   search: string
   children: FC<{
@@ -33,10 +34,10 @@ export const SearchResults = ({
     draftsResults: IDraft[]
     historyResults: ITask[]
   }>
+  tasks: ITask[]
+  history: ITask[]
+  drafts: IDraft[]
 }) => {
-  const { tasks, history } = usePersist()
-  const { drafts } = useDraft()
-
   const searchedTask = new Fuse(tasks, {
     keys: ["nodes.value", "params.tags"],
     minMatchCharLength: 2

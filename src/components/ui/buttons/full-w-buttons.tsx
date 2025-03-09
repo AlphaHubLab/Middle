@@ -15,7 +15,7 @@ export default function ButtonFull({
   ...props
 }: IButtonProps) {
   return (
-    <button {...props} className={`text-sm ${BASE_CLASS} ${VARIANT[variant]}`}>
+    <button {...props} className={`flex items-center justify-center text-sm px-2 min-h-10 ${BASE_CLASS} ${VARIANT[variant]}`}>
       {children}
     </button>
   )

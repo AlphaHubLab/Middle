@@ -1,7 +1,7 @@
 import { PiGear } from "react-icons/pi"
 
-// import ConnectWallet from "~components/connect-wallets/connect-wallet-rainbow"
-import ConnectWallet from "~components/connect-wallets/connect-wallet"
+import ConnectMobileWallet from "~components/connect-wallet/connect-mobile-wallet"
+import CreateWallet from "~components/connect-wallet/create-wallet"
 import FetchLogo from "~components/ui/fetch-logo"
 
 export default function NavbarContainer({ isDev = false }) {
@@ -9,16 +9,11 @@ export default function NavbarContainer({ isDev = false }) {
     <nav className="relative w-full h-12 flex items-center justify-center">
       <div className="w-full h-full bg-indigo-50 border-b border-fetch-primary flex p-1">
         <div className="flex-auto h-full flex gap-2 flex items-center">
-          <FetchLogo  />
+          <FetchLogo />
         </div>
         <div className="flex gap-2 items-center">
-          <button className="h-full border border-fetch-primary text-fetch-primary px-2 rounded-xl text-sm">
-            Create wallet
-          </button>
-          {/* <button className="h-full border border-fetch-primary text-fetch-primary px-2 rounded-xl text-sm">
-            Connect
-          </button> */}
-          <ConnectWallet />
+          <ConnectMobileWallet />
+          <CreateWallet />
           <a
             href={isDev ? "/options" : "/options.html"}
             rel="noopener noreferrer"

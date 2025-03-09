@@ -62,7 +62,7 @@ export const Command = ({ extensions, setter, command }) => {
       )}
       {searched.length > 0 && (
         <div className="max-h-[200px] overflow-y-auto">
-          {searched.map((ex: any, i: number) => (
+          {searched.map((ex, i) => (
             <div
               onMouseMove={() => setSelected(i)}
               key={`extension_${i}`}

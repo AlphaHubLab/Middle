@@ -1,103 +1,52 @@
-import { useModal, useSIWE, type SIWESession } from "connectkit"
-import { useAuth } from "~providers/auth-provider"
-import CloudProvider from "~providers/cloud-provider"
-import { useAccount, useDisconnect } from "wagmi"
+import ButtonFull from "~components/ui/buttons/full-w-buttons"
+import { Section } from "~components/ui/typograrphy"
+import SessionProvider, { useSession } from "~providers/session-provider"
 
-import { FETCH_API } from "~fetch.config"
+import Dashboard from "./dashboard"
 
 export default function Cloud() {
   return (
-    <CloudProvider>
-      <div>
-        <CustomSIWEButton />
-      </div>
-    </CloudProvider>
+    <SessionProvider>
+      <DashboardWithSession />
+    </SessionProvider>
   )
 }
 
-export const CustomSIWEButton = () => {
-  const { setOpen } = useModal()
-  const { isConnected } = useAccount()
-  const { disconnect } = useDisconnect()
-  const { jwt } = useAuth()
-
-  const authPost = async () => {
-    // if (!jwt) return console.log("nope")
-    const res = await fetch(`${FETCH_API}/do`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ jwt })
-    })
-    if (!res.ok) {
-      console.log("cannot")
-    }
-    if (res.ok) {
-      const json = await res.json()
-      console.log(json)
-    }
-  }
-
-  const { data, isReady, isRejected, isLoading, isSignedIn, signOut, signIn } =
-    useSIWE({
-      onSignIn: (session?: SIWESession) => {
-        console.log(session)
-        // Do something with the data
-      },
-      onSignOut: () => {
-        disconnect()
-        // Do something when signed out
-      }
-    })
-
-  const handleSignIn = async () => {
-    await signIn()?.then((session?: SIWESession) => {
-      // Do something when signed in
-    })
-  }
-
-  const handleSignOut = async () => {
-    await signOut()?.then(() => {
-      disconnect()
-      // Do something when signed out
-    })
-  }
-
-  /** Wallet is connected and signed in */
-  if (isSignedIn) {
-    return (
-      <>
-        <button onClick={() => authPost()}>do</button>
-        <div>Address: {data?.address}</div>
-        <div>ChainId: {data?.chainId}</div>
-        <button onClick={handleSignOut}>Sign Out</button>
-      </>
-    )
-  }
-
-  /** Wallet is connected, but not signed in */
-  if (isConnected) {
-    return (
-      <>
-        <button onClick={() => authPost()}>do</button>
-        <button onClick={handleSignIn} disabled={isLoading}>
-          {isRejected // User Rejected
-            ? "Try Again"
-            : isLoading // Waiting for signing request
-              ? "Awaiting request..."
-              : // Waiting for interaction
-                "Sign In"}
-        </button>
-      </>
-    )
-  }
-
-  /** A wallet needs to be connected first */
+const DashboardWithSession = () => {
+  const { session } = useSession()
   return (
-    <>
-      <button onClick={() => authPost()}>do</button>
-      <button onClick={() => setOpen(true)}>Connect Wallet</button>
-    </>
+    <div className="bg-slate-100 min-h-screen">
+      <div className="w-full max-w-[650px] mx-auto p-4">
+        {!session && (
+          <Section title="Log in">
+            <div className="h-[500px]">
+              <div className="h-1/2 flex flex-col justify-center">
+                <h2 className="w-full text-center font-medium text-xl">
+                  Log in to your cloud space
+                </h2>
+                <p className="text-black/50 w-full text-center">
+                  Manage your backups, share task with the world, and more!
+                </p>
+              </div>
+              <div className="h-1/2 flex flex-col justify-end">
+                <ButtonFull
+                  variant="primary"
+                  onClick={() =>
+                    chrome.windows.create({
+                      url: `http://localhost:3000/auth?id=${chrome.runtime.id}`,
+                      type: "popup",
+                      width: 400,
+                      height: 600
+                    })
+                  }>
+                  Sign in with ethereum
+                </ButtonFull>
+              </div>
+            </div>
+          </Section>
+        )}
+        {session && <Dashboard />}
+      </div>
+    </div>
   )
 }

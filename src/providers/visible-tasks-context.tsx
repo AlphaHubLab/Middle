@@ -6,6 +6,11 @@ import type { ITask } from "~lib/types"
 
 import { usePersist } from "./persist-context"
 
+interface IVisibleTasksContext {
+  visibleTasks: IVisibleTasks
+  storageLoading: boolean
+}
+
 interface IVisibleTasks {
   overdue: ITask[]
   urgent: ITask[]
@@ -62,14 +67,14 @@ export const filterTasks = (tasks: ITask[]): IVisibleTasks => {
   }
 }
 
-const VisibleTasksContext = createContext({} as IVisibleTasks)
+const VisibleTasksContext = createContext<IVisibleTasksContext>(null)
 
 export default function VisibleTasksProvider({
   children
 }: {
   children: ReactNode
 }) {
-  const { tasks } = usePersist()
+  const { tasks, storageLoading } = usePersist()
 
   const [visibleTasks, setVisibleTasks] =
     useState<IVisibleTasks>(emptyVisibleTasks)
@@ -97,8 +102,12 @@ export default function VisibleTasksProvider({
     return () => interval && clearInterval(interval)
   }, [tasks])
 
+  const context = {
+    visibleTasks,
+    storageLoading: storageLoading || !visibleTasks
+  }
   return (
-    <VisibleTasksContext.Provider value={visibleTasks}>
+    <VisibleTasksContext.Provider value={context}>
       {children}
     </VisibleTasksContext.Provider>
   )

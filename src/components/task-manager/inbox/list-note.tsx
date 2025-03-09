@@ -1,12 +1,11 @@
-import { useVisibleTasks } from "~providers/visible-tasks-context"
-
 import type { ITask } from "~lib/types"
+import { useVisibleTasks } from "~providers/visible-tasks-context"
 
 import { DraftItem } from "../items/items"
 import { TaskGroup, TaskGroupWrapper } from "./task-group"
 
 export default function NoteList() {
-  const visibleTasks = useVisibleTasks()
+  const { visibleTasks } = useVisibleTasks()
 
   return (
     <TaskGroupWrapper>

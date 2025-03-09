@@ -1,3 +1,4 @@
+import type { JSXElementConstructor } from "react"
 import type { IconType } from "react-icons"
 
 export interface IBookmark {
@@ -65,7 +66,7 @@ export interface IStore extends Omit<ITaskCore, "recurrenceId" | "params"> {
 }
 
 export interface IExtenstion {
-  icon: IconType | (() => Element)
+  icon: IconType 
   title: string
   value: any
   action: string
@@ -126,9 +127,9 @@ export interface IBackupConfig {
 
 export interface IShareData {
   tasks: ITask[]
-  history: ITask[]
   recurrences: IRecurrence[]
 }
+
 export interface IShareConfig {
   customSelection: boolean
   tasks: boolean

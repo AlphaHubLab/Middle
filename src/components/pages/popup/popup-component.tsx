@@ -1,10 +1,10 @@
+import { v4 as uuidv4 } from "uuid"
 import { useEffect, useState } from "react"
-import uuid4 from "uuid4"
 
 import FetchLogo from "~components/ui/fetch-logo"
-import { usePersist } from "~providers/persist-context"
 import { getTaskDefaultParams } from "~lib/task-helpers"
 import type { ITask } from "~lib/types"
+import { usePersist } from "~providers/persist-context"
 
 export default function PopupComponent() {
   const [tab, setTab] = useState("")
@@ -29,7 +29,7 @@ export default function PopupComponent() {
   const addTask = (type: "task" | "note") => {
     const now = new Date().getTime()
     const task: ITask = {
-      id: uuid4(),
+      id: uuidv4(),
       nodes: [
         { type: "h", value: "" },
         { type: "a", value: tab }

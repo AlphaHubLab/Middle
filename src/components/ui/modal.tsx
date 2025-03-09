@@ -22,12 +22,12 @@ export const Modal = (props: IModalProps) => {
             onClick={props.closeOnBackdrop ? props.onClose : () => false}
             className="fixed top-0 left-0 right-0 bottom-0 w-full h-full bg-black/50 z-0"></div>
           <div
-            className={`modal-show px-8 relative ${props.className && props.className}`}>
+            className={`modal-show px-8 relative h-fit transition-[height] duration-200 ${props.className && props.className}`}>
             <header className="flex w-full items-center h-12 border-b">
               {props.title ? (
                 <>{props.title}</>
               ) : (
-                <h1 className="text-fetch-primary w-full">Action needed</h1>
+                <h1 className="text-fetch-primary font-semilbod w-full">Action needed</h1>
               )}
               {props.onClose && (
                 <div className="flex flex-auto items-center justify-end">

@@ -108,7 +108,7 @@ export const TaskToolbar = ({
         <Modal
           className="w-full max-w-[600px] rounded-3xl bg-white"
           title={
-            <h1 className="flex items-center gap-2 w-full">
+            <h1 className="flex font-semibold items-center gap-2 w-full">
               <PiWarning /> <span className="text-rose-500">Delete Items</span>
             </h1>
           }
@@ -131,7 +131,7 @@ export const TaskToolbar = ({
         <Modal
           className="w-full max-w-[600px] rounded-3xl bg-white"
           title={
-            <h1 className="flex items-center gap-2 w-full">
+            <h1 className="flex font-semibold items-center gap-2 w-full">
               <PiWarning /> <span className="text-blue-500">Edit Items</span>
             </h1>
           }

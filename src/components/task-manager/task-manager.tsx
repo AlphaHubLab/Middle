@@ -1,8 +1,7 @@
-import { useApp } from "~providers/app-context"
-
 import Editor from "~components/editor/editor"
 import NavbarContainer from "~components/navbar/navbar-container"
 import Inbox from "~components/task-manager/inbox/inbox"
+import { useApp } from "~providers/app-context"
 
 export default function TaskManager({ isDev = false }) {
   const { editMode, setEditMode } = useApp()

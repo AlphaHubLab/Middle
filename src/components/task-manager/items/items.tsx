@@ -1,6 +1,3 @@
-import { useDraft } from "~providers/draft-context"
-import { usePersist } from "~providers/persist-context"
-import { useRecurrence } from "~providers/recurrence-context"
 import { useEffect, useState } from "react"
 import type { ReactNode } from "react"
 import { PiTrash } from "react-icons/pi"
@@ -16,6 +13,9 @@ import {
   getUpcomingPreview
 } from "~lib/task-helpers"
 import type { ITask } from "~lib/types"
+import { useDraft } from "~providers/draft-context"
+import { usePersist } from "~providers/persist-context"
+import { useRecurrence } from "~providers/recurrence-context"
 
 import { TaskToolbar } from "./task-toolbar"
 
@@ -98,7 +98,7 @@ export const UpcomingItem = ({ type, item, variant }) => {
           </C.Action>
           <C.Toggle>
             <div
-              className={`h-[62px] relative bg-inherit hover:cursor-pointer select-none ${show && `border-b-[1px] ${upcomingClass[variant]}`}`}>
+              className={`h-[52px] relative bg-inherit hover:cursor-pointer select-none ${show && `border-b-[1px] ${upcomingClass[variant]}`}`}>
               <div
                 onTransitionEnd={slideToHistory}
                 style={timerStyle}
@@ -212,7 +212,7 @@ export const DraftItem = ({ type, item }) => {
           </C.Action>
           <C.Toggle>
             <header
-              className={`h-[62px] relative bg-inherit dark:bg-white/10 hover:cursor-pointer select-none ${show && "border-b-[1px] dark:border-zinc-500"}`}>
+              className={`h-[52px] relative bg-inherit dark:bg-white/10 hover:cursor-pointer select-none ${show && "border-b-[1px] dark:border-zinc-500"}`}>
               <div className="relative z-1 flex gap-2 items-center h-full px-2">
                 <div className="px-2 flex-auto">
                   <ItemView item={item} />
@@ -300,7 +300,7 @@ export const HistoryItem = ({ item }) => {
           </C.Action>
           <C.Toggle>
             <div
-              className={`h-[62px] relative bg-inherit dark:bg-white/10 hover:cursor-pointer select-none ${show && "border-b-[1px] dark:border-zinc-500"}`}>
+              className={`h-[52px] relative bg-inherit dark:bg-white/10 hover:cursor-pointer select-none ${show && "border-b-[1px] dark:border-zinc-500"}`}>
               <div
                 onTransitionEnd={slide}
                 style={timerStyle}
@@ -319,7 +319,7 @@ export const HistoryItem = ({ item }) => {
                           ? item.params.identities[0].color
                           : "inherit"
                     }}
-                    className="h-[20px] rounded-full w-[20px] mr-3"></div>
+                    className={`h-3 ${item.params.identities.length > 0 && "border"} rounded-full w-3 mr-3`}></div>
                 </div>
               </div>
             </div>
@@ -346,10 +346,9 @@ export const HistoryItem = ({ item }) => {
 }
 
 const wrapperClass = {
-  neutral: "bg-slate-50/50 hover:outline border-black/15",
-  red: "bg-rose-100 border-rose-600/70 hover:outline hover:outline-rose-600",
-  orange:
-    "bg-orange-100 border-orange-500/70  hover:outline hover:outline-orange-500"
+  neutral: "bg-slate-50/50 hover:border-black border-black/15",
+  red: "bg-rose-100 border-rose-600/50 hover:border-rose-700",
+  orange: "bg-orange-100 border-orange-500/50 hover:border-orange-600"
 }
 
 export const InboxItemWrapper = ({

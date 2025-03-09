@@ -1,4 +1,4 @@
-import uuid4 from "uuid4"
+import { v4 as uuidv4 } from "uuid"
 
 import type { INode, ITask, ITaskParams } from "~lib/types"
 
@@ -29,7 +29,7 @@ const mockNodes = [
 export const mockTask: ITask[] = [
   ...(() =>
     Array.from({ length: 20 }).map((_, i) => ({
-      id: uuid4(),
+      id: uuidv4(),
       done: false,
       dateAdded: new Date().getTime(),
       dateDone: -1,

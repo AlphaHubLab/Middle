@@ -1,7 +1,6 @@
-import { createContext, useContext, useEffect, useState } from "react"
-import uuid4 from "uuid4"
+import { v4 as uuidv4 } from "uuid"
+import { createContext, useContext, useEffect } from "react"
 
-import { sendToBackground } from "@plasmohq/messaging"
 import { Storage } from "@plasmohq/storage"
 import { useStorage } from "@plasmohq/storage/hook"
 
@@ -127,7 +126,7 @@ const persistRecurrentTask = (store: IStore, tasks: ITask[]) => {
       }
 
       _tasks.push({
-        id: uuid4(),
+        id: uuidv4(),
         nodes: [{ type: "h", value: "" }],
         params,
         recurrenceId: store.id,

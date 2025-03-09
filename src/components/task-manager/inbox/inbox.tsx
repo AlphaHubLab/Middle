@@ -1,4 +1,3 @@
-import { usePersist } from "~providers/persist-context"
 import { useState } from "react"
 import {
   PiBoxArrowDown,
@@ -8,6 +7,7 @@ import {
 } from "react-icons/pi"
 
 import { SearchBar } from "~components/search/search"
+import { usePersist } from "~providers/persist-context"
 
 import Loading from "../../ui/loading"
 import { Handle } from "../../ui/svgs/handle"
@@ -45,37 +45,34 @@ export default function Inbox({ show, setHide }) {
           </div>
         </div>
       )}
-      {show && (
-        <div>
-          <div
-            dir="ltr"
-            role="tablist"
-            aria-orientation="horizontal"
-            className="w-full flex gap-1 px-5 lg:px-11 pt-6">
-            {tabs.map((tab) => (
-              <button
-                onClick={() => setActiveTab(tab.title)}
-                className={`border flex gap-2 items-center rounded-xl py-1 px-2 ${activeTab === tab.title ? "text-white bg-fetch-primary font-semibold" : "text-fetch-primary font-normal bg-inherit hover:bg-violet-100"}`}
-                key={tab.title}>
-                <span className="text-normal">{<tab.icon />}</span>
-                <span
-                  className={`${activeTab === tab.title ? "flex" : "hidden"} lg:flex text-xs`}>
-                  {tab.title}
-                </span>
-              </button>
-            ))}
-          </div>
-          <div dir="ltr" className="pl-5 pr-3 lg:pl-11 lg:pr-9">
-            <SearchBar
-              search={search}
-              setSearch={setSearch}
-              onFocus={() => setActiveTab("Search")}
-            />
-          </div>
+      <div className={`${show ? "visible" : "invisible"}`}>
+        <div
+          dir="ltr"
+          role="tablist"
+          aria-orientation="horizontal"
+          className="w-full flex gap-1 px-5 lg:px-11 pt-6">
+          {tabs.map((tab) => (
+            <button
+              onClick={() => setActiveTab(tab.title)}
+              className={`border flex gap-2 items-center rounded-xl py-1 px-2 ${activeTab === tab.title ? "text-white bg-fetch-primary font-semibold" : "text-fetch-primary font-normal bg-inherit hover:bg-violet-100"}`}
+              key={tab.title}>
+              <span className="text-normal">{<tab.icon />}</span>
+              <span
+                className={`${activeTab === tab.title ? "flex" : "hidden"} lg:flex text-xs`}>
+                {tab.title}
+              </span>
+            </button>
+          ))}
         </div>
-      )}
+        <div dir="ltr" className="pl-5 pr-3 lg:pl-11 lg:pr-9">
+          <SearchBar
+            search={search}
+            setSearch={setSearch}
+            onFocus={() => setActiveTab("Search")}
+          />
+        </div>
+      </div>
       {/* non-scrollables */}
-
       <div
         className={`styled-scrollbar ${show ? "overflow-y-auto" : "overflow-y-hidden"} h-full px-1 lg:px-4 bg-inherit`}>
         {/* <a href="#other">OTHER</a> */}

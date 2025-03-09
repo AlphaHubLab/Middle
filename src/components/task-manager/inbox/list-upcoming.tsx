@@ -1,6 +1,5 @@
-import { useVisibleTasks } from "~providers/visible-tasks-context"
-
 import type { ITask } from "~lib/types"
+import { useVisibleTasks } from "~providers/visible-tasks-context"
 
 import { UpcomingItem } from "../items/items"
 import { TaskGroup, TaskGroupWrapper } from "./task-group"
@@ -20,9 +19,9 @@ const UPCOMMING_GROUP: {
 ]
 
 export const UpcomingList = () => {
-  const visibleTasks = useVisibleTasks()
+  const { visibleTasks, storageLoading } = useVisibleTasks()
   return (
-    <TaskGroupWrapper>
+    <TaskGroupWrapper storageLoading={storageLoading}>
       {UPCOMMING_GROUP.map((group) => (
         <TaskGroup key={`taskgroup-${group.value}`} {...group}>
           {visibleTasks[group.value].map((t: ITask) => (

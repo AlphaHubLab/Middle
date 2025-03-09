@@ -204,9 +204,9 @@ export const createShare = async (
   selectedItems: string[],
   config: IShareConfig
 ): Promise<IShareData> => {
+  
   const share: IShareData = {
     tasks: [],
-    history: [],
     recurrences: []
   }
 
@@ -220,7 +220,7 @@ export const createShare = async (
 
       history.forEach((item) => {
         if (selectedItems.includes(item.id)) {
-          addItemToBackup(item, "history", recurrences, share, "share")
+          addItemToBackup(item, "tasks", recurrences, share, "share")
         }
       })
     } else {
@@ -232,7 +232,7 @@ export const createShare = async (
 
       if (config.history) {
         history.forEach((item) => {
-          addItemToBackup(item, "history", recurrences, share, "share")
+          addItemToBackup(item, "tasks", recurrences, share, "share")
         })
       }
     }

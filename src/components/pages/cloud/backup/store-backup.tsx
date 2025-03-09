@@ -1,18 +1,21 @@
-import { useDraft } from "~providers/draft-context"
-import { usePersist } from "~providers/persist-context"
-import { useRecurrence } from "~providers/recurrence-context"
-import { useSetting } from "~providers/setting-context"
-import { useState, type ChangeEvent } from "react"
+import { useEffect, useState } from "react"
+import type { ChangeEvent } from "react"
 import { PiTrash } from "react-icons/pi"
 
 import ButtonFull from "~components/ui/buttons/full-w-buttons"
 import Input from "~components/ui/input"
 import PasswordInput from "~components/ui/input-password"
-import { Section } from "~components/ui/typograrphy"
+import { Modal } from "~components/ui/modal"
+import { FETCH_API } from "~fetch.config"
 import { createBackup } from "~lib/cloud"
 import type { IBackupConfig } from "~lib/types"
+import { useDraft } from "~providers/draft-context"
+import { usePersist } from "~providers/persist-context"
+import { useRecurrence } from "~providers/recurrence-context"
+import { useSession } from "~providers/session-provider"
+import { useSetting } from "~providers/setting-context"
 
-import TaskSelector from "./task-selector/task-selector"
+import TaskSelector from "../task-selector/task-selector"
 
 const defaultSelection: IBackupConfig = {
   tasks: true,
@@ -29,8 +32,9 @@ const categories = [
   { label: "Drafts", value: "drafts" }
 ]
 
-export default function SelfBackup() {
-  const authorizedWallet = "0x0"
+export default function StoreBackup() {
+  const { session } = useSession()
+  const authorizedWallet = session?.address
 
   const [pwd, setPwd] = useState("")
   const [pwd2, setPwd2] = useState("")
@@ -40,13 +44,37 @@ export default function SelfBackup() {
   const [selectedItems, setSelectedItems] = useState<string[]>([])
   const [showTaskSelector, setShowTaskSelector] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [name, setName] = useState("")
+  const [error, setError] = useState("")
 
-  const { tasks, history } = usePersist()
+  const { tasks, history, storageLoading, historyLoading } = usePersist()
   const { drafts } = useDraft()
   const { recurrences } = useRecurrence()
   const { setting } = useSetting()
 
   const createAndStoreBackup = async () => {
+    setError("")
+
+    if (pwd !== pwd2) {
+      setError("Passwords are not match.")
+      return
+    }
+
+    if (name.length === 0) {
+      setError("Please enter a name for the backup")
+      return
+    }
+
+    if (pwd.length === 0) {
+      setError("Please enter a password")
+      return
+    }
+
+    if (backupConfig.customSelection && selectedItems.length === 0) {
+      setError("Please select items to backup")
+      return
+    }
+
     setLoading(true)
 
     const data = await createBackup(
@@ -60,30 +88,39 @@ export default function SelfBackup() {
     )
 
     const backup = {
+      address: authorizedWallet,
+      name,
       data,
       pwd,
       wallets
     }
 
+    const res = await fetch(`${FETCH_API}/backup/store`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(backup)
+    })
+
+    if (res.ok) {
+      alert("Backup created successfully")
+    } else {
+      alert("Failed to create backup")
+    }
+
     setLoading(false)
-    console.log(backup)
   }
 
   const handleChangeWallets = (e: ChangeEvent<HTMLInputElement>, i: number) => {
     const _wallets = [...wallets]
+    // @ts-ignore
     _wallets[i] = e.target.value
     setWallets(_wallets)
   }
 
-  const isDisable = () => {
-    return (
-      pwd.length === 0 ||
-      pwd2.length === 0 ||
-      pwd !== pwd2 ||
-      (backupConfig.customSelection === true && selectedItems.length === 0)
-    )
-  }
-
+  useEffect(() => setError(""), [name, pwd, pwd2])
+  // @ts-ignoreƒ
   const addWallet = () => setWallets([...wallets, ""])
 
   const removeWallet = (i: number) => {
@@ -113,15 +150,25 @@ export default function SelfBackup() {
   }
 
   return (
-    <Section title={"Backup for myself"}>
-      <TaskSelector
-        title={"Select Items to backup"}
-        show={showTaskSelector}
-        selectedItems={selectedItems}
-        setSelectedItems={setSelectedItems}
+    <div>
+      <Modal
         onClose={() => setShowTaskSelector(false)}
-        skipSimilarIdentities={false}
-      />
+        show={showTaskSelector}
+        className="w-full max-w-[600px] rounded-3xl bg-white h-full"
+        title={
+          <h1 className="flex items-center gap-2 w-full">
+            <span className="text-fetch-primary">Select Items to backup</span>
+          </h1>
+        }>
+        <TaskSelector
+          items={{ tasks, history, drafts }}
+          selectedItems={selectedItems}
+          setSelectedItems={setSelectedItems}
+          skipSimilarIdentities={false}
+          buttonTitle="Ok"
+          buttonAction={() => setShowTaskSelector(false)}
+        />
+      </Modal>
       <div className="mt-4 mb-12">
         <h2 className="text-black/90 text-sm font-semibold">
           Select Items you want to backup
@@ -130,18 +177,34 @@ export default function SelfBackup() {
           {categories.map((c) => (
             <button
               key={c.value}
-              className={`my-[2px] block py-2 text-sm w-full max-w-[350px] border transition rounded-xl duration-200 ${backupConfig[c.value] ? "border-fetch-primary text-fetch-primary bg-fetch-secondary/40 hover:bg-fetch-secondary/70" : "text-black/70 border-black/15 hover:bg-zinc-500/10"}`}
+              className={`my-[2px] px-2 py-2 text-sm w-full flex items-center max-w-[350px] border transition rounded-xl duration-200 ${backupConfig[c.value] ? "border-fetch-primary text-fetch-primary bg-fetch-secondary/40 hover:bg-fetch-secondary/70" : "text-black/70 border-black/15 hover:bg-zinc-500/10"}`}
               onClick={() => handleSelectCategory(c.value)}>
-              {c.label}
+              <span className="w-full">{c.label}</span>
+              <span
+                className={`w-4 h-4 inline-block shrink-0 rounded-full after:rounded-full after:top-[2px] after:left-[2px] border relative after:absolute after:w-[calc(100%-4px)] after:h-[calc(100%-4px)] ${backupConfig[c.value] ? " after:bg-fetch-primary border-fetch-primary" : "after:bg-white/50 border-black/15"}`}></span>
             </button>
           ))}
           <p className="text-sm mt-2 text-blue-400">or create a custom list</p>
           <button
-            className={`my-[1px] block py-2 text-sm w-full max-w-[350px] border transition rounded-xl duration-200 ${backupConfig.customSelection ? "border-fetch-primary text-fetch-primary bg-fetch-secondary/40 hover:bg-fetch-secondary/70" : "text-black/70 border-black/15 hover:bg-zinc-500/10"}`}
+            className={`my-[1px] px-2 flex items-center py-2 text-sm w-full max-w-[350px] border transition rounded-xl duration-200 ${backupConfig.customSelection ? "border-fetch-primary text-fetch-primary bg-fetch-secondary/40 hover:bg-fetch-secondary/70" : "text-black/70 border-black/15 hover:bg-zinc-500/10"}`}
             onClick={handleSelectCustomSelection}>
-            Custom Selection{" "}
-            {backupConfig.customSelection && `(${selectedItems.length} Items)`}
+            <span className="w-full">
+              Custom Selection{" "}
+              {backupConfig.customSelection &&
+                `(${selectedItems.length} Items)`}
+            </span>
+            <span
+              className={`w-4 h-4 inline-block shrink-0 rounded-full after:rounded-full after:top-[2px] after:left-[2px] border relative after:absolute after:w-[calc(100%-4px)] after:h-[calc(100%-4px)] ${backupConfig.customSelection ? " after:bg-fetch-primary border-fetch-primary" : "after:bg-white/50 border-black/15"}`}></span>
           </button>
+        </div>
+      </div>
+      <div className="mb-12">
+        <h2 className="text-sm font-semibold text-black/90">
+          Choose a name for backup
+        </h2>
+        <div className="my-2">
+          <label className="block text-black/70 text-sm">Name</label>
+          <Input onChange={(e) => setName(e.target.value)} />
         </div>
       </div>
       <div className="mb-12">
@@ -232,12 +295,13 @@ export default function SelfBackup() {
           All backups will be stored for 30 days.
         </p>
         <ButtonFull
-          disabled={isDisable() || loading}
+          disabled={loading}
           variant="primary"
           onClick={() => createAndStoreBackup()}>
           {loading ? "loading" : "Create Backup"}
         </ButtonFull>
+        {error && <p className="text-xs text-rose-500">{error}</p>}
       </div>
-    </Section>
+    </div>
   )
 }

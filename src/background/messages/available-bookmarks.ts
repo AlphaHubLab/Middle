@@ -30,15 +30,10 @@ const defaultBookmarks = {
 }
 
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
-  //   const message = await querySomeApi(req.body.id)
-
   const response = await fetch(`${FETCH_API}/available-apps`)
-
-  //   const json = await response.json()
 
   if (response.status === 201) {
     const bookmarks = await response.json()
-    console.log(bookmarks)
     res.send(bookmarks)
   }
 

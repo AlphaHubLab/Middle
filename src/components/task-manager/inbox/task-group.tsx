@@ -14,10 +14,12 @@ const isListEmpty = (children: ReactElement[]) => {
 
 export const TaskGroupWrapper = ({
   children,
-  messageType = "other"
+  messageType = "other",
+  storageLoading
 }: {
   children: ReactNode
   messageType?: "other" | "search"
+  storageLoading?: boolean
 }) => {
   const messages = [
     "To do or not to do - That is the question!",
@@ -27,6 +29,8 @@ export const TaskGroupWrapper = ({
 
   const ch = Children.toArray(children) as ReactElement[]
 
+  if (storageLoading) return false
+  
   if (isListEmpty(ch)) {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center text-sm text-zinc-400">

@@ -1,11 +1,11 @@
 import { DateTime } from "luxon"
-import { useRecurrence } from "~providers/recurrence-context"
-import { useSetting } from "~providers/setting-context"
 
 import { IdentityPreview } from "~components/renderables/identity-preview"
 import Copiable from "~components/ui/copiable"
 import { getPreviewNodes } from "~lib/task-helpers"
 import type { IIdentity, INode, ITaskCore } from "~lib/types"
+import { useRecurrence } from "~providers/recurrence-context"
+import { useSetting } from "~providers/setting-context"
 
 export const RenderAllElementsReadOnlyWithCopy = ({
   taskCore
@@ -88,7 +88,7 @@ export const RenderElementReadOnlyWithCopy = (props: INode) => {
   )
 }
 
-const DateReadOnly = ({ timestamp }: { timestamp: number }) => {
+export const DateReadOnly = ({ timestamp }: { timestamp: number }) => {
   const { setting } = useSetting()
 
   if (!timestamp) return false

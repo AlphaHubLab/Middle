@@ -1,24 +1,12 @@
-import type { title } from "process"
-import { useDraft } from "~providers/draft-context"
-import { usePersist } from "~providers/persist-context"
 import { useEffect, useState } from "react"
 import { PiCheckFat, PiWarning } from "react-icons/pi"
 
+import { Alert, Prompt } from "~components/general/generals"
 import ButtonFull from "~components/ui/buttons/full-w-buttons"
 import { Modal, type IModalProps } from "~components/ui/modal"
 import { P, Section } from "~components/ui/typograrphy"
-
-interface IPromptProps extends IModalProps {
-  acceptLabel: string
-  onAccept: () => void
-  cancelLabel: string
-  onCancel: () => void
-}
-
-interface IAlertProps extends IModalProps {
-  doneLabel: string
-  onDone: () => void
-}
+import { useDraft } from "~providers/draft-context"
+import { usePersist } from "~providers/persist-context"
 
 // const NO_PROMPT_PARAMS : IPromptProps = {
 //   show: false,
@@ -72,7 +60,9 @@ export default function DangerZoneSetting() {
             title="Delete Drafts?"
             show={showDraftPrompt}
             onClose={() => setShowDraftPrompt(false)}>
-            You are about to delete all of your drafted tasks and notes.
+            <div className="pt-2 pb-12 text-black/70 text-sm">
+              You are about to delete all of your drafted tasks and notes.
+            </div>
           </Prompt>
         )}
         {showHistoryPrompt && (
@@ -84,7 +74,9 @@ export default function DangerZoneSetting() {
             title="Delete History?"
             show={showHistoryPrompt}
             onClose={() => setShowHistoryPrompt(false)}>
-            You are about to delete all of your completed.
+            <div className="pt-2 pb-12 text-black/70 text-sm">
+              You are about to delete all of your completed.
+            </div>
           </Prompt>
         )}
         {showTasksPrompt && (
@@ -96,7 +88,9 @@ export default function DangerZoneSetting() {
             title="Delete Tasks?"
             show={showTasksPrompt}
             onClose={() => setShowTasksPrompt(false)}>
-            You are about to delete all of your active tasks and notes.
+            <div className="pt-2 pb-12 text-black/70 text-sm">
+              You are about to delete all of your active tasks and notes.
+            </div>
           </Prompt>
         )}
       </>
@@ -125,55 +119,5 @@ export default function DangerZoneSetting() {
         </button>
       </div>
     </Section>
-  )
-}
-
-const Alert = ({ onDone, doneLabel, ...props }: IAlertProps) => {
-  return (
-    <Modal
-      {...props}
-      className="w-full max-w-[600px] rounded-3xl bg-white"
-      title={
-        <h1 className="flex text-sm items-center gap-2 w-full">
-          <PiCheckFat />
-          <span className="text-fetch-primary">{props.title}</span>
-        </h1>
-      }>
-      <div className="pt-2 pb-12 text-black/70 text-sm">{props.children}</div>
-      <div className="py-2 text-sm flex flex-col items-center *:my-1">
-        <ButtonFull variant="primary" onClick={onDone}>
-          {doneLabel}
-        </ButtonFull>
-      </div>
-    </Modal>
-  )
-}
-
-const Prompt = ({
-  acceptLabel,
-  onAccept,
-  cancelLabel,
-  onCancel,
-  ...props
-}: IPromptProps) => {
-  return (
-    <Modal
-      {...props}
-      className="w-full max-w-[600px] rounded-3xl bg-white"
-      title={
-        <h1 className="flex text-sm items-center gap-2 w-full">
-          <PiWarning /> <span className="text-rose-500">{props.title}</span>
-        </h1>
-      }>
-      <div className="pt-2 pb-12 text-black/70 text-sm">{props.children}</div>
-      <div className="py-2 text-sm flex flex-col items-center *:my-1">
-        <ButtonFull variant="primary" onClick={onCancel}>
-          {cancelLabel}
-        </ButtonFull>
-        <ButtonFull variant="red" onClick={onAccept}>
-          {acceptLabel}
-        </ButtonFull>
-      </div>
-    </Modal>
   )
 }

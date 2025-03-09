@@ -1,3 +1,5 @@
-import type { ComponentProps } from "react"
+import type { ComponentProps } from "react";
 
-export type IButtonProps = ComponentProps<"button"> & { variant: string }
+export type IButtonProps = ComponentProps<"button"> & {
+  variant: "primary" | "red" | "blue";
+};
