@@ -6,8 +6,6 @@ import {
   type ReactNode
 } from "react"
 
-import { FETCH_API } from "~fetch.config"
-
 interface ISession {
   address: `0x${string}`
   chainId: number
@@ -23,6 +21,9 @@ interface ISessionContext {
 
 const Session = createContext<ISessionContext>(null)
 
+const fetchApiUrl =
+  process.env.PLASMO_PUBLIC_FETCH_API || "http://localhost:3000/api"
+
 export default function SessionProvider({ children }: { children: ReactNode }) {
   const [session, setSesion] = useState<ISession>(null)
   const [error, setError] = useState("")
@@ -32,7 +33,7 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
     setPending(true)
 
     try {
-      const res = await fetch(`${FETCH_API}/auth/session`, {
+      const res = await fetch(`${fetchApiUrl}/auth/session`, {
         method: "GET",
         credentials: "include"
       })
@@ -53,7 +54,7 @@ export default function SessionProvider({ children }: { children: ReactNode }) {
     setPending(true)
 
     try {
-      const res = await fetch(`${FETCH_API}/auth/signout`, {
+      const res = await fetch(`${fetchApiUrl}/auth/signout`, {
         method: "GET",
         credentials: "include"
       })

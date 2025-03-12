@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react"
-import { PiCheckFat, PiWarning } from "react-icons/pi"
 
 import { Alert, Prompt } from "~components/general/generals"
-import ButtonFull from "~components/ui/buttons/full-w-buttons"
-import { Modal, type IModalProps } from "~components/ui/modal"
 import { P, Section } from "~components/ui/typograrphy"
 import { useDraft } from "~providers/draft-context"
-import { usePersist } from "~providers/persist-context"
+import { usePersist } from "~providers/persist-provider"
 
 // const NO_PROMPT_PARAMS : IPromptProps = {
 //   show: false,

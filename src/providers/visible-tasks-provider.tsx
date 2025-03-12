@@ -1,10 +1,11 @@
 import { createContext, useContext, useEffect, useState } from "react"
 import type { ReactNode } from "react"
 
+import { visibleTasksRefetchInterval } from "~fetch.config"
 import { TIME } from "~lib/constants"
 import type { ITask } from "~lib/types"
 
-import { usePersist } from "./persist-context"
+import { usePersist } from "./persist-provider"
 
 interface IVisibleTasksContext {
   visibleTasks: IVisibleTasks
@@ -76,8 +77,8 @@ export default function VisibleTasksProvider({
 }) {
   const { tasks, storageLoading } = usePersist()
 
-  const [visibleTasks, setVisibleTasks] =
-    useState<IVisibleTasks>(emptyVisibleTasks)
+  const [visibleTasks, setVisibleTasks] = useState<IVisibleTasks | null>(null)
+  const [isPenging, setPending] = useState(false)
 
   useEffect(() => {
     if (tasks.length === 0) {
@@ -91,12 +92,12 @@ export default function VisibleTasksProvider({
       })
       return
     }
-
+    setPending(true)
     setVisibleTasks(filterTasks(tasks))
-
+    setPending(false)
     const interval = setInterval(
       () => setVisibleTasks(filterTasks(tasks)),
-      60 * 1000
+      visibleTasksRefetchInterval
     )
 
     return () => interval && clearInterval(interval)
@@ -106,6 +107,8 @@ export default function VisibleTasksProvider({
     visibleTasks,
     storageLoading: storageLoading || !visibleTasks
   }
+
+  console.log(context.storageLoading)
   return (
     <VisibleTasksContext.Provider value={context}>
       {children}

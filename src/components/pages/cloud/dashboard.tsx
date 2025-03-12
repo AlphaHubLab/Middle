@@ -25,17 +25,17 @@ export default function Dashboard({ isDev = false }) {
       <div className="text-sm gap-2 w-full flex justify-around">
         <button
           onClick={() => setPage("backup")}
-          className={`w-full text-black/90 border rounded-xl py-2 ${page === "backup" ? "border-fetch-primary bg-violet-50" : "border-black/15 hover:bg-zinc-500/10"} `}>
+          className={`w-full text-black/90 border rounded-xl py-2 ${page === "backup" ? "border-fetch-primary bg-violet-50 text-fetch-primary/90" : "border-black/15 hover:bg-zinc-500/10"} `}>
           Backup
         </button>
         <button
           onClick={() => setPage("share")}
-          className={`w-full text-black/90 border rounded-xl py-2 ${page === "share" ? "border-fetch-primary bg-violet-50" : "border-black/15 hover:bg-zinc-500/10"} `}>
+          className={`w-full text-black/90 border rounded-xl py-2 ${page === "share" ? "border-fetch-primary bg-fetch-secondary/40 text-fetch-primary/90" : "border-black/15 hover:bg-zinc-500/10"} `}>
           Share
         </button>
         <button
           onClick={() => setPage("activity")}
-          className={`w-full text-black/90 border rounded-xl py-2 ${page === "activity" ? "border-fetch-primary bg-violet-50" : "border-black/15 hover:bg-zinc-500/10"} `}>
+          className={`w-full text-black/90 border rounded-xl py-2 ${page === "activity" ? "border-fetch-primary bg-fetch-secondary/40 text-fetch-primary/90" : "border-black/15 hover:bg-zinc-500/10"} `}>
           Activity
         </button>
       </div>

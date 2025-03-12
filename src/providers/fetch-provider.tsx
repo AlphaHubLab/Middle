@@ -1,9 +1,9 @@
 import AppStateProvider from "./app-context"
 import DraftProvider from "./draft-context"
-import PersistProvider from "./persist-context"
-import RecurrenceProvider from "./recurrence-context"
-import SettingProvider from "./setting-context"
-import VisibleTasksProvider from "./visible-tasks-context"
+import PersistProvider from "./persist-provider"
+import RecurrenceProvider from "./recurrence-provider"
+import SettingProvider from "./setting-provider"
+import VisibleTasksProvider from "./visible-tasks-provider"
 
 export default function FetchProvider({ children, isDev = false }) {
   return (

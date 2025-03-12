@@ -1,6 +1,7 @@
 import type { PlasmoMessaging } from "@plasmohq/messaging"
 
-import { FETCH_API } from "~fetch.config"
+const fetchApiUrl =
+  process.env.PLASMO_PUBLIC_FETCH_API || "http://localhost:3000/api"
 
 const defaultBookmarks = {
   sponsered: [
@@ -30,7 +31,7 @@ const defaultBookmarks = {
 }
 
 const handler: PlasmoMessaging.MessageHandler = async (req, res) => {
-  const response = await fetch(`${FETCH_API}/available-apps`)
+  const response = await fetch(`${fetchApiUrl}/available-apps`)
 
   if (response.status === 201) {
     const bookmarks = await response.json()

@@ -1,5 +1,5 @@
 import type { ITask } from "~lib/types"
-import { useVisibleTasks } from "~providers/visible-tasks-context"
+import { useVisibleTasks } from "~providers/visible-tasks-provider"
 
 import { DraftItem } from "../items/items"
 import { TaskGroup, TaskGroupWrapper } from "./task-group"

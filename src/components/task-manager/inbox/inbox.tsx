@@ -7,7 +7,7 @@ import {
 } from "react-icons/pi"
 
 import { SearchBar } from "~components/search/search"
-import { usePersist } from "~providers/persist-context"
+import { usePersist } from "~providers/persist-provider"
 
 import Loading from "../../ui/loading"
 import { Handle } from "../../ui/svgs/handle"
@@ -54,11 +54,11 @@ export default function Inbox({ show, setHide }) {
           {tabs.map((tab) => (
             <button
               onClick={() => setActiveTab(tab.title)}
-              className={`border flex gap-2 items-center rounded-xl py-1 px-2 ${activeTab === tab.title ? "text-white bg-fetch-primary font-semibold" : "text-fetch-primary font-normal bg-inherit hover:bg-violet-100"}`}
+              className={`border flex gap-2 items-center rounded-xl h-6 px-2 ${activeTab === tab.title ? "text-white bg-fetch-primary font-semibold" : "text-fetch-primary font-normal bg-inherit hover:bg-violet-100"}`}
               key={tab.title}>
               <span className="text-normal">{<tab.icon />}</span>
               <span
-                className={`${activeTab === tab.title ? "flex" : "hidden"} lg:flex text-xs`}>
+                className={`${activeTab === tab.title ? "flex" : "hidden"} sm:flex text-xs`}>
                 {tab.title}
               </span>
             </button>

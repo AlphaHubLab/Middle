@@ -1,5 +1,8 @@
+import { Suspense } from "react"
+
+import Loading from "~components/ui/loading"
 import type { ITask } from "~lib/types"
-import { useVisibleTasks } from "~providers/visible-tasks-context"
+import { useVisibleTasks } from "~providers/visible-tasks-provider"
 
 import { UpcomingItem } from "../items/items"
 import { TaskGroup, TaskGroupWrapper } from "./task-group"
@@ -19,21 +22,28 @@ const UPCOMMING_GROUP: {
 ]
 
 export const UpcomingList = () => {
-  const { visibleTasks, storageLoading } = useVisibleTasks()
+  const { visibleTasks } = useVisibleTasks()
   return (
-    <TaskGroupWrapper storageLoading={storageLoading}>
-      {UPCOMMING_GROUP.map((group) => (
-        <TaskGroup key={`taskgroup-${group.value}`} {...group}>
-          {visibleTasks[group.value].map((t: ITask) => (
-            <UpcomingItem
-              key={`${t.id}`}
-              type="task"
-              item={t}
-              variant={group.variant}
-            />
-          ))}
-        </TaskGroup>
-      ))}
+    <TaskGroupWrapper>
+      <Suspense
+        fallback={
+          <div className="h-full w-full flex items-center justify-center">
+            <Loading r={20} color="#aaaaaa" />
+          </div>
+        }>
+        {UPCOMMING_GROUP.map((group) => (
+          <TaskGroup key={`taskgroup-${group.value}`} {...group}>
+            {visibleTasks[group.value].map((t: ITask) => (
+              <UpcomingItem
+                key={`${t.id}`}
+                type="task"
+                item={t}
+                variant={group.variant}
+              />
+            ))}
+          </TaskGroup>
+        ))}
+      </Suspense>
     </TaskGroupWrapper>
   )
 }

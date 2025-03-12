@@ -4,13 +4,15 @@ import ButtonFull from "~components/ui/buttons/full-w-buttons"
 import Input from "~components/ui/input"
 import { Modal } from "~components/ui/modal"
 import { Note } from "~components/ui/typograrphy"
-import { FETCH_API } from "~fetch.config"
 import { createShare } from "~lib/cloud"
-import { usePersist } from "~providers/persist-context"
-import { useRecurrence } from "~providers/recurrence-context"
+import { usePersist } from "~providers/persist-provider"
+import { useRecurrence } from "~providers/recurrence-provider"
 import { useSession } from "~providers/session-provider"
 
 import TaskSelector from "../task-selector/task-selector"
+
+const fetchApiUrl =
+  process.env.PLASMO_PUBLIC_FETCH_API || "http://localhost:3000/api"
 
 const defaultShareConfig = {
   tasks: true,
@@ -66,7 +68,7 @@ export default function StoreShare() {
       data
     }
 
-    const res = await fetch(`${FETCH_API}/share/store`, {
+    const res = await fetch(`${fetchApiUrl}/share/store`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

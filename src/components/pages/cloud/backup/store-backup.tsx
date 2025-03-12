@@ -6,16 +6,18 @@ import ButtonFull from "~components/ui/buttons/full-w-buttons"
 import Input from "~components/ui/input"
 import PasswordInput from "~components/ui/input-password"
 import { Modal } from "~components/ui/modal"
-import { FETCH_API } from "~fetch.config"
 import { createBackup } from "~lib/cloud"
 import type { IBackupConfig } from "~lib/types"
 import { useDraft } from "~providers/draft-context"
-import { usePersist } from "~providers/persist-context"
-import { useRecurrence } from "~providers/recurrence-context"
+import { usePersist } from "~providers/persist-provider"
+import { useRecurrence } from "~providers/recurrence-provider"
 import { useSession } from "~providers/session-provider"
-import { useSetting } from "~providers/setting-context"
+import { useSetting } from "~providers/setting-provider"
 
 import TaskSelector from "../task-selector/task-selector"
+
+const fetchApiUrl =
+  process.env.PLASMO_PUBLIC_FETCH_API || "http://localhost:3000/api"
 
 const defaultSelection: IBackupConfig = {
   tasks: true,
@@ -33,7 +35,12 @@ const categories = [
 ]
 
 export default function StoreBackup() {
+  const { tasks, history } = usePersist()
+  const { drafts } = useDraft()
+  const { recurrences } = useRecurrence()
+  const { setting } = useSetting()
   const { session } = useSession()
+
   const authorizedWallet = session?.address
 
   const [pwd, setPwd] = useState("")
@@ -46,11 +53,6 @@ export default function StoreBackup() {
   const [loading, setLoading] = useState(false)
   const [name, setName] = useState("")
   const [error, setError] = useState("")
-
-  const { tasks, history, storageLoading, historyLoading } = usePersist()
-  const { drafts } = useDraft()
-  const { recurrences } = useRecurrence()
-  const { setting } = useSetting()
 
   const createAndStoreBackup = async () => {
     setError("")
@@ -95,7 +97,7 @@ export default function StoreBackup() {
       wallets
     }
 
-    const res = await fetch(`${FETCH_API}/backup/store`, {
+    const res = await fetch(`${fetchApiUrl}/backup/store`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

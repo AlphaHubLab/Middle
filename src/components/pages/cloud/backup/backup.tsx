@@ -16,12 +16,12 @@ export default function SelfBackup() {
       <div className="flex gap-2">
         <button
           onClick={() => setTab("store")}
-          className={`w-full text-black/90 border rounded-xl py-2 ${tab === "store" ? "border-fetch-primary bg-violet-50" : "border-black/15 hover:bg-zinc-500/10"} `}>
+          className={`w-full text-black/90 border rounded-xl py-2 ${tab === "store" ? "border-fetch-primary bg-fetch-secondary/40 text-fetch-primary/90" : "border-black/15 hover:bg-zinc-500/10"} `}>
           Store Backup
         </button>
         <button
           onClick={() => setTab("restore")}
-          className={`w-full text-black/90 border rounded-xl py-2 ${tab === "restore" ? "border-fetch-primary bg-violet-50" : "border-black/15 hover:bg-zinc-500/10"} `}>
+          className={`w-full text-black/90 border rounded-xl py-2 ${tab === "restore" ? "border-fetch-primary bg-fetch-secondary/40 text-fetch-primary/90" : "border-black/15 hover:bg-zinc-500/10"} `}>
           Restore Backup
         </button>
       </div>

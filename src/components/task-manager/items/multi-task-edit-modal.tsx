@@ -4,8 +4,8 @@ import { useEffect } from "react"
 import ButtonFull from "~components/ui/buttons/full-w-buttons"
 import type { ITaskCore } from "~lib/types"
 import { useApp } from "~providers/app-context"
-import { usePersist } from "~providers/persist-context"
-import { useRecurrence } from "~providers/recurrence-context"
+import { usePersist } from "~providers/persist-provider"
+import { useRecurrence } from "~providers/recurrence-provider"
 
 export default function EditModal({
   item,

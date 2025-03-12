@@ -14,8 +14,8 @@ import {
 } from "~lib/task-helpers"
 import type { ITask } from "~lib/types"
 import { useDraft } from "~providers/draft-context"
-import { usePersist } from "~providers/persist-context"
-import { useRecurrence } from "~providers/recurrence-context"
+import { usePersist } from "~providers/persist-provider"
+import { useRecurrence } from "~providers/recurrence-provider"
 
 import { TaskToolbar } from "./task-toolbar"
 

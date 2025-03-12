@@ -8,7 +8,7 @@ import type { INode, IRecurrence, IStore, ITask } from "~lib/types"
 import { mockTask } from "~mock/mock-tasks"
 
 import { useApp, type IRecurrenceEditData } from "./app-context"
-import { useRecurrence } from "./recurrence-context"
+import { useRecurrence } from "./recurrence-provider"
 
 interface IPersistContext {
   tasks: ITask[]

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import FetchLogo from "~components/ui/fetch-logo"
 import { getTaskDefaultParams } from "~lib/task-helpers"
 import type { ITask } from "~lib/types"
-import { usePersist } from "~providers/persist-context"
+import { usePersist } from "~providers/persist-provider"
 
 export default function PopupComponent() {
   const [tab, setTab] = useState("")

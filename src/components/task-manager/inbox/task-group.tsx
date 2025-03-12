@@ -1,6 +1,12 @@
-import { Children, type ReactElement, type ReactNode } from "react"
+import {
+  Children,
+  useEffect,
+  useState,
+  type ReactElement,
+  type ReactNode
+} from "react"
 
-import NothingToFind from "../../ui/svgs/nothing-to-fetch.png"
+import FetchSleepingSvg from "~components/ui/svgs/fetch-sleeping"
 
 const isListEmpty = (children: ReactElement[]) => {
   if (children.length === 0) return true
@@ -14,12 +20,10 @@ const isListEmpty = (children: ReactElement[]) => {
 
 export const TaskGroupWrapper = ({
   children,
-  messageType = "other",
-  storageLoading
+  messageType = "other"
 }: {
   children: ReactNode
   messageType?: "other" | "search"
-  storageLoading?: boolean
 }) => {
   const messages = [
     "To do or not to do - That is the question!",
@@ -29,16 +33,16 @@ export const TaskGroupWrapper = ({
 
   const ch = Children.toArray(children) as ReactElement[]
 
-  if (storageLoading) return false
-  
   if (isListEmpty(ch)) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center text-sm text-zinc-400">
-        {messageType === "other"
-          ? messages[Math.floor(Math.random() * messages.length)]
-          : "Found Nothing!"}
+      <div className="w-full h-full flex flex-col items-center justify-center">
+        <p className="text-sm text-black/50 mt-8">
+          {messageType === "other"
+            ? messages[Math.floor(Math.random() * messages.length)]
+            : "Found Nothing!"}
+        </p>
 
-        <img src={NothingToFind} alt="nothing" width={200} />
+        <FetchSleepingSvg className="w-[200px]" />
       </div>
     )
   }

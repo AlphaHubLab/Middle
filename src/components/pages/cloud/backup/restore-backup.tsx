@@ -6,12 +6,14 @@ import ButtonFull from "~components/ui/buttons/full-w-buttons"
 import PasswordInput from "~components/ui/input-password"
 import Loading from "~components/ui/loading"
 import { Modal } from "~components/ui/modal"
-import { FETCH_API } from "~fetch.config"
 import { useDraft } from "~providers/draft-context"
-import { usePersist } from "~providers/persist-context"
-import { useRecurrence } from "~providers/recurrence-context"
+import { usePersist } from "~providers/persist-provider"
+import { useRecurrence } from "~providers/recurrence-provider"
 import { useSession } from "~providers/session-provider"
-import { useSetting } from "~providers/setting-context"
+import { useSetting } from "~providers/setting-provider"
+
+const fetchApiUrl =
+  process.env.PLASMO_PUBLIC_FETCH_API || "http://localhost:3000/api"
 
 export default function RestoreBackup({
   backups,
@@ -32,7 +34,7 @@ export default function RestoreBackup({
     setFetching(true)
 
     try {
-      const res = await fetch(`${FETCH_API}/backup/get-available-backups`, {
+      const res = await fetch(`${fetchApiUrl}/backup/get-available-backups`, {
         method: "POST",
         body: JSON.stringify({ address: session.address })
       })
@@ -136,7 +138,7 @@ const RestoreModal = ({ show, onClose, uuid }: any) => {
   const restoreBackup = async () => {
     setLoading(true)
 
-    const res = await fetch(`${FETCH_API}/backup/restore`, {
+    const res = await fetch(`${fetchApiUrl}/backup/restore`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

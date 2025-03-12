@@ -1,6 +1,6 @@
 import { DateTime } from "luxon"
-import { usePersist } from "~providers/persist-context"
-import { useSetting } from "~providers/setting-context"
+import { usePersist } from "~providers/persist-provider"
+import { useSetting } from "~providers/setting-provider"
 import { useMemo, useState } from "react"
 
 import { TIME } from "~lib/constants"

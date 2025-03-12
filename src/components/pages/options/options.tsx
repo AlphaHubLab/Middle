@@ -3,7 +3,7 @@ import GeneralSetting from "~components/pages/options/general-setting"
 import IdentitySection from "~components/pages/options/identity-setting"
 import FetchProvider from "~providers/fetch-provider"
 
-export default function OptionMain({ isDev = false }) {
+export default function Options({ isDev = false }) {
   return (
     <FetchProvider isDev={isDev}>
       <div className="bg-slate-100">

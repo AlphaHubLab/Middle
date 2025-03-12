@@ -2,11 +2,7 @@ export default function PrimaryLogo(props) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" {...props}>
       <defs>
-        <style>
-          {
-            "\n      .cls-1 {\n        fill: #380088;\n        stroke-width: 0px;\n      }\n    "
-          }
-        </style>
+        <style>{".cls-1{fill: #380088;stroke-width: 0px;}"}</style>
       </defs>
       <g id="Layer_2" data-name="Layer 2">
         <path

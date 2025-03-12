@@ -7,7 +7,7 @@ import FetchLogo from "~components/ui/fetch-logo"
 export default function NavbarContainer({ isDev = false }) {
   return (
     <nav className="relative w-full h-12 flex items-center justify-center">
-      <div className="w-full h-full bg-indigo-50 border-b border-fetch-primary flex p-1">
+      <div className="w-full h-full bg-fetch-secondary/40 flex p-1">
         <div className="flex-auto h-full flex gap-2 flex items-center">
           <FetchLogo />
         </div>

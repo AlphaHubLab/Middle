@@ -7,12 +7,14 @@ import Input from "~components/ui/input"
 import Label from "~components/ui/label"
 import Loading from "~components/ui/loading"
 import { Modal } from "~components/ui/modal"
-import { FETCH_API } from "~fetch.config"
 import type { IRecurrence, IShareData } from "~lib/types"
-import { usePersist } from "~providers/persist-context"
-import { useRecurrence } from "~providers/recurrence-context"
+import { usePersist } from "~providers/persist-provider"
+import { useRecurrence } from "~providers/recurrence-provider"
 
 import TaskSelector from "../task-selector/task-selector"
+
+const fetchApiUrl =
+  process.env.PLASMO_PUBLIC_FETCH_API || "http://localhost:3000/api"
 
 export default function ImportShare() {
   const [shareId, setShareId] = useState("")
@@ -39,7 +41,7 @@ export default function ImportShare() {
     setFetching(true)
 
     try {
-      const res = await fetch(`${FETCH_API}/share/import`, {
+      const res = await fetch(`${fetchApiUrl}/share/import`, {
         method: "POST",
         body: JSON.stringify({ shareId })
       })

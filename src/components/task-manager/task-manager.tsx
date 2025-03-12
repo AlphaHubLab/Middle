@@ -15,7 +15,7 @@ export default function TaskManager({ isDev = false }) {
         <div className="relative h-full w-[calc(100%-64px)] md:w-[calc(100%-286px)]">
           <div
             className={
-              "relative w-full h-[calc(100%-180px)] max-w-[650px] overflow-y-auto mx-auto px-4 styled-scrollbar"
+              "relative w-full h-[calc(100%-180px)] max-w-[850px] overflow-y-auto mx-auto px-4 styled-scrollbar"
             }>
             {!editMode && (
               <div
@@ -26,7 +26,7 @@ export default function TaskManager({ isDev = false }) {
           </div>
           <div className="flex justify-center">
             <div
-              className={`${!editMode ? "drawer-up" : "drawer-down"} absolute overflow-y-hidden max-w-[690px] h-[calc(100%-170px)] w-[calc(100%-8px)] shadow-md rounded-xl`}>
+              className={`${!editMode ? "drawer-up" : "drawer-down"} absolute overflow-y-hidden max-w-[890px] h-[calc(100%-170px)] w-[calc(100%-8px)] shadow-md rounded-xl`}>
               <Inbox show={!editMode} setHide={setEditMode} />
             </div>
           </div>

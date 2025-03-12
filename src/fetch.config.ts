@@ -11,4 +11,4 @@ export const defaultSetting = {
   identities: []
 }
 
-export const FETCH_API = "http://localhost:3000/api"
+export const visibleTasksRefetchInterval = 60 * 1000 // 1 minute

@@ -1,5 +1,5 @@
 import { DateTime } from "luxon"
-import { useSetting } from "~providers/setting-context"
+import { useSetting } from "~providers/setting-provider"
 import { useRef, useState } from "react"
 import { PiHashStraight, PiRepeat, PiTimer, PiTrash } from "react-icons/pi"
 

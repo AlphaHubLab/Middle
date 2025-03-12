@@ -13,12 +13,12 @@ export default function Share() {
       <div className="flex gap-2">
         <button
           onClick={() => setTab("share")}
-          className={`w-full text-black/90 border rounded-xl py-2 ${tab === "share" ? "border-fetch-primary bg-violet-50" : "border-black/15 hover:bg-zinc-500/10"} `}>
+          className={`w-full text-black/90 border rounded-xl py-2 ${tab === "share" ? "border-fetch-primary bg-fetch-secondary/40 text-fetch-primary/90" : "border-black/15 hover:bg-zinc-500/10"} `}>
           Share to public
         </button>
         <button
           onClick={() => setTab("import")}
-          className={`w-full text-black/90 border rounded-xl py-2 ${tab === "import" ? "border-fetch-primary bg-violet-50" : "border-black/15 hover:bg-zinc-500/10"} `}>
+          className={`w-full text-black/90 border rounded-xl py-2 ${tab === "import" ? "border-fetch-primary bg-fetch-secondary/40 text-fetch-primary/90" : "border-black/15 hover:bg-zinc-500/10"} `}>
           Import by id
         </button>
       </div>

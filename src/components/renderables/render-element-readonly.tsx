@@ -4,8 +4,8 @@ import { IdentityPreview } from "~components/renderables/identity-preview"
 import Copiable from "~components/ui/copiable"
 import { getPreviewNodes } from "~lib/task-helpers"
 import type { IIdentity, INode, ITaskCore } from "~lib/types"
-import { useRecurrence } from "~providers/recurrence-context"
-import { useSetting } from "~providers/setting-context"
+import { useRecurrence } from "~providers/recurrence-provider"
+import { useSetting } from "~providers/setting-provider"
 
 export const RenderAllElementsReadOnlyWithCopy = ({
   taskCore

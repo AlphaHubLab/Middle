@@ -1,5 +1,3 @@
-import * as React from "react"
-
 const SVGComponent = (props) => (
   <svg
     id="sitting"

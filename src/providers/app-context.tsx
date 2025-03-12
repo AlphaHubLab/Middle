@@ -52,7 +52,9 @@ export default function AppStateProvider({ children }) {
   const openEditMode = (taskCore: ITaskCore, editorType: IEditorType) => {
     // since drafts and recurrece params is typeof IStoreParams,
     // convertToStore() should converts draft and recurrence items differently
-    // currently convertToStore() checks for "repeatParams" presence for difference between tasks and drafts/recurrence objects
+    
+    // currently convertToStore() checks for "repeatParams" presence for difference
+    // between tasks and drafts/recurrence objects
 
     // todo: dispatch for drafts and tasks in here and libs
     setInitialStore(convertToStore(taskCore))
