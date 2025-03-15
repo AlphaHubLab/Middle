@@ -73,7 +73,7 @@ export const GroupItem = ({
       <div className="border-b flex gap-1 py-1">
         <input
           checked={isAllSelected}
-          className="accent-violet-500 cursor-pointer w-[16px] h-[16px]"
+          className="accent-fetch-primary cursor-pointer w-[16px] h-[16px]"
           type="checkbox"
           onChange={handleCheck}
         />

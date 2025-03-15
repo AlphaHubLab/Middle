@@ -62,8 +62,8 @@ export const filterTasks = (tasks: ITask[]): IVisibleTasks => {
     overdue: overdue.sort((a, b) => a.params.dueDate - b.params.dueDate),
     urgent: urgent.sort((a, b) => a.params.dueDate - b.params.dueDate),
     next24: next24.sort((a, b) => a.params.dueDate - b.params.dueDate),
-    next48,
-    unschaduled,
+    next48: next48.sort((a, b) => a.params.dueDate - b.params.dueDate),
+    unschaduled: unschaduled.sort((a, b) => b.dateAdded - a.dateAdded),
     other
   }
 }
@@ -78,23 +78,16 @@ export default function VisibleTasksProvider({
   const { tasks, storageLoading } = usePersist()
 
   const [visibleTasks, setVisibleTasks] = useState<IVisibleTasks | null>(null)
-  const [isPenging, setPending] = useState(false)
 
   useEffect(() => {
+    // console.log(tasks.length)
     if (tasks.length === 0) {
-      setVisibleTasks({
-        overdue: [],
-        urgent: [],
-        next24: [],
-        next48: [],
-        unschaduled: [],
-        other: []
-      })
+      setVisibleTasks(emptyVisibleTasks)
       return
     }
-    setPending(true)
+
     setVisibleTasks(filterTasks(tasks))
-    setPending(false)
+
     const interval = setInterval(
       () => setVisibleTasks(filterTasks(tasks)),
       visibleTasksRefetchInterval
@@ -108,7 +101,6 @@ export default function VisibleTasksProvider({
     storageLoading: storageLoading || !visibleTasks
   }
 
-  console.log(context.storageLoading)
   return (
     <VisibleTasksContext.Provider value={context}>
       {children}

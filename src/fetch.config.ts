@@ -8,7 +8,8 @@ export const defaultSetting = {
   darkMode: false,
   editorTimeZone: "utc",
   preferredTimeZone: "local",
-  identities: []
+  identities: [],
+  compactView:false,
 }
 
 export const visibleTasksRefetchInterval = 60 * 1000 // 1 minute

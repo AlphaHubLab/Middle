@@ -24,10 +24,12 @@ const upcomingClass = {
   red: "border-rose-600/70",
   orange: "border-rose-500/70"
 }
-export const UpcomingItem = ({ type, item, variant }) => {
+export const UpcomingItem = ({ type, item, variant, compact }) => {
+  const [show, setShow] = useState(false)
+
   const { handleDone, setTasks } = usePersist()
 
-  const [show, setShow] = useState(false)
+  const height = compact ? "h-[40px]" : "h-[52px]"
 
   const [hidingStyle, setHidingStyle] = useState({
     opacity: 1,
@@ -98,7 +100,7 @@ export const UpcomingItem = ({ type, item, variant }) => {
           </C.Action>
           <C.Toggle>
             <div
-              className={`h-[52px] relative bg-inherit hover:cursor-pointer select-none ${show && `border-b-[1px] ${upcomingClass[variant]}`}`}>
+              className={`${height} relative bg-inherit hover:cursor-pointer select-none ${show && `border-b-[1px] ${upcomingClass[variant]}`}`}>
               <div
                 onTransitionEnd={slideToHistory}
                 style={timerStyle}
@@ -107,7 +109,11 @@ export const UpcomingItem = ({ type, item, variant }) => {
               <div className="relative z-1 h-full flex flex-col justify-center">
                 <div className="flex gap-2 items-center h-full">
                   <div className="px-2 flex-auto">
-                    <ItemView item={item} />
+                    {compact ? (
+                      <ItemBriefView item={item} />
+                    ) : (
+                      <ItemView item={item} />
+                    )}
                   </div>
                   <TimeStatus item={item} itemType="task" />
                   <LabelStatus taskCore={item} />
@@ -148,11 +154,13 @@ export const UpcomingItem = ({ type, item, variant }) => {
   )
 }
 
-export const DraftItem = ({ type, item }) => {
-  const { setDrafts } = useDraft()
-
+export const DraftItem = ({ type, item, compact }) => {
   const [show, setShow] = useState(false)
   const [showWarning, setShowWarning] = useState(false)
+
+  const { setDrafts } = useDraft()
+
+  const height = compact ? "h-[40px]" : "h-[52px]"
 
   const [hidingStyle, setHidingStyle] = useState({
     transform: "none",
@@ -185,11 +193,11 @@ export const DraftItem = ({ type, item }) => {
         <C.CollapsibleForTasks show={show} setShow={setShow}>
           <C.Action>
             <div
-              className={`flex h-full justify-center items-center bg-inherit ${show && "border-b-[1px]"} ${showWarning ? "transition-[width] duration-200 w-32" : "w-8"}`}>
+              className={`flex h-full w-10 justify-center items-center bg-inherit ${show && "border-b-[1px]"} ${showWarning ? "transition-[width] duration-200 w-32" : "w-10"}`}>
               {!showWarning && (
                 <button
                   aria-label="Delete"
-                  className="w-8 flex items-center justify-center text-rose-500 hover:text-rose-400"
+                  className="w-10 flex items-center justify-center text-rose-500 hover:text-rose-400"
                   onClick={() => setShowWarning(true)}>
                   <PiTrash />
                 </button>
@@ -212,10 +220,14 @@ export const DraftItem = ({ type, item }) => {
           </C.Action>
           <C.Toggle>
             <header
-              className={`h-[52px] relative bg-inherit dark:bg-white/10 hover:cursor-pointer select-none ${show && "border-b-[1px] dark:border-zinc-500"}`}>
+              className={`${height} relative bg-inherit dark:bg-white/10 hover:cursor-pointer select-none ${show && "border-b-[1px] dark:border-zinc-500"}`}>
               <div className="relative z-1 flex gap-2 items-center h-full px-2">
                 <div className="px-2 flex-auto">
-                  <ItemView item={item} />
+                  {compact ? (
+                    <ItemBriefView item={item} />
+                  ) : (
+                    <ItemView item={item} />
+                  )}
                 </div>
                 <TimeStatus item={item} itemType="task" />
                 <LabelStatus taskCore={item} />
@@ -243,10 +255,12 @@ export const DraftItem = ({ type, item }) => {
   )
 }
 
-export const HistoryItem = ({ item }) => {
+export const HistoryItem = ({ item, compact }) => {
+  const [show, setShow] = useState(false)
+
   const { handleUndone } = usePersist()
 
-  const [show, setShow] = useState(false)
+  const height = compact ? "h-[40px]" : "h-[52px]"
 
   const [hidingStyle, setHidingStyle] = useState({
     transform: "none",
@@ -300,7 +314,7 @@ export const HistoryItem = ({ item }) => {
           </C.Action>
           <C.Toggle>
             <div
-              className={`h-[52px] relative bg-inherit dark:bg-white/10 hover:cursor-pointer select-none ${show && "border-b-[1px] dark:border-zinc-500"}`}>
+              className={`${height} relative bg-inherit dark:bg-white/10 hover:cursor-pointer select-none ${show && "border-b-[1px] dark:border-zinc-500"}`}>
               <div
                 onTransitionEnd={slide}
                 style={timerStyle}
@@ -308,7 +322,11 @@ export const HistoryItem = ({ item }) => {
               <div className="relative z-1 h-full flex flex-col justify-center">
                 <div className="flex gap-2 items-center h-full">
                   <div className="px-2 flex-auto">
-                    <ItemView item={item} />
+                    {compact ? (
+                      <ItemBriefView item={item} />
+                    ) : (
+                      <ItemView item={item} />
+                    )}
                   </div>
                   <TimeStatus item={item} itemType="history" />
                   <LabelStatus taskCore={item} />

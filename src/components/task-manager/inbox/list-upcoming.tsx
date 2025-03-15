@@ -2,6 +2,7 @@ import { Suspense } from "react"
 
 import Loading from "~components/ui/loading"
 import type { ITask } from "~lib/types"
+import { useSetting } from "~providers/setting-provider"
 import { useVisibleTasks } from "~providers/visible-tasks-provider"
 
 import { UpcomingItem } from "../items/items"
@@ -23,6 +24,8 @@ const UPCOMMING_GROUP: {
 
 export const UpcomingList = () => {
   const { visibleTasks } = useVisibleTasks()
+  const { setting } = useSetting()
+
   return (
     <TaskGroupWrapper>
       <Suspense
@@ -35,6 +38,7 @@ export const UpcomingList = () => {
           <TaskGroup key={`taskgroup-${group.value}`} {...group}>
             {visibleTasks[group.value].map((t: ITask) => (
               <UpcomingItem
+                compact={setting.compactView}
                 key={`${t.id}`}
                 type="task"
                 item={t}

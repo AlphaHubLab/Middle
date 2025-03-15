@@ -1,10 +1,10 @@
 import { DateTime } from "luxon"
-import { usePersist } from "~providers/persist-provider"
-import { useSetting } from "~providers/setting-provider"
 import { useMemo, useState } from "react"
 
 import { TIME } from "~lib/constants"
 import type { ITask } from "~lib/types"
+import { usePersist } from "~providers/persist-provider"
+import { useSetting } from "~providers/setting-provider"
 
 import { HistoryItem } from "../items/items"
 import { TaskGroup, TaskGroupWrapper } from "./task-group"
@@ -63,7 +63,11 @@ export default function HistoryList() {
             value={groupName}
             variant="neutral">
             {historyList[groupName].map((item) => (
-              <HistoryItem key={`${item.id}`} item={item} />
+              <HistoryItem
+                key={`${item.id}`}
+                item={item}
+                compact={setting.compactView}
+              />
             ))}
           </TaskGroup>
         ))}

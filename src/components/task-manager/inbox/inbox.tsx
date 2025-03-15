@@ -8,6 +8,7 @@ import {
 
 import { SearchBar } from "~components/search/search"
 import { usePersist } from "~providers/persist-provider"
+import { useSetting } from "~providers/setting-provider"
 
 import Loading from "../../ui/loading"
 import { Handle } from "../../ui/svgs/handle"
@@ -18,7 +19,7 @@ import SearchList from "./list-search"
 import { UpcomingList } from "./list-upcoming"
 
 const tabs = [
-  { title: "Upcoming", icon: PiBoxArrowDown },
+  { title: "Inbox", icon: PiBoxArrowDown },
   { title: "Drafts", icon: PiNotePencil },
   { title: "Completed", icon: PiClockCounterClockwise },
   { title: "Notes", icon: PiNote }
@@ -27,9 +28,11 @@ const tabs = [
 ]
 
 export default function Inbox({ show, setHide }) {
-  const { storageLoading } = usePersist()
-  const [activeTab, setActiveTab] = useState("Upcoming")
+  const [activeTab, setActiveTab] = useState("Inbox")
   const [search, setSearch] = useState("")
+
+  const { storageLoading } = usePersist()
+  const { setSetting, setting } = useSetting()
 
   return (
     <div
@@ -50,19 +53,44 @@ export default function Inbox({ show, setHide }) {
           dir="ltr"
           role="tablist"
           aria-orientation="horizontal"
-          className="w-full flex gap-1 px-5 lg:px-11 pt-6">
-          {tabs.map((tab) => (
-            <button
-              onClick={() => setActiveTab(tab.title)}
-              className={`border flex gap-2 items-center rounded-xl h-6 px-2 ${activeTab === tab.title ? "text-white bg-fetch-primary font-semibold" : "text-fetch-primary font-normal bg-inherit hover:bg-violet-100"}`}
-              key={tab.title}>
-              <span className="text-normal">{<tab.icon />}</span>
-              <span
-                className={`${activeTab === tab.title ? "flex" : "hidden"} sm:flex text-xs`}>
-                {tab.title}
-              </span>
-            </button>
-          ))}
+          className="w-full flex px-5 lg:px-11 pt-6">
+          <div className="flex flex-auto">
+            {tabs.map((tab) => (
+              <button
+                onClick={() => setActiveTab(tab.title)}
+                className={`flex items-center first:rounded-l-xl border-l border-y last:border-r last:rounded-r-xl h-6 px-2 ${activeTab === tab.title ? "text-white bg-fetch-primary" : "text-fetch-primary bg-inherit hover:bg-violet-100"}`}
+                key={tab.title}>
+                <span className="text-normal">{<tab.icon />}</span>
+                <span
+                  className={`${activeTab === tab.title ? "flex" : "hidden"} sm:flex text-xs`}>
+                  {tab.title}
+                </span>
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-1 items-center justify-center text-fetch-primary">
+            <label
+              onClick={() =>
+                setSetting((prev) => ({
+                  ...prev,
+                  compactView: !prev.compactView
+                }))
+              }
+              className="select-none text-fetch-primary cursor-pointer">
+              Compact
+            </label>
+            <input
+              checked={setting.compactView}
+              onChange={() =>
+                setSetting((prev) => ({
+                  ...prev,
+                  compactView: !prev.compactView
+                }))
+              }
+              className="w-[16px] h-[16px] cursor-pointer accent-fetch-primary"
+              type="checkbox"
+            />
+          </div>
         </div>
         <div dir="ltr" className="pl-5 pr-3 lg:pl-11 lg:pr-9">
           <SearchBar
@@ -84,7 +112,7 @@ export default function Inbox({ show, setHide }) {
             </div>
           ) : (
             <div className="relative z-100 bg-inherit">
-              {activeTab === "Upcoming" && <UpcomingList />}
+              {activeTab === "Inbox" && <UpcomingList />}
               {activeTab === "Drafts" && <DraftList />}
               {activeTab === "Completed" && <HistoryList />}
               {activeTab === "Notes" && <NoteList />}
