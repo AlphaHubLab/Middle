@@ -19,6 +19,13 @@ npm i
 # or
 pnpm i
 ```
+Create .env.local in the root with the following content:
+
+``` bash
+NODE_ENV = "development"
+PLASMO_PUBLIC_FETCH_URL = "http://localhost:3000"
+PLASMO_PUBLIC_FETCH_API_URL = "http://localhost:3000/api"
+```
 
 Then, run the development server:
 

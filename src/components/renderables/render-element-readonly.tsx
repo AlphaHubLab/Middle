@@ -96,8 +96,9 @@ const LinkReadOnly = ({ value }: { value: string }) => (
 const ParagraphReadOnly = ({ value }: { value: string }) => {
   return (
     <p
+      style={{ overflowWrap: "anywhere" }}
       dir={getDir(value)}
-      className="whitespace-pre min-h-[20px] py-[2px] text-black/60 text-sm w-full px-2 overflow-y-hidden leading-tight rounded-md break-all">
+      className="min-h-[20px] py-[2px] text-black/60 text-sm w-full px-2 overflow-y-hidden leading-tight rounded-md">
       {value}
     </p>
   )
@@ -110,8 +111,9 @@ const ParagraphReadOnly = ({ value }: { value: string }) => {
 const CodeReadOnly = ({ value }: { value: string }) => {
   return (
     <code
+      style={{ overflowWrap: "anywhere" }}
       dir={getDir(value)}
-      className="whitespace-pre code min-h-[20px] py-[2px] text-black/60 text-xs w-full px-2 overflow-y-hidden leading-tight rounded-md break-all">
+      className="whitespace-pre-wrap code min-h-[20px] py-[2px] text-black/60 text-xs w-full px-2 overflow-y-hidden leading-tight rounded-md">
       {value}
     </code>
   )
