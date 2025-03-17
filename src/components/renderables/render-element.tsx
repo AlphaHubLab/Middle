@@ -44,6 +44,10 @@ type ILinkProps = Omit<
 
 const getDir = (str: string) => (isRtlChar(str.charAt(0)) ? "rtl" : "ltr")
 
+/**
+ * Render a node in editor based on its type
+ * @param param0 
+ */
 export const RenderElement = ({ type, ...props }: IRenderElementProps) => {
   switch (type) {
     case "h":
@@ -60,6 +64,10 @@ export const RenderElement = ({ type, ...props }: IRenderElementProps) => {
   }
 }
 
+/**
+ * Render the Title and task params in editor
+ * @param props 
+ */
 const HeaderWithProps = (props: IHeaderProps) => {
   const { store } = props
   const { editMode } = useApp()
@@ -128,6 +136,10 @@ const HeaderWithProps = (props: IHeaderProps) => {
   )
 }
 
+/**
+ * Rendeer a Link node in editor
+ * @param props 
+ */
 const LinkInputWithProps = (props: ILinkProps) => {
   return (
     <div className="flex items-center">
@@ -155,6 +167,10 @@ const LinkInputWithProps = (props: ILinkProps) => {
   )
 }
 
+/**
+ * Rendeer a Paragraph node in editor
+ * @param props 
+ */
 const ParagraphInputWithProps = (props: ITextAreaProps) => {
   const ref = useRef(null)
 
@@ -198,6 +214,10 @@ const ParagraphInputWithProps = (props: ITextAreaProps) => {
   )
 }
 
+/**
+ * Rendeer a Code node in editor
+ * @param props 
+ */
 const CodeInputWithProps = (props: ITextAreaProps) => {
   const ref = useRef(null)
 
@@ -229,7 +249,7 @@ const CodeInputWithProps = (props: ITextAreaProps) => {
         w-full px-2 py-[2px] bg-inherit rounded-md resize-none overflow-y-hidden appearance-none outline-none
         focus:bg-zinc-100 dark:focus:bg-fetch-darkgray/40 
         hover:bg-zinc-50 dark:hover:bg-fetch-darkgray/30 
-        text-zinc-500 dark:text-zinc-400 leading-tight text-sm code
+        text-zinc-500 dark:text-zinc-400 leading-tight text-xs code
         "
         value={props.value}
         onChange={props.onChange}

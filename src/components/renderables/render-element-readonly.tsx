@@ -10,6 +10,10 @@ import { useSetting } from "~providers/setting-provider"
 
 const getDir = (str: string) => (isRtlChar(str.charAt(0)) ? "rtl" : "ltr")
 
+/**
+ * Render all nodes and params as readonly with copiable
+ * @param param0
+ */
 export const RenderAllElementsReadOnlyWithCopy = ({
   taskCore
 }: {
@@ -39,6 +43,10 @@ export const RenderAllElementsReadOnlyWithCopy = ({
   )
 }
 
+/**
+ * Render a readonly node based on its type
+ * @param param0
+ */
 export const RenderElementReadOnly = ({ type, value }: INode) => {
   switch (type) {
     case "h":
@@ -55,6 +63,10 @@ export const RenderElementReadOnly = ({ type, value }: INode) => {
   }
 }
 
+/**
+ * Render readonly Title node
+ * @param param0
+ */
 const HeaderReadOnly = ({ value }: { value: string }) => {
   return (
     <h1
@@ -65,6 +77,10 @@ const HeaderReadOnly = ({ value }: { value: string }) => {
   )
 }
 
+/**
+ * Render a readonly link node
+ * @param param0
+ */
 const LinkReadOnly = ({ value }: { value: string }) => (
   <div className="py-[2px] px-2 min-h-[20px]">
     <a
@@ -87,6 +103,10 @@ const ParagraphReadOnly = ({ value }: { value: string }) => {
   )
 }
 
+/**
+ * Render a readonly code node
+ * @param param0
+ */
 const CodeReadOnly = ({ value }: { value: string }) => {
   return (
     <code
@@ -97,6 +117,10 @@ const CodeReadOnly = ({ value }: { value: string }) => {
   )
 }
 
+/**
+ * Render readonly nodes with copiable
+ * @param props
+ */
 export const RenderElementReadOnlyWithCopy = (props: INode) => {
   // Don't render an empty title in readonly mode
   if (props.type === "h" && props.value.trim().length === 0) return false
@@ -108,6 +132,10 @@ export const RenderElementReadOnlyWithCopy = (props: INode) => {
   )
 }
 
+/**
+ * Render readonly node Date param
+ * @param param0
+ */
 export const DateReadOnly = ({ timestamp }: { timestamp: number }) => {
   const { setting } = useSetting()
 
@@ -124,6 +152,10 @@ export const DateReadOnly = ({ timestamp }: { timestamp: number }) => {
   )
 }
 
+/**
+ * Render readonly identity node
+ * @param param0
+ */
 export const IdentityReadonly = ({ identity }: { identity: IIdentity }) => {
   return (
     <div className="px-2">
