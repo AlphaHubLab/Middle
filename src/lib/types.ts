@@ -11,7 +11,7 @@ export interface IBookmark {
  * A type representing a node type.
  * "h": Header | "a": Link | "p": text.
  */
-export type NodeType = "h" | "a" | "p"
+export type NodeType = "h" | "a" | "p" | "c"
 
 /**
  * A type representing a node.

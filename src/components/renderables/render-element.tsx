@@ -1,10 +1,11 @@
 import isUrl from "is-url"
-import { useApp } from "~providers/app-context"
 import { useEffect, useRef } from "react"
-import { PiLink } from "react-icons/pi"
+import { PiCode, PiLink } from "react-icons/pi"
 
 import { isUrlByRegex } from "~lib/task-helpers"
 import type { IRepeatParams, IStore } from "~lib/types"
+import { isRtlChar } from "~lib/utils"
+import { useApp } from "~providers/app-context"
 
 import {
   DateWithProps,
@@ -41,6 +42,8 @@ type ILinkProps = Omit<
   "type" | "addDate" | "removeIdentity" | "store" | "index"
 >
 
+const getDir = (str: string) => (isRtlChar(str.charAt(0)) ? "rtl" : "ltr")
+
 export const RenderElement = ({ type, ...props }: IRenderElementProps) => {
   switch (type) {
     case "h":
@@ -48,6 +51,9 @@ export const RenderElement = ({ type, ...props }: IRenderElementProps) => {
 
     case "p":
       return <ParagraphInputWithProps {...props} />
+
+    case "c":
+      return <CodeInputWithProps {...props} />
 
     case "a":
       return <LinkInputWithProps {...props} />
@@ -63,6 +69,7 @@ const HeaderWithProps = (props: IHeaderProps) => {
       <div className="w-full pl-4 pb-2">
         <div className="has-[:focus]:outline outline-2 outline-violet-900 w-full rounded-2xl flex">
           <input
+            dir={getDir(props.value)}
             placeholder={editMode ? "LFG..." : "Click to start..."}
             type="text"
             ref={props.addToRef}
@@ -173,12 +180,56 @@ const ParagraphInputWithProps = (props: ITextAreaProps) => {
             ? "Type anything or press '/' for commands..."
             : ""
         }
+        dir={getDir(props.value)}
         ref={_addToRef}
         className="
         w-full px-2 py-[2px] bg-inherit rounded-md resize-none overflow-y-hidden appearance-none outline-none
         focus:bg-zinc-100 dark:focus:bg-fetch-darkgray/40 
         hover:bg-zinc-50 dark:hover:bg-fetch-darkgray/30 
         text-zinc-500 dark:text-zinc-400 leading-tight text-sm
+        "
+        value={props.value}
+        onChange={props.onChange}
+        onKeyDown={props.onKeyDown}
+        onFocus={props.onFocus}
+        onPaste={props.onPaste}
+      />
+    </div>
+  )
+}
+
+const CodeInputWithProps = (props: ITextAreaProps) => {
+  const ref = useRef(null)
+
+  useEffect(() => {
+    ref.current.style.height = "18px"
+    const h = ref?.current?.scrollHeight + "px"
+    ref.current.style.height = h
+  }, [props.value])
+
+  const _addToRef = (el: HTMLElement) => {
+    props.addToRef(el)
+    ref.current = el
+  }
+
+  return (
+    <div className="flex items-center w-full">
+      <div className="w-4">
+        <PiCode />
+      </div>
+      <textarea
+        placeholder={
+          props.index === 1 && props.value.length === 0
+            ? "Type anything or press '/' for commands..."
+            : ""
+        }
+        dir={getDir(props.value)}
+        ref={_addToRef}
+        className="
+        w-full px-2 py-[2px] bg-inherit rounded-md resize-none overflow-y-hidden appearance-none outline-none
+        focus:bg-zinc-100 dark:focus:bg-fetch-darkgray/40 
+        hover:bg-zinc-50 dark:hover:bg-fetch-darkgray/30 
+        text-zinc-500 dark:text-zinc-400 leading-tight text-sm code
         "
         value={props.value}
         onChange={props.onChange}

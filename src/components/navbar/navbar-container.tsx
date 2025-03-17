@@ -1,4 +1,5 @@
 import { PiGear } from "react-icons/pi"
+import { useSwitchChain } from "wagmi"
 
 import ConnectMobileWallet from "~components/connect-wallet/connect-mobile-wallet"
 import CreateWallet from "~components/connect-wallet/create-wallet"

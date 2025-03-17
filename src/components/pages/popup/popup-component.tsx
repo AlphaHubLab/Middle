@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid"
 import { useEffect, useState } from "react"
+import { v4 as uuidv4 } from "uuid"
 
 import FetchLogo from "~components/ui/fetch-logo"
 import { getTaskDefaultParams } from "~lib/task-helpers"
@@ -7,7 +7,10 @@ import type { ITask } from "~lib/types"
 import { usePersist } from "~providers/persist-provider"
 
 export default function PopupComponent() {
-  const [tab, setTab] = useState("")
+  const [tab, setTab] = useState<{ url: string; title: string }>({
+    url: "",
+    title: ""
+  })
 
   const { setTasks } = usePersist()
 
@@ -20,7 +23,8 @@ export default function PopupComponent() {
         },
         (tabs) => {
           const tab = tabs[0]
-          if (tab.url) setTab(tab.url)
+
+          if (tab.url) setTab({ url: tab.url, title: tab.title })
         }
       ),
     [chrome]
@@ -31,8 +35,8 @@ export default function PopupComponent() {
     const task: ITask = {
       id: uuidv4(),
       nodes: [
-        { type: "h", value: "" },
-        { type: "a", value: tab }
+        { type: "h", value: tab.title },
+        { type: "a", value: tab.url }
       ],
       recurrenceId: "",
       params: getTaskDefaultParams(),
@@ -56,7 +60,7 @@ export default function PopupComponent() {
         </div>
       </nav>
       <div className="h-[calc(100%-64px)] w-full flex items-center justify-center p-2">
-        {tab === "chrome://newtab/" || tab === "chrome://newtab" ? (
+        {tab.url === "chrome://newtab/" || tab.url === "chrome://newtab" ? (
           <div>
             <p className="text-fetch-primary py-4 w-full flex justify-center h-full items-center">
               Nothing To fetch...
@@ -67,8 +71,10 @@ export default function PopupComponent() {
           </div>
         ) : (
           <div className="flex flex-col w-full h-full items-center justify-center">
+            <input className="w-full border px-2 rounded-xl h-8" value={tab.title} />
+            <textarea className="w-full border px-2 rounded-xl" value="" />
             <p className="break-all p-2 text-blue-500 border border-fetch-primary rounded-2xl my-4">
-              {tab}
+              {tab.url}
             </p>
             <button
               className="py-1 h-10 px-2 w-full block hover:bg-violet-700 text-white bg-fetch-primary my-1 rounded-xl text-sm text-fetch-primary"
@@ -82,8 +88,6 @@ export default function PopupComponent() {
             </button>
           </div>
         )}
-
-        {/* <button onClick={() => message()}>test</button> */}
       </div>
     </div>
   )

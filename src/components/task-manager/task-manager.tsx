@@ -12,7 +12,7 @@ export default function TaskManager({ isDev = false }) {
       <div className="h-full w-full">
         <NavbarContainer isDev={isDev} />
 
-        <div className="relative h-full w-[calc(100%-64px)] md:w-[calc(100%-286px)]">
+        <div className="relative h-full transition-[width] md:transition-none w-[calc(100%-64px)] md:w-[calc(100%-286px)]">
           <div
             className={
               "relative w-full h-[calc(100%-180px)] max-w-[850px] overflow-y-auto mx-auto px-4 styled-scrollbar"

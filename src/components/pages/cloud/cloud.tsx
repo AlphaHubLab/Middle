@@ -16,9 +16,13 @@ const DashboardWithSession = () => {
 
   return (
     <div className="bg-slate-100 min-h-screen">
-      <div className="w-full max-w-[650px] mx-auto p-4">
-        {!session ? <SignIn /> : <Dashboard />}
-      </div>
+      {!session ? (
+        <div className="w-full max-w-[650px] mx-auto p-4">
+          <SignIn />
+        </div>
+      ) : (
+        <Dashboard />
+      )}
     </div>
   )
 }

@@ -1,7 +1,8 @@
 import {
+  PiCode,
   // PiFloppyDiskBack,
   PiLink,
-  PiTextH,
+  // PiTextH,
   PiTextT,
   PiTimer
 } from "react-icons/pi"
@@ -17,7 +18,6 @@ export const GENERAL_EXTENTIONS: IExtenstion[] = [
     description: "Add a simple paragraph",
     keywords: ["write", "text", "paragraph"]
   },
-
   {
     icon: PiLink,
     title: "Link",
@@ -26,7 +26,14 @@ export const GENERAL_EXTENTIONS: IExtenstion[] = [
     description: "Add a link",
     keywords: ["link", "web", "site"]
   },
-
+  {
+    icon: PiCode,
+    title: "Code",
+    value: "c",
+    action: "replaceNode",
+    description: "Add a Code block",
+    keywords: ["code"]
+  },
   {
     icon: PiTimer,
     title: "Date",

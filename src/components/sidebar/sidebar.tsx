@@ -75,7 +75,7 @@ export default function Sidebar({ isDev = false }) {
 
   return (
     <div
-      className={`fixed h-[calc(100%-3rem)] py-1 md:pr-1 p-0 top-12 right-0 w-[286px] transition-[margin-right] duration-200 z-20 ${isOpen ? "mr-0" : "-mr-[222px] md:mr-0"}`}>
+      className={`fixed h-[calc(100%-3rem)] py-1 md:pr-1 p-0 top-12 right-0 w-[286px] transition-[margin-right] duration-200 md:transition-none z-20 ${isOpen ? "mr-0" : "-mr-[222px] md:mr-0"}`}>
       <div
         className={`relative w-full h-full px-1 md:px-2 ${isOpen && "px-2"} z-30 bg-white shadow-none border rounded-l-3xl md:rounded-3xl border-transparent md:shadow-lg md:border-black/15`}>
         <div className="w-full h-full">

@@ -4,8 +4,11 @@ import { IdentityPreview } from "~components/renderables/identity-preview"
 import Copiable from "~components/ui/copiable"
 import { getPreviewNodes } from "~lib/task-helpers"
 import type { IIdentity, INode, ITaskCore } from "~lib/types"
+import { isRtlChar } from "~lib/utils"
 import { useRecurrence } from "~providers/recurrence-provider"
 import { useSetting } from "~providers/setting-provider"
+
+const getDir = (str: string) => (isRtlChar(str.charAt(0)) ? "rtl" : "ltr")
 
 export const RenderAllElementsReadOnlyWithCopy = ({
   taskCore
@@ -44,6 +47,9 @@ export const RenderElementReadOnly = ({ type, value }: INode) => {
     case "p":
       return <ParagraphReadOnly value={value} />
 
+    case "c":
+      return <CodeReadOnly value={value} />
+
     case "a":
       return <LinkReadOnly value={value} />
   }
@@ -51,7 +57,9 @@ export const RenderElementReadOnly = ({ type, value }: INode) => {
 
 const HeaderReadOnly = ({ value }: { value: string }) => {
   return (
-    <h1 className="w-full py-1 px-2 min-h-[20px] text-sm flex h-full items-center font-medium text-black/80 leading-tight rounded-md">
+    <h1
+      dir={getDir(value)}
+      className="w-full py-1 px-2 min-h-[20px] text-sm flex h-full items-center font-medium text-black/80 leading-tight rounded-md">
       {value}
     </h1>
   )
@@ -71,9 +79,21 @@ const LinkReadOnly = ({ value }: { value: string }) => (
 
 const ParagraphReadOnly = ({ value }: { value: string }) => {
   return (
-    <p className="min-h-[20px] py-[2px] text-black/60 text-sm w-full px-2 overflow-y-hidden leading-tight rounded-md break-all">
+    <p
+      dir={getDir(value)}
+      className="whitespace-pre min-h-[20px] py-[2px] text-black/60 text-sm w-full px-2 overflow-y-hidden leading-tight rounded-md break-all">
       {value}
     </p>
+  )
+}
+
+const CodeReadOnly = ({ value }: { value: string }) => {
+  return (
+    <code
+      dir={getDir(value)}
+      className="whitespace-pre code min-h-[20px] py-[2px] text-black/60 text-xs w-full px-2 overflow-y-hidden leading-tight rounded-md break-all">
+      {value}
+    </code>
   )
 }
 

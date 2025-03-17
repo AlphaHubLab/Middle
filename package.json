@@ -16,6 +16,8 @@
   "dependencies": {
     "@plasmohq/messaging": "^0.6.2",
     "@rainbow-me/rainbowkit": "^2.2.1",
+    "@reown/appkit": "^1.7.0",
+    "@reown/appkit-adapter-wagmi": "^1.7.0",
     "@tanstack/react-query": "^5.62.8",
     "connectkit": "^1.8.2",
     "fuse.js": "^7.0.0",

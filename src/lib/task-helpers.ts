@@ -63,6 +63,7 @@ export const splitTextByUrls = (e: ClipboardEvent, store: IStore) => {
     e.clipboardData.getData("Text").trim()
 
   const splittedByLine = current.trim().split(/\n/)
+
   const urls: string[] = current.match(urlRegex) || []
 
   const nodes: INode[] = []
@@ -71,10 +72,10 @@ export const splitTextByUrls = (e: ClipboardEvent, store: IStore) => {
   splittedByLine.forEach((s) => splittedBySpace.push(s.split(" ")))
 
   for (let i = 0; i < splittedBySpace.length; i++) {
-    if (splittedBySpace[i][0] === "") {
-      nodes.push({ type: "p", value: "" })
-      continue
-    }
+    // if (splittedBySpace[i][0] === "") {
+    //   nodes.push({ type: "p", value: "" })
+    //   continue
+    // }
 
     let str = ""
 
@@ -83,6 +84,7 @@ export const splitTextByUrls = (e: ClipboardEvent, store: IStore) => {
 
       if (isUrl === false) {
         str = str + " " + splittedBySpace[i][j]
+
         if (j === splittedBySpace[i].length - 1) {
           const trimmed = str.trim()
 
@@ -117,7 +119,7 @@ export const getNodeType = (_node: INode, _newValue = null): NodeType => {
   _newValue = typeof _newValue === "string" ? _newValue : _node.value
 
   if (_node.type === "h") return "h"
-
+  if (_node.type === "c") return "c"
   if (isUrlByRegex(_newValue)) return "a"
 
   return "p"

@@ -1,7 +1,3 @@
-import { useApp } from "~providers/app-context"
-import { useDraft } from "~providers/draft-context"
-import { usePersist } from "~providers/persist-provider"
-import { useSetting } from "~providers/setting-provider"
 import { useEffect, useMemo, useRef, useState } from "react"
 import type { ChangeEvent, KeyboardEvent } from "react"
 import { PiFloppyDisk, PiTrash } from "react-icons/pi"
@@ -18,6 +14,10 @@ import type {
   IStoreParams,
   NodeType
 } from "~lib/types"
+import { useApp } from "~providers/app-context"
+import { useDraft } from "~providers/draft-context"
+import { usePersist } from "~providers/persist-provider"
+import { useSetting } from "~providers/setting-provider"
 
 import { RenderElement } from "../renderables/render-element"
 import { DraftStatus } from "../renderables/status"
@@ -538,6 +538,9 @@ export default function Editor({ disabled }) {
   }
 
   const handlePaste = (e: ClipboardEvent) => {
+    if (store.nodes[store.focusedNode].type === "c") return
+    if (store.nodes[store.focusedNode].value.trim().length > 0) return
+
     e.stopPropagation()
     e.preventDefault()
     const nodes = helpers.splitTextByUrls(e, store)
